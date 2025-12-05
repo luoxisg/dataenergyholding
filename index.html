@@ -1,774 +1,819 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  ChevronDown, ArrowRight, Activity, Globe, Cpu, Factory, Building, Users, 
-  Menu, X, Mail, MapPin, Phone, CheckCircle2, Languages, ArrowDown, ShieldCheck, Zap 
-} from 'lucide-react';
-
-// --- Animation & Utility Hooks ---
-
-const useOnScreen = (options) => {
-  const ref = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setIsVisible(true);
-        observer.unobserve(entry.target);
-      }
-    }, options);
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => {
-      if (ref.current) observer.unobserve(ref.current);
-    };
-  }, [ref, options]);
-
-  return [ref, isVisible];
-};
-
-const Reveal = ({ children, delay = 0, className = "" }) => {
-  const [ref, isVisible] = useOnScreen({ threshold: 0.1 });
-  
-  return (
-    <div
-      ref={ref}
-      className={`transition-all duration-1000 ease-out transform ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-      } ${className}`}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      {children}
-    </div>
-  );
-};
-
-// --- Shared Components ---
-
-const SectionTitle = ({ title, subtitle, titleCn, subtitleCn, lang }) => (
-  <Reveal className="text-center mb-12 md:mb-16 px-4">
-    <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-4 md:mb-6 tracking-tight">
-      {lang === 'en' ? title : titleCn}
-    </h2>
-    <div className="h-1.5 w-20 md:w-24 bg-blue-600 mx-auto mb-6"></div>
-    <p className="text-slate-600 max-w-3xl mx-auto text-base md:text-xl font-light leading-relaxed">
-      {lang === 'en' ? subtitle : subtitleCn}
-    </p>
-  </Reveal>
-);
-
-const Button = ({ children, primary = false, className = "", onClick }) => (
-  <button onClick={onClick} className={`w-full md:w-auto px-8 py-4 rounded-none text-sm uppercase tracking-widest font-bold transition-all duration-500 relative overflow-hidden group active:scale-95 ${
-    primary 
-      ? "bg-blue-900 text-white hover:bg-blue-800" 
-      : "bg-transparent text-white border border-white hover:bg-white hover:text-slate-900"
-  } ${className}`}>
-    <span className="relative z-10 flex items-center justify-center">{children}</span>
-  </button>
-);
-
-// --- Org Chart Components ---
-
-const OrgCard = ({ title, titleCn, subtitle, subtitleCn, role, roleCn, functions, functionsCn, ownership, ownershipCn, className = "", icon: Icon, lang, delay = 0, isRoot = false }) => {
-  const [ref, isVisible] = useOnScreen({ threshold: 0.1 });
-
-  return (
-    <div 
-      ref={ref}
-      style={{ transitionDelay: `${delay}ms` }}
-      className={`bg-white border-t-4 border-slate-800 shadow-sm hover:shadow-2xl active:scale-[0.98] transition-all duration-700 p-5 md:p-6 flex flex-col gap-3 relative z-10 w-full md:w-64 text-sm group transform ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      } ${isRoot ? "md:w-80 md:scale-105 border-t-blue-800" : ""} ${className}`}
-    >
-      <div className="flex items-start justify-between mb-1">
-        <div className="font-bold text-slate-900 text-base md:text-lg leading-tight group-hover:text-blue-700 transition-colors">
-          {Icon && <Icon className="w-5 h-5 md:w-6 md:h-6 mb-2 text-slate-400 group-hover:text-blue-600 transition-colors" />}
-          <div className="block">{lang === 'en' ? title : titleCn}</div>
-        </div>
-      </div>
-      {(lang === 'en' ? subtitle : subtitleCn) && (
-        <div className="text-slate-400 font-medium text-xs uppercase tracking-wider mb-2 border-b border-slate-100 pb-2">
-          {lang === 'en' ? subtitle : subtitleCn}
-        </div>
-      )}
-      
-      <div className="space-y-3 mt-1">
-        {role && (
-          <div className="text-xs">
-            <span className="font-bold text-slate-700 block mb-1 uppercase text-[10px] tracking-wide">{lang === 'en' ? "Role" : "角色"}</span> 
-            <span className="text-slate-600 text-sm leading-relaxed block">{lang === 'en' ? role : roleCn}</span>
-          </div>
-        )}
-        {functions && (
-          <div className="text-xs">
-             <span className="font-bold text-slate-700 block mb-1 uppercase text-[10px] tracking-wide">{lang === 'en' ? "Functions" : "職能"}</span> 
-            <div className="text-slate-600 mt-0.5 leading-snug">{lang === 'en' ? functions : functionsCn}</div>
-          </div>
-        )}
-        {ownership && (
-          <div className="text-xs pt-3 border-t border-slate-100 mt-1 bg-slate-50 -mx-5 -mb-5 p-4 md:-mx-6 md:-mb-6">
-             <span className="font-bold text-slate-700 block mb-1 uppercase text-[10px] tracking-wide">{lang === 'en' ? "Ownership" : "股權 / 股東"}</span> 
-            <div className="text-slate-600 italic">{lang === 'en' ? ownership : ownershipCn}</div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-// Mobile Org Chart Node (Timeline Style)
-const MobileOrgNode = ({ children, isLast = false }) => (
-  <div className="flex gap-4">
-    <div className="flex flex-col items-center">
-      <div className="w-3 h-3 rounded-full bg-blue-600 mt-6 shadow-[0_0_0_4px_rgba(37,99,235,0.1)]"></div>
-      {!isLast && <div className="w-0.5 flex-grow bg-slate-200 my-1"></div>}
-    </div>
-    <div className="pb-8 w-full">
-      {children}
-    </div>
-  </div>
-);
-
-const InteractiveOrgChart = ({ lang }) => {
-  return (
-    <div className="bg-slate-50/50 rounded-xl border border-slate-100 md:p-12">
-      {/* Desktop View (Horizontal Tree) */}
-      <div className="hidden md:block overflow-x-auto pb-8">
-        <div className="min-w-[900px] max-w-6xl mx-auto pt-8">
-          
-          {/* Level 1: DataEnergy Holding (Mother Company) */}
-          <div className="flex justify-center items-start gap-32 mb-24 relative">
-            <div className="relative z-20">
-              <OrgCard 
-                isRoot={true}
-                lang={lang}
-                icon={Globe}
-                title="DataEnergy Holding Pte. Ltd."
-                titleCn="DataEnergy 控股私人有限公司"
-                subtitle="(Singapore)"
-                subtitleCn="(新加坡)"
-                role="Group Mother Company / Capital Platform"
-                roleCn="集團母公司 / 資本與所有權平台"
-                functions="Equity Investment, Banking & Financing, IP & Brand Control"
-                functionsCn="股權投資、銀行融資、知識產權與品牌控制"
-                ownership="Shareholders: Chinese Industrial Capital, SG Founding Team"
-                ownershipCn="股東：中國產業資本、新加坡創始團隊"
-                className="bg-white shadow-xl"
-                delay={200}
-              />
-            </div>
-            
-            {/* Dashed Line to JV */}
-            <div className="absolute left-[60%] top-20 w-[140px] border-t-2 border-dashed border-blue-300 opacity-60">
-               <ArrowRight className="absolute -right-1 -top-[9px] text-blue-300 w-4 h-4" />
-            </div>
-
-            <div className="relative z-20 mt-8">
-              <OrgCard 
-                lang={lang}
-                icon={Activity}
-                title="HHE JV Pte. Ltd."
-                titleCn="HHE 合資公司"
-                subtitle="(Singapore)"
-                subtitleCn="(新加坡)"
-                role="EaaS Platform"
-                roleCn="EaaS 服務平台"
-                ownership="30% Owned by DataEnergy"
-                ownershipCn="DataEnergy 持股 30%"
-                className="w-64 opacity-80 hover:opacity-100"
-                delay={400}
-              />
-            </div>
-          </div>
-
-          {/* Level 2: Subsidiaries Tree */}
-          <div className="relative h-16 w-full max-w-6xl mx-auto -mt-20 mb-8 opacity-60">
-             <div className="absolute left-[41.5%] -translate-x-1/2 -top-0 h-16 w-px bg-slate-300"></div>
-             <div className="absolute top-16 left-[12.5%] right-[20%] h-px bg-slate-300"></div>
-             
-             <div className="absolute top-16 left-[12.5%] h-8 w-px bg-slate-300"><ChevronDown className="absolute -bottom-1 -left-1.5 text-slate-300 w-4 h-4" /></div>
-             <div className="absolute top-16 left-[35.5%] h-8 w-px bg-slate-300">
-                 <div className="absolute top-0 -left-px h-full border-l-2 border-dashed border-slate-300 bg-transparent"></div>
-                 <span className="absolute -top-4 left-2 text-[10px] bg-yellow-50 px-2 py-0.5 border border-yellow-200 text-yellow-800 uppercase tracking-wider font-bold shadow-sm">
-                    {lang === 'en' ? "Strategic Inv." : "戰略投資"}
-                 </span>
-                 <ChevronDown className="absolute -bottom-1 -left-1.5 text-slate-300 w-4 h-4" />
-             </div>
-             <div className="absolute top-16 left-[58.5%] h-8 w-px bg-slate-300"><ChevronDown className="absolute -bottom-1 -left-1.5 text-slate-300 w-4 h-4" /></div>
-             <div className="absolute top-16 left-[80%] h-8 w-px bg-slate-300"><ChevronDown className="absolute -bottom-1 -left-1.5 text-slate-300 w-4 h-4" /></div>
-          </div>
-
-          {/* Level 2 Cards */}
-          <div className="grid grid-cols-4 gap-6 max-w-7xl mx-auto items-start">
-            <OrgCard lang={lang} delay={600} icon={Cpu} title="DCDeepTech" titleCn="DCDeepTech" subtitle="(Singapore)" subtitleCn="(新加坡)" role="Tech Compliance" roleCn="技術與合規平台" functions="EMA / BCA Liaison, Audit" functionsCn="監管聯絡、合規審計" className="w-full" />
-            <OrgCard lang={lang} delay={700} icon={Zap} title="AxiomDeta" titleCn="AxiomDeta" subtitle="(Singapore)" subtitleCn="(新加坡)" role="Data Center Infra" roleCn="數據中心基礎設施平台" functions="OCP Racks, Power & Cooling" functionsCn="OCP 機櫃、電力與冷卻系統" ownership="Strategic Minority (20-40%)" ownershipCn="戰略少數股權 (20-40%)" className="w-full border-t-yellow-500" />
-            <OrgCard lang={lang} delay={800} icon={Factory} title="DataEnergy MY" titleCn="DataEnergy MY" subtitle="(Malaysia)" subtitleCn="(馬來西亞)" role="Manufacturing Base" roleCn="製造基地 / 柔佛工廠" functions="Production, Supply Chain" functionsCn="生產製造、供應鏈運營" ownership="Majority / 100% Owned" ownershipCn="控股或 100% 全資擁有" className="w-full border-t-emerald-600" />
-            <OrgCard lang={lang} delay={900} icon={Building} title="Property SPVs" titleCn="Property SPVs" subtitle="(SG / CN)" subtitleCn="(新加坡 / 中國)" role="Asset Holdings" roleCn="資產持有平台" functions="Commercial Property, Land" functionsCn="商業地產、工業用地持有" className="w-full" />
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile View (Vertical Timeline) */}
-      <div className="md:hidden px-4 py-8">
-        <MobileOrgNode>
-           <div className="text-xs font-bold text-blue-600 mb-2 uppercase tracking-wider">{lang === 'en' ? "Group Mother Company" : "集團母公司"}</div>
-           <OrgCard 
-              isRoot={true}
-              lang={lang} icon={Globe} title="DataEnergy Holding Pte. Ltd." titleCn="DataEnergy 控股私人有限公司" subtitle="(Singapore)" subtitleCn="(新加坡)"
-              role="Capital & Ownership Platform" roleCn="資本與所有權平台" functions="Equity Investment, Banking & Financing" functionsCn="股權投資、銀行融資"
-              ownership="Shareholders: Chinese Industrial Capital, SG Founding Team"
-              ownershipCn="股東：中國產業資本、新加坡創始團隊"
-              className="bg-white border-t-blue-800 w-full"
-            />
-        </MobileOrgNode>
-
-        <MobileOrgNode>
-            <div className="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider pl-2 border-l-2 border-dashed border-slate-300 ml-1">
-               {lang === 'en' ? "Joint Venture" : "合資企業"}
-            </div>
-            <OrgCard 
-              lang={lang} icon={Activity} title="HHE JV Pte. Ltd." titleCn="HHE 合資公司" subtitle="(Singapore)" subtitleCn="(新加坡)"
-              role="EaaS Platform" roleCn="EaaS 服務平台" ownership="30% Owned" ownershipCn="DataEnergy 持股 30%"
-              className="w-full opacity-90"
-            />
-        </MobileOrgNode>
-
-        <MobileOrgNode isLast={true}>
-            <div className="text-xs font-bold text-slate-500 mb-4 uppercase tracking-wider">{lang === 'en' ? "Subsidiaries" : "子公司"}</div>
-            <div className="space-y-6">
-                <OrgCard lang={lang} icon={Cpu} title="DCDeepTech" titleCn="DCDeepTech" subtitle="(Singapore)" subtitleCn="(新加坡)" role="Tech Compliance" roleCn="技術與合規平台" className="w-full" />
-                <div className="relative">
-                   <div className="absolute -top-3 left-0 bg-yellow-100 text-yellow-800 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide border border-yellow-200">
-                     {lang === 'en' ? "Strategic Inv." : "戰略投資"}
-                   </div>
-                   <OrgCard lang={lang} icon={Zap} title="AxiomDeta" titleCn="AxiomDeta" subtitle="(Singapore)" subtitleCn="(新加坡)" role="Data Center Infra" roleCn="數據中心基礎設施平台" ownership="Strategic Minority (20-40%)" ownershipCn="戰略少數股權 (20-40%)" className="w-full border-t-yellow-500" />
-                </div>
-                <OrgCard lang={lang} icon={Factory} title="DataEnergy MY" titleCn="DataEnergy MY" subtitle="(Malaysia)" subtitleCn="(馬來西亞)" role="Manufacturing Base" roleCn="製造基地" className="w-full border-t-emerald-600" />
-                <OrgCard lang={lang} icon={Building} title="Property SPVs" titleCn="Property SPVs" subtitle="(SG / CN)" subtitleCn="(新加坡 / 中國)" role="Asset Holdings" roleCn="資產持有平台" className="w-full" />
-            </div>
-        </MobileOrgNode>
-      </div>
-    </div>
-  );
-};
-
-// --- Website Sections ---
-
-const Navbar = ({ lang, setLang }) => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-  
-  const toggleLang = () => setLang(prev => prev === 'en' ? 'zh' : 'en');
-
-  const navItems = {
-    about: { en: "About", zh: "關於我們" },
-    structure: { en: "Structure", zh: "組織架構" },
-    business: { en: "Business", zh: "業務板塊" },
-    contact: { en: "Contact", zh: "聯繫我們" }
-  };
-  
-  return (
-    <>
-      <nav className={`fixed w-full z-50 transition-all duration-500 ${
-        isScrolled ? "bg-white/90 backdrop-blur-md shadow-md py-3 md:py-4" : "bg-transparent py-4 md:py-6"
-      }`}>
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
-          <div className="flex justify-between items-center">
-            {/* Logo */}
-            <div className="flex items-center group cursor-pointer z-50 relative">
-              <div className={`p-2 rounded transition-colors ${isScrolled || isOpen ? "bg-blue-600 text-white" : "bg-white text-slate-900"}`}>
-                <Globe size={20} className="md:w-6 md:h-6" />
-              </div>
-              <div className="ml-2 md:ml-3 flex flex-col">
-                <span className={`text-lg md:text-xl font-bold tracking-tight leading-none ${isScrolled || isOpen ? "text-slate-900" : "text-white"}`}>
-                  DATA<span className={isScrolled || isOpen ? "text-blue-600" : "text-blue-200"}>ENERGY</span>
-                </span>
-                <span className={`text-[9px] md:text-[10px] uppercase tracking-[0.2em] font-medium mt-0.5 md:mt-1 ${isScrolled || isOpen ? "text-slate-500" : "text-slate-300"}`}>
-                  {lang === 'en' ? "Holdings Pte Ltd" : "控股私人有限公司"}
-                </span>
-              </div>
-            </div>
-            
-            {/* Desktop Menu */}
-            <div className="hidden md:flex items-center space-x-12">
-              {Object.entries(navItems).map(([key, label]) => (
-                <a 
-                  key={key} 
-                  href={`#${key}`} 
-                  className={`text-sm font-semibold uppercase tracking-widest hover:text-blue-400 transition-colors relative group ${
-                    isScrolled ? "text-slate-700" : "text-slate-200"
-                  }`}
-                >
-                  {lang === 'en' ? label.en : label.zh}
-                  <span className="absolute -bottom-2 left-0 w-0 h-0.5 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
-                </a>
-              ))}
-              
-              <button 
-                onClick={toggleLang}
-                className={`flex items-center gap-2 px-4 py-1.5 border rounded-full transition-all duration-300 ${
-                  isScrolled 
-                    ? "border-slate-300 text-slate-600 hover:bg-slate-100" 
-                    : "border-white/30 text-white hover:bg-white/10"
-                }`}
-              >
-                <Languages size={14} />
-                <span className="text-xs font-bold tracking-wider">{lang === 'en' ? '繁' : 'EN'}</span>
-              </button>
-            </div>
-
-            {/* Mobile Menu Toggle & Lang */}
-            <div className="md:hidden flex items-center gap-3 z-50 relative">
-              <button onClick={toggleLang} className={`text-xs font-bold px-3 py-1.5 rounded-full transition-all duration-300 ${isScrolled || isOpen ? "text-slate-900 border border-slate-300 bg-white/50" : "text-white border border-white/30 bg-black/20"}`}>
-                  {lang === 'en' ? '繁' : 'EN'}
-              </button>
-              <button onClick={() => setIsOpen(!isOpen)} className={`p-1 rounded-full transition-all duration-300 ${isOpen ? "bg-slate-100 text-slate-900" : (isScrolled ? "text-slate-900" : "text-white")}`}>
-                {isOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      {/* Mobile Full Screen Menu Overlay with High-level Animation */}
-      <div className={`fixed inset-0 bg-white/95 backdrop-blur-xl z-40 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${isOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none"}`}>
-        <div className="flex flex-col items-center justify-center h-full space-y-8 p-6">
-           {Object.entries(navItems).map(([key, label], idx) => (
-              <a 
-                key={key} 
-                href={`#${key}`} 
-                onClick={() => setIsOpen(false)} 
-                className={`text-2xl font-bold text-slate-800 tracking-tight transform transition-all duration-700 ${isOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}`}
-                style={{ transitionDelay: `${idx * 100}ms` }}
-              >
-                {lang === 'en' ? label.en : label.zh}
-              </a>
-           ))}
-           <div className={`w-12 h-1 bg-blue-600 rounded-full mt-4 transform transition-all duration-700 delay-500 ${isOpen ? "scale-x-100" : "scale-x-0"}`}></div>
-           <p className={`text-slate-400 text-sm mt-8 uppercase tracking-widest transition-opacity duration-1000 delay-700 ${isOpen ? "opacity-100" : "opacity-0"}`}>
-              Global Headquarters
-           </p>
-        </div>
-      </div>
-    </>
-  );
-};
-
-const Hero = ({ lang }) => (
-  <div className="relative h-screen min-h-[600px] bg-slate-900 overflow-hidden flex items-center">
-    <style>{`
-      @keyframes slow-zoom {
-        0% { transform: scale(1); }
-        100% { transform: scale(1.1); }
-      }
-      .animate-slow-zoom {
-        animation: slow-zoom 20s infinite alternate linear;
-      }
-      .animate-bounce-slow {
-        animation: bounce 3s infinite;
-      }
-      /* High-level Mobile Scan Animation */
-      @keyframes scan {
-        0% { top: -10%; opacity: 0; }
-        15% { opacity: 0.5; }
-        85% { opacity: 0.5; }
-        100% { top: 110%; opacity: 0; }
-      }
-      .animate-scan {
-        animation: scan 4s ease-in-out infinite;
-      }
-    `}</style>
-
-    {/* Background Parallax */}
-    <div className="absolute inset-0 z-0">
-      <div className="absolute inset-0 bg-slate-900/60 z-10 mix-blend-multiply"></div>
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent z-10"></div>
-      <img 
-        src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop" 
-        alt="Data Connectivity" 
-        className="w-full h-full object-cover opacity-60 animate-slow-zoom"
-      />
-      {/* Mobile-only High-level Scanner Effect */}
-      <div className="md:hidden absolute left-0 w-full h-32 bg-gradient-to-b from-blue-500/0 via-blue-400/20 to-blue-500/0 z-10 animate-scan pointer-events-none"></div>
-    </div>
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataEnergy Holding Pte. Ltd.</title>
     
-    <div className="relative z-20 max-w-7xl mx-auto px-4 md:px-6 lg:px-12 w-full pt-16 md:pt-20">
-      <Reveal delay={200} className="md:w-3/4 lg:w-2/3">
-        <div className="inline-block px-3 py-1 mb-6 border border-blue-400/30 rounded-full bg-blue-900/30 backdrop-blur-sm">
-          <span className="text-blue-300 text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase">
-            {lang === 'en' ? "Infrastructure for the AI Era" : "AI 時代的基礎設施"}
-          </span>
-        </div>
-        
-        {lang === 'en' ? (
-          <>
-            <h1 className="text-4xl md:text-7xl font-extrabold text-white tracking-tight mb-6 md:mb-8 leading-[1.15]">
-              Bridging Capital, <br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
-                Technology
-              </span> & Assets.
-            </h1>
-            <p className="text-base md:text-xl text-slate-300 mb-8 md:mb-12 leading-relaxed max-w-xl font-light border-l-2 border-blue-500 pl-4 md:pl-6">
-              DataEnergy Holding is the premier Singapore-based platform integrating investment, compliance, and manufacturing for next-gen data centers.
-            </p>
-          </>
-        ) : (
-          <>
-            <h1 className="text-4xl md:text-7xl font-bold text-white tracking-tight mb-6 md:mb-8 leading-[1.25]">
-              連接資本，<br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
-                技術
-              </span>與資產。
-            </h1>
-            <p className="text-base md:text-xl text-slate-300 mb-8 md:mb-12 leading-relaxed max-w-xl font-light border-l-2 border-blue-500 pl-4 md:pl-6">
-              DataEnergy 是總部位於新加坡的領先平台，整合投資、合規與製造，賦能下一代數據中心。
-            </p>
-          </>
-        )}
-        
-        <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
-          <Button primary className="w-full sm:w-auto">
-            {lang === 'en' ? "Our Portfolio" : "業務組合"} 
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-          <Button className="w-full sm:w-auto">
-            {lang === 'en' ? "Corporate Structure" : "組織架構"}
-          </Button>
-        </div>
-      </Reveal>
-    </div>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    {/* Scroll Indicator */}
-    <div className="absolute bottom-6 md:bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center animate-bounce-slow opacity-50 z-20">
-      <span className="text-[9px] md:text-[10px] text-white uppercase tracking-widest mb-1 md:mb-2">Scroll</span>
-      <ArrowDown size={20} className="text-white" />
-    </div>
-  </div>
-);
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-const StatItem = ({ value, label, delay }) => (
-  <Reveal delay={delay} className="flex flex-col items-center p-4 bg-slate-50/50 rounded-lg md:bg-transparent">
-    <div className="text-3xl md:text-5xl font-bold text-blue-900 mb-1 md:mb-2 font-mono">{value}</div>
-    <div className="text-[10px] md:text-xs uppercase tracking-widest text-slate-500 font-semibold text-center">{label}</div>
-  </Reveal>
-);
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+        }
+        @keyframes slow-zoom {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+        .animate-slow-zoom {
+            animation: slow-zoom 20s infinite alternate linear;
+        }
+        .animate-bounce-slow {
+            animation: bounce 3s infinite;
+        }
+        @keyframes scan {
+            0% { top: -10%; opacity: 0; }
+            15% { opacity: 0.5; }
+            85% { opacity: 0.5; }
+            100% { top: 110%; opacity: 0; }
+        }
+        .animate-scan {
+            animation: scan 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-white text-slate-900">
+    <div id="root"></div>
 
-const BusinessCard = ({ title, titleCn, icon: Icon, description, descriptionCn, features, color = "blue", lang, delay }) => {
-  return (
-    <Reveal delay={delay} className="h-full">
-      <div className="group bg-white h-full p-6 md:p-8 border border-slate-200 hover:border-blue-600 transition-all duration-500 hover:shadow-2xl relative overflow-hidden flex flex-col active:scale-[0.98]">
-        {/* Background Hover Effect */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-bl-full -mr-16 -mt-16 transition-transform duration-700 group-hover:scale-150 group-hover:bg-blue-50"></div>
-        
-        <div className="relative z-10 mb-6">
-          <div className="w-12 h-12 md:w-14 md:h-14 bg-slate-900 text-white flex items-center justify-center mb-6 group-hover:bg-blue-600 transition-colors duration-300 rounded-lg md:rounded-none">
-            <Icon size={24} strokeWidth={1.5} className="md:w-[28px] md:h-[28px]" />
-          </div>
-          <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-2 group-hover:text-blue-700 transition-colors">
-            {lang === 'en' ? title : titleCn}
-          </h3>
-          <div className="h-0.5 w-12 bg-slate-200 mb-4 group-hover:bg-blue-400 group-hover:w-20 transition-all duration-500"></div>
-        </div>
-        
-        <div className="relative z-10 flex-grow">
-          <p className="text-slate-600 text-sm leading-relaxed mb-6 font-light">
-            {lang === 'en' ? description : descriptionCn}
-          </p>
-          
-          <ul className="space-y-3 md:space-y-4">
-            {features.map((feature, idx) => (
-              <li key={idx} className="flex items-start text-sm text-slate-700">
-                <CheckCircle2 className="h-4 w-4 text-blue-500 mr-3 mt-0.5 flex-shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 delay-100" />
-                <span className="md:-ml-7 md:group-hover:ml-0 transition-all duration-500">
-                  {lang === 'en' ? feature.en : feature.cn}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
 
-        <div className="relative z-10 mt-8 pt-6 border-t border-slate-100">
-          <span className="text-xs font-bold text-blue-600 uppercase tracking-widest flex items-center gap-2 group/link cursor-pointer">
-            {lang === 'en' ? "Learn More" : "了解更多"} <ArrowRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
-          </span>
-        </div>
-      </div>
-    </Reveal>
-  );
-};
+        // --- Icons (Replaced lucide-react imports with SVG components for standalone HTML) ---
+        const IconBase = ({ children, size = 24, className = "", ...props }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>{children}</svg>
+        );
 
-const App = () => {
-  const [lang, setLang] = useState('en');
+        const ChevronDown = (props) => <IconBase {...props}><path d="m6 9 6 6 6-6"/></IconBase>;
+        const ArrowRight = (props) => <IconBase {...props}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></IconBase>;
+        const Activity = (props) => <IconBase {...props}><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></IconBase>;
+        const Globe = (props) => <IconBase {...props}><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></IconBase>;
+        const Cpu = (props) => <IconBase {...props}><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></IconBase>;
+        const Factory = (props) => <IconBase {...props}><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></IconBase>;
+        const Building = (props) => <IconBase {...props}><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></IconBase>;
+        const Users = (props) => <IconBase {...props}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></IconBase>;
+        const Menu = (props) => <IconBase {...props}><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></IconBase>;
+        const X = (props) => <IconBase {...props}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></IconBase>;
+        const Mail = (props) => <IconBase {...props}><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></IconBase>;
+        const MapPin = (props) => <IconBase {...props}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></IconBase>;
+        const Phone = (props) => <IconBase {...props}><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></IconBase>;
+        const CheckCircle2 = (props) => <IconBase {...props}><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></IconBase>;
+        const Languages = (props) => <IconBase {...props}><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></IconBase>;
+        const ArrowDown = (props) => <IconBase {...props}><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></IconBase>;
+        const ShieldCheck = (props) => <IconBase {...props}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></IconBase>;
+        const Zap = (props) => <IconBase {...props}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></IconBase>;
 
-  return (
-    <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-blue-100 selection:text-blue-900">
-      <Navbar lang={lang} setLang={setLang} />
-      
-      <Hero lang={lang} />
+        // --- Animation & Utility Hooks ---
+        const useOnScreen = (options) => {
+            const ref = useRef(null);
+            const [isVisible, setIsVisible] = useState(false);
 
-      {/* About Section */}
-      <section id="about" className="py-16 md:py-24 bg-white relative">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
-          <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
-            <Reveal>
-              <h2 className="text-xs font-bold text-blue-600 uppercase tracking-[0.2em] mb-4">
-                {lang === 'en' ? "About Us" : "關於我們"}
-              </h2>
-              <h3 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6 md:mb-8 leading-tight">
-                {lang === 'en' 
-                  ? "Strategic Capital & Ownership Platform" 
-                  : "戰略資本與所有權平台"
+            useEffect(() => {
+                const observer = new IntersectionObserver(([entry]) => {
+                    if (entry.isIntersecting) {
+                        setIsVisible(true);
+                        observer.unobserve(entry.target);
+                    }
+                }, options);
+
+                if (ref.current) {
+                    observer.observe(ref.current);
                 }
-              </h3>
-              
-              <p className="text-base md:text-lg text-slate-600 leading-relaxed font-light mb-8 border-l-4 border-slate-200 pl-4 md:pl-6">
-                {lang === 'en' 
-                  ? "Headquartered in Singapore, DataEnergy Holding serves as the central hub for equity investment, financing, and intellectual property control. We act as the bridge between capital markets and industrial innovation."
-                  : "DataEnergy 控股總部位於新加坡，是股權投資、融資及知識產權控制的中心樞紐。我們是資本市場與產業創新的橋樑。"
-                }
-              </p>
 
-              <div className="grid grid-cols-2 gap-6 md:gap-12 mt-8 md:mt-12">
-                <div className="flex flex-col">
-                  <Globe className="text-blue-900 mb-3 h-6 w-6 md:h-8 md:w-8" />
-                  <span className="font-bold text-slate-900 text-sm md:text-base">{lang === 'en' ? "Global HQ" : "全球總部"}</span>
-                  <span className="text-xs md:text-sm text-slate-500">Singapore CBD</span>
-                </div>
-                <div className="flex flex-col">
-                  <ShieldCheck className="text-blue-900 mb-3 h-6 w-6 md:h-8 md:w-8" />
-                  <span className="font-bold text-slate-900 text-sm md:text-base">{lang === 'en' ? "Risk Control" : "風險控制"}</span>
-                  <span className="text-xs md:text-sm text-slate-500">IP & Compliance</span>
-                </div>
-              </div>
-            </Reveal>
+                return () => {
+                    if (ref.current) observer.unobserve(ref.current);
+                };
+            }, [ref, options]);
 
-            <div className="relative mt-8 md:mt-0">
-              <Reveal delay={200}>
-                <div className="aspect-[4/3] md:aspect-[4/5] bg-slate-900 relative z-10 overflow-hidden rounded-lg md:rounded-none">
-                   <img 
-                    src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
-                    alt="Architecture" 
-                    className="w-full h-full object-cover opacity-80 hover:scale-105 transition-transform duration-1000"
-                  />
-                  {/* Decorative Elements */}
-                  <div className="hidden md:block absolute -bottom-8 -left-8 w-48 h-48 border-2 border-slate-200 z-0"></div>
-                  <div className="absolute top-4 right-4 md:top-8 md:right-8 w-12 h-12 md:w-20 md:h-20 bg-blue-600/20 backdrop-blur-md z-20"></div>
-                </div>
-              </Reveal>
-            </div>
-          </div>
+            return [ref, isVisible];
+        };
 
-          <div className="mt-16 md:mt-24 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 border-t border-slate-100 pt-8 md:pt-12">
-             <StatItem value="SG" label="Headquarters" delay={300} />
-             <StatItem value="3+" label="Strategic SPVs" delay={400} />
-             <StatItem value="100%" label="Compliance" delay={500} />
-             <StatItem value="ASEAN" label="Focus Region" delay={600} />
-          </div>
-        </div>
-      </section>
-
-      {/* Structure Section (Grey Background) */}
-      <section id="structure" className="py-16 md:py-32 bg-slate-50 relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-slate-100 skew-x-12 transform origin-top-right"></div>
-        
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12 relative z-10">
-          <SectionTitle 
-            lang={lang}
-            title="Corporate Structure" 
-            titleCn="公司組織架構"
-            subtitle="A clear hierarchy designed for operational efficiency, compliance, and strategic growth across ASEAN."
-            subtitleCn="清晰的層級結構旨在提高運營效率、確保合規性，並推動在東盟地區的戰略增長。"
-          />
-          
-          <div className="mt-8 md:mt-16">
-             <InteractiveOrgChart lang={lang} />
-          </div>
-        </div>
-      </section>
-
-      {/* Business Units Section */}
-      <section id="business" className="py-16 md:py-32 bg-white">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-12 md:mb-20">
-            <div className="md:w-2/3">
-              <h2 className="text-xs font-bold text-blue-600 uppercase tracking-[0.2em] mb-4">
-                {lang === 'en' ? "Our Expertise" : "我們的專長"}
-              </h2>
-              <h3 className="text-3xl md:text-4xl font-bold text-slate-900 leading-tight">
-                {lang === 'en' ? "Synergistic Business Units" : "協同業務板塊"}
-              </h3>
-            </div>
-            <div className="md:w-1/3 text-right hidden md:block">
-              <button className="text-sm font-bold border-b border-slate-900 pb-1 hover:text-blue-600 hover:border-blue-600 transition-colors">
-                {lang === 'en' ? "View All Projects" : "查看所有項目"}
-              </button>
-            </div>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <BusinessCard 
-              lang={lang}
-              delay={0}
-              title="DCDeepTech"
-              titleCn="技術與合規"
-              icon={Cpu}
-              description="Singapore-based technical and local compliance platform ensuring seamless regulatory alignment."
-              descriptionCn="基於新加坡的技術與本地合規平台，確保與監管要求無縫對接。"
-              features={[
-                { en: "EMA / BCA / IMDA Liaison", cn: "監管機構聯絡" },
-                { en: "Local Certification", cn: "本地認證" },
-                { en: "Risk Audits", cn: "風險審計" }
-              ]}
-            />
+        const Reveal = ({ children, delay = 0, className = "" }) => {
+            const [ref, isVisible] = useOnScreen({ threshold: 0.1 });
             
-            <BusinessCard 
-              lang={lang}
-              delay={200}
-              title="AxiomDeta"
-              titleCn="基礎設施"
-              icon={Zap}
-              description="OCP & AI Data Center Infrastructure Platform serving enterprise and hyperscale clients."
-              descriptionCn="服務於企業與超大規模客戶的 OCP 及 AI 數據中心基礎設施平台。"
-              features={[
-                { en: "OCP Racks & Power", cn: "OCP 機櫃與電力" },
-                { en: "Cooling Modules", cn: "冷卻模組" },
-                { en: "Hyperscale Solutions", cn: "超大規模方案" }
-              ]}
-            />
-
-            <BusinessCard 
-              lang={lang}
-              delay={400}
-              title="DataEnergy MY"
-              titleCn="製造基地"
-              icon={Factory}
-              description="Our manufacturing base in Malaysia, optimizing supply chain and production efficiency."
-              descriptionCn="我們位於馬來西亞的製造基地，優化供應鏈與生產效率。"
-              features={[
-                { en: "Rack Production", cn: "機櫃生產" },
-                { en: "Supply Chain Ops", cn: "供應鏈運營" },
-                { en: "Cost Optimization", cn: "成本優化" }
-              ]}
-            />
-
-            <BusinessCard 
-              lang={lang}
-              delay={600}
-              title="Property SPVs"
-              titleCn="資產管理"
-              icon={Building}
-              description="Strategic asset holdings supporting the incubation of our operating companies."
-              descriptionCn="支持運營公司孵化的戰略資產持有平台。"
-              features={[
-                { en: "Commercial Property", cn: "商業地產" },
-                { en: "Industrial Land", cn: "工業用地" },
-                { en: "Asset Management", cn: "資產管理" }
-              ]}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section id="contact" className="bg-slate-900 text-white py-16 md:py-24 relative overflow-hidden">
-        {/* Abstract shapes */}
-        <div className="absolute -left-20 -top-20 w-96 h-96 bg-blue-900/20 rounded-full blur-3xl"></div>
-        <div className="absolute right-0 bottom-0 w-[500px] h-[500px] bg-indigo-900/20 rounded-full blur-3xl"></div>
-
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12 relative z-10">
-          <div className="grid md:grid-cols-2 gap-12 md:gap-20">
-            <Reveal>
-              <h2 className="text-3xl md:text-5xl font-bold mb-6">
-                {lang === 'en' ? "Let's Build the Future" : "共建未來"}
-              </h2>
-              <p className="text-slate-400 mb-8 md:mb-12 text-base md:text-lg font-light leading-relaxed max-w-md">
-                {lang === 'en' 
-                  ? "Interested in partnership, investment, or our infrastructure solutions? Connect with our global headquarters."
-                  : "對合作夥伴關係、投資或我們的基礎設施解決方案感興趣？請聯繫我們的全球總部。"
-                }
-              </p>
-
-              <div className="space-y-6 md:space-y-8">
-                <div className="flex items-start gap-6 group">
-                   <div className="p-3 md:p-4 bg-white/5 border border-white/10 rounded-none group-hover:bg-blue-600 transition-colors duration-300">
-                      <MapPin size={20} className="text-white md:w-6 md:h-6" />
-                   </div>
-                   <div>
-                      <h4 className="text-xs md:text-sm font-bold uppercase tracking-widest text-slate-500 mb-1">{lang === 'en' ? "Visit Us" : "地址"}</h4>
-                      <p className="text-white text-base md:text-lg">Singapore CBD</p>
-                      <p className="text-slate-400 text-xs md:text-sm">Central Business District</p>
-                   </div>
+            return (
+                <div
+                    ref={ref}
+                    className={`transition-all duration-1000 ease-out transform ${
+                        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+                    } ${className}`}
+                    style={{ transitionDelay: `${delay}ms` }}
+                >
+                    {children}
                 </div>
+            );
+        };
 
-                <div className="flex items-start gap-6 group">
-                   <div className="p-3 md:p-4 bg-white/5 border border-white/10 rounded-none group-hover:bg-blue-600 transition-colors duration-300">
-                      <Mail size={20} className="text-white md:w-6 md:h-6" />
-                   </div>
-                   <div>
-                      <h4 className="text-xs md:text-sm font-bold uppercase tracking-widest text-slate-500 mb-1">{lang === 'en' ? "Email Us" : "郵箱"}</h4>
-                      <p className="text-white text-base md:text-lg">luoxi.sg@gmail.com</p>
-                   </div>
-                </div>
-              </div>
+        // --- Shared Components ---
+        const SectionTitle = ({ title, subtitle, titleCn, subtitleCn, lang }) => (
+            <Reveal className="text-center mb-12 md:mb-16 px-4">
+                <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-4 md:mb-6 tracking-tight">
+                    {lang === 'en' ? title : titleCn}
+                </h2>
+                <div className="h-1.5 w-20 md:w-24 bg-blue-600 mx-auto mb-6"></div>
+                <p className="text-slate-600 max-w-3xl mx-auto text-base md:text-xl font-light leading-relaxed">
+                    {lang === 'en' ? subtitle : subtitleCn}
+                </p>
             </Reveal>
-            
-            <Reveal delay={200} className="bg-white p-6 md:p-10 shadow-2xl rounded-lg md:rounded-none">
-              <form className="space-y-4 md:space-y-6">
-                <div className="grid grid-cols-2 gap-4 md:gap-6">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-900 uppercase tracking-wide">
-                      {lang === 'en' ? "First Name" : "名字"}
-                    </label>
-                    <input type="text" className="w-full bg-slate-50 border-b-2 border-slate-200 p-2 md:p-3 text-slate-900 focus:outline-none focus:border-blue-600 transition-colors placeholder-transparent" placeholder="Name" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-900 uppercase tracking-wide">
-                      {lang === 'en' ? "Last Name" : "姓氏"}
-                    </label>
-                    <input type="text" className="w-full bg-slate-50 border-b-2 border-slate-200 p-2 md:p-3 text-slate-900 focus:outline-none focus:border-blue-600 transition-colors placeholder-transparent" placeholder="Name" />
-                  </div>
+        );
+
+        const Button = ({ children, primary = false, className = "", onClick }) => (
+            <button onClick={onClick} className={`w-full md:w-auto px-8 py-4 rounded-none text-sm uppercase tracking-widest font-bold transition-all duration-500 relative overflow-hidden group active:scale-95 ${
+                primary 
+                    ? "bg-blue-900 text-white hover:bg-blue-800" 
+                    : "bg-transparent text-white border border-white hover:bg-white hover:text-slate-900"
+            } ${className}`}>
+                <span className="relative z-10 flex items-center justify-center">{children}</span>
+            </button>
+        );
+
+        // --- Org Chart Components ---
+        const OrgCard = ({ title, titleCn, subtitle, subtitleCn, role, roleCn, functions, functionsCn, ownership, ownershipCn, className = "", icon: Icon, lang, delay = 0, isRoot = false }) => {
+            const [ref, isVisible] = useOnScreen({ threshold: 0.1 });
+
+            return (
+                <div 
+                    ref={ref}
+                    style={{ transitionDelay: `${delay}ms` }}
+                    className={`bg-white border-t-4 border-slate-800 shadow-sm hover:shadow-2xl active:scale-[0.98] transition-all duration-700 p-5 md:p-6 flex flex-col gap-3 relative z-10 w-full md:w-64 text-sm group transform ${
+                        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                    } ${isRoot ? "md:w-80 md:scale-105 border-t-blue-800" : ""} ${className}`}
+                >
+                    <div className="flex items-start justify-between mb-1">
+                        <div className="font-bold text-slate-900 text-base md:text-lg leading-tight group-hover:text-blue-700 transition-colors">
+                            {Icon && <Icon className="w-5 h-5 md:w-6 md:h-6 mb-2 text-slate-400 group-hover:text-blue-600 transition-colors" />}
+                            <div className="block">{lang === 'en' ? title : titleCn}</div>
+                        </div>
+                    </div>
+                    {(lang === 'en' ? subtitle : subtitleCn) && (
+                        <div className="text-slate-400 font-medium text-xs uppercase tracking-wider mb-2 border-b border-slate-100 pb-2">
+                            {lang === 'en' ? subtitle : subtitleCn}
+                        </div>
+                    )}
+                    
+                    <div className="space-y-3 mt-1">
+                        {role && (
+                            <div className="text-xs">
+                                <span className="font-bold text-slate-700 block mb-1 uppercase text-[10px] tracking-wide">{lang === 'en' ? "Role" : "角色"}</span> 
+                                <span className="text-slate-600 text-sm leading-relaxed block">{lang === 'en' ? role : roleCn}</span>
+                            </div>
+                        )}
+                        {functions && (
+                            <div className="text-xs">
+                                <span className="font-bold text-slate-700 block mb-1 uppercase text-[10px] tracking-wide">{lang === 'en' ? "Functions" : "職能"}</span> 
+                                <div className="text-slate-600 mt-0.5 leading-snug">{lang === 'en' ? functions : functionsCn}</div>
+                            </div>
+                        )}
+                        {ownership && (
+                            <div className="text-xs pt-3 border-t border-slate-100 mt-1 bg-slate-50 -mx-5 -mb-5 p-4 md:-mx-6 md:-mb-6">
+                                <span className="font-bold text-slate-700 block mb-1 uppercase text-[10px] tracking-wide">{lang === 'en' ? "Ownership" : "股權 / 股東"}</span> 
+                                <div className="text-slate-600 italic">{lang === 'en' ? ownership : ownershipCn}</div>
+                            </div>
+                        )}
+                    </div>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-900 uppercase tracking-wide">
-                    {lang === 'en' ? "Email" : "電郵"}
-                  </label>
-                  <input type="email" className="w-full bg-slate-50 border-b-2 border-slate-200 p-2 md:p-3 text-slate-900 focus:outline-none focus:border-blue-600 transition-colors placeholder-transparent" placeholder="Email" />
+            );
+        };
+
+        const MobileOrgNode = ({ children, isLast = false }) => (
+            <div className="flex gap-4">
+                <div className="flex flex-col items-center">
+                    <div className="w-3 h-3 rounded-full bg-blue-600 mt-6 shadow-[0_0_0_4px_rgba(37,99,235,0.1)]"></div>
+                    {!isLast && <div className="w-0.5 flex-grow bg-slate-200 my-1"></div>}
                 </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-900 uppercase tracking-wide">
-                    {lang === 'en' ? "Message" : "留言"}
-                  </label>
-                  <textarea rows="4" className="w-full bg-slate-50 border-b-2 border-slate-200 p-2 md:p-3 text-slate-900 focus:outline-none focus:border-blue-600 transition-colors placeholder-transparent" placeholder="Message"></textarea>
+                <div className="pb-8 w-full">
+                    {children}
                 </div>
-                <button className="w-full bg-slate-900 text-white font-bold py-3 md:py-4 uppercase tracking-widest hover:bg-blue-800 transition-colors flex justify-center items-center gap-2">
-                  {lang === 'en' ? "Send Message" : "發送訊息"}
-                  <ArrowRight size={16} />
-                </button>
-              </form>
-            </Reveal>
-          </div>
-          
-          <div className="border-t border-slate-800 mt-16 md:mt-24 pt-8 md:pt-12 flex flex-col md:flex-row justify-between items-center text-slate-500 text-xs md:text-sm">
-            <p>&copy; {new Date().getFullYear()} DataEnergy Holding Pte. Ltd.</p>
-            <div className="flex gap-6 md:gap-8 mt-4 md:mt-0">
-               <span className="hover:text-white cursor-pointer transition-colors">Privacy Policy</span>
-               <span className="hover:text-white cursor-pointer transition-colors">Terms of Service</span>
             </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-};
+        );
 
-export default App;
+        const InteractiveOrgChart = ({ lang }) => {
+            return (
+                <div className="bg-slate-50/50 rounded-xl border border-slate-100 md:p-12">
+                    {/* Desktop View (Horizontal Tree) */}
+                    <div className="hidden md:block overflow-x-auto pb-8">
+                        <div className="min-w-[900px] max-w-6xl mx-auto pt-8">
+                            
+                            {/* Level 1: DataEnergy Holding (Mother Company) */}
+                            <div className="flex justify-center items-start gap-32 mb-24 relative">
+                                <div className="relative z-20">
+                                    <OrgCard 
+                                        isRoot={true}
+                                        lang={lang}
+                                        icon={Globe}
+                                        title="DataEnergy Holding Pte. Ltd."
+                                        titleCn="DataEnergy 控股私人有限公司"
+                                        subtitle="(Singapore)"
+                                        subtitleCn="(新加坡)"
+                                        role="Group Mother Company / Capital Platform"
+                                        roleCn="集團母公司 / 資本與所有權平台"
+                                        functions="Equity Investment, Banking & Financing, IP & Brand Control"
+                                        functionsCn="股權投資、銀行融資、知識產權與品牌控制"
+                                        ownership="Shareholders: Chinese Industrial Capital, SG Founding Team"
+                                        ownershipCn="股東：中國產業資本、新加坡創始團隊"
+                                        className="bg-white shadow-xl"
+                                        delay={200}
+                                    />
+                                </div>
+                                
+                                {/* Dashed Line to JV */}
+                                <div className="absolute left-[60%] top-20 w-[140px] border-t-2 border-dashed border-blue-300 opacity-60">
+                                    <ArrowRight className="absolute -right-1 -top-[9px] text-blue-300 w-4 h-4" />
+                                </div>
+
+                                <div className="relative z-20 mt-8">
+                                    <OrgCard 
+                                        lang={lang}
+                                        icon={Activity}
+                                        title="HHE JV Pte. Ltd."
+                                        titleCn="HHE 合資公司"
+                                        subtitle="(Singapore)"
+                                        subtitleCn="(新加坡)"
+                                        role="EaaS Platform"
+                                        roleCn="EaaS 服務平台"
+                                        ownership="30% Owned by DataEnergy"
+                                        ownershipCn="DataEnergy 持股 30%"
+                                        className="w-64 opacity-80 hover:opacity-100"
+                                        delay={400}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Level 2: Subsidiaries Tree */}
+                            <div className="relative h-16 w-full max-w-6xl mx-auto -mt-20 mb-8 opacity-60">
+                                <div className="absolute left-[41.5%] -translate-x-1/2 -top-0 h-16 w-px bg-slate-300"></div>
+                                <div className="absolute top-16 left-[12.5%] right-[20%] h-px bg-slate-300"></div>
+                                
+                                <div className="absolute top-16 left-[12.5%] h-8 w-px bg-slate-300"><ChevronDown className="absolute -bottom-1 -left-1.5 text-slate-300 w-4 h-4" /></div>
+                                <div className="absolute top-16 left-[35.5%] h-8 w-px bg-slate-300">
+                                    <div className="absolute top-0 -left-px h-full border-l-2 border-dashed border-slate-300 bg-transparent"></div>
+                                    <span className="absolute -top-4 left-2 text-[10px] bg-yellow-50 px-2 py-0.5 border border-yellow-200 text-yellow-800 uppercase tracking-wider font-bold shadow-sm">
+                                        {lang === 'en' ? "Strategic Inv." : "戰略投資"}
+                                    </span>
+                                    <ChevronDown className="absolute -bottom-1 -left-1.5 text-slate-300 w-4 h-4" />
+                                </div>
+                                <div className="absolute top-16 left-[58.5%] h-8 w-px bg-slate-300"><ChevronDown className="absolute -bottom-1 -left-1.5 text-slate-300 w-4 h-4" /></div>
+                                <div className="absolute top-16 left-[80%] h-8 w-px bg-slate-300"><ChevronDown className="absolute -bottom-1 -left-1.5 text-slate-300 w-4 h-4" /></div>
+                            </div>
+
+                            {/* Level 2 Cards */}
+                            <div className="grid grid-cols-4 gap-6 max-w-7xl mx-auto items-start">
+                                <OrgCard lang={lang} delay={600} icon={Cpu} title="DCDeepTech" titleCn="DCDeepTech" subtitle="(Singapore)" subtitleCn="(新加坡)" role="Tech Compliance" roleCn="技術與合規平台" functions="EMA / BCA Liaison, Audit" functionsCn="監管聯絡、合規審計" className="w-full" />
+                                <OrgCard lang={lang} delay={700} icon={Zap} title="AxiomDeta" titleCn="AxiomDeta" subtitle="(Singapore)" subtitleCn="(新加坡)" role="Data Center Infra" roleCn="數據中心基礎設施平台" functions="OCP Racks, Power & Cooling" functionsCn="OCP 機櫃、電力與冷卻系統" ownership="Strategic Minority (20-40%)" ownershipCn="戰略少數股權 (20-40%)" className="w-full border-t-yellow-500" />
+                                <OrgCard lang={lang} delay={800} icon={Factory} title="DataEnergy MY" titleCn="DataEnergy MY" subtitle="(Malaysia)" subtitleCn="(馬來西亞)" role="Manufacturing Base" roleCn="製造基地 / 柔佛工廠" functions="Production, Supply Chain" functionsCn="生產製造、供應鏈運營" ownership="Majority / 100% Owned" ownershipCn="控股或 100% 全資擁有" className="w-full border-t-emerald-600" />
+                                <OrgCard lang={lang} delay={900} icon={Building} title="Property SPVs" titleCn="Property SPVs" subtitle="(SG / CN)" subtitleCn="(新加坡 / 中國)" role="Asset Holdings" roleCn="資產持有平台" functions="Commercial Property, Land" functionsCn="商業地產、工業用地持有" className="w-full" />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Mobile View (Vertical Timeline) */}
+                    <div className="md:hidden px-4 py-8">
+                        <MobileOrgNode>
+                            <div className="text-xs font-bold text-blue-600 mb-2 uppercase tracking-wider">{lang === 'en' ? "Group Mother Company" : "集團母公司"}</div>
+                            <OrgCard 
+                                isRoot={true}
+                                lang={lang} icon={Globe} title="DataEnergy Holding Pte. Ltd." titleCn="DataEnergy 控股私人有限公司" subtitle="(Singapore)" subtitleCn="(新加坡)"
+                                role="Capital & Ownership Platform" roleCn="資本與所有權平台" functions="Equity Investment, Banking & Financing" functionsCn="股權投資、銀行融資"
+                                ownership="Shareholders: Chinese Industrial Capital, SG Founding Team"
+                                ownershipCn="股東：中國產業資本、新加坡創始團隊"
+                                className="bg-white border-t-blue-800 w-full"
+                            />
+                        </MobileOrgNode>
+
+                        <MobileOrgNode>
+                            <div className="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider pl-2 border-l-2 border-dashed border-slate-300 ml-1">
+                                {lang === 'en' ? "Joint Venture" : "合資企業"}
+                            </div>
+                            <OrgCard 
+                                lang={lang} icon={Activity} title="HHE JV Pte. Ltd." titleCn="HHE 合資公司" subtitle="(Singapore)" subtitleCn="(新加坡)"
+                                role="EaaS Platform" roleCn="EaaS 服務平台" ownership="30% Owned" ownershipCn="DataEnergy 持股 30%"
+                                className="w-full opacity-90"
+                            />
+                        </MobileOrgNode>
+
+                        <MobileOrgNode isLast={true}>
+                            <div className="text-xs font-bold text-slate-500 mb-4 uppercase tracking-wider">{lang === 'en' ? "Subsidiaries" : "子公司"}</div>
+                            <div className="space-y-6">
+                                <OrgCard lang={lang} icon={Cpu} title="DCDeepTech" titleCn="DCDeepTech" subtitle="(Singapore)" subtitleCn="(新加坡)" role="Tech Compliance" roleCn="技術與合規平台" className="w-full" />
+                                <div className="relative">
+                                    <div className="absolute -top-3 left-0 bg-yellow-100 text-yellow-800 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide border border-yellow-200">
+                                    {lang === 'en' ? "Strategic Inv." : "戰略投資"}
+                                    </div>
+                                    <OrgCard lang={lang} icon={Zap} title="AxiomDeta" titleCn="AxiomDeta" subtitle="(Singapore)" subtitleCn="(新加坡)" role="Data Center Infra" roleCn="數據中心基礎設施平台" ownership="Strategic Minority (20-40%)" ownershipCn="戰略少數股權 (20-40%)" className="w-full border-t-yellow-500" />
+                                </div>
+                                <OrgCard lang={lang} icon={Factory} title="DataEnergy MY" titleCn="DataEnergy MY" subtitle="(Malaysia)" subtitleCn="(馬來西亞)" role="Manufacturing Base" roleCn="製造基地" className="w-full border-t-emerald-600" />
+                                <OrgCard lang={lang} icon={Building} title="Property SPVs" titleCn="Property SPVs" subtitle="(SG / CN)" subtitleCn="(新加坡 / 中國)" role="Asset Holdings" roleCn="資產持有平台" className="w-full" />
+                            </div>
+                        </MobileOrgNode>
+                    </div>
+                </div>
+            );
+        };
+
+        const StatItem = ({ value, label, delay }) => (
+            <Reveal delay={delay} className="flex flex-col items-center p-4 bg-slate-50/50 rounded-lg md:bg-transparent">
+                <div className="text-3xl md:text-5xl font-bold text-blue-900 mb-1 md:mb-2 font-mono">{value}</div>
+                <div className="text-[10px] md:text-xs uppercase tracking-widest text-slate-500 font-semibold text-center">{label}</div>
+            </Reveal>
+        );
+
+        const BusinessCard = ({ title, titleCn, icon: Icon, description, descriptionCn, features, color = "blue", lang, delay }) => {
+            return (
+                <Reveal delay={delay} className="h-full">
+                    <div className="group bg-white h-full p-6 md:p-8 border border-slate-200 hover:border-blue-600 transition-all duration-500 hover:shadow-2xl relative overflow-hidden flex flex-col active:scale-[0.98]">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-bl-full -mr-16 -mt-16 transition-transform duration-700 group-hover:scale-150 group-hover:bg-blue-50"></div>
+                        
+                        <div className="relative z-10 mb-6">
+                            <div className="w-12 h-12 md:w-14 md:h-14 bg-slate-900 text-white flex items-center justify-center mb-6 group-hover:bg-blue-600 transition-colors duration-300 rounded-lg md:rounded-none">
+                                <Icon size={24} strokeWidth={1.5} className="md:w-[28px] md:h-[28px]" />
+                            </div>
+                            <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-2 group-hover:text-blue-700 transition-colors">
+                                {lang === 'en' ? title : titleCn}
+                            </h3>
+                            <div className="h-0.5 w-12 bg-slate-200 mb-4 group-hover:bg-blue-400 group-hover:w-20 transition-all duration-500"></div>
+                        </div>
+                        
+                        <div className="relative z-10 flex-grow">
+                            <p className="text-slate-600 text-sm leading-relaxed mb-6 font-light">
+                                {lang === 'en' ? description : descriptionCn}
+                            </p>
+                            
+                            <ul className="space-y-3 md:space-y-4">
+                                {features.map((feature, idx) => (
+                                    <li key={idx} className="flex items-start text-sm text-slate-700">
+                                        <CheckCircle2 className="h-4 w-4 text-blue-500 mr-3 mt-0.5 flex-shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 delay-100" />
+                                        <span className="md:-ml-7 md:group-hover:ml-0 transition-all duration-500">
+                                            {lang === 'en' ? feature.en : feature.cn}
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        <div className="relative z-10 mt-8 pt-6 border-t border-slate-100">
+                            <span className="text-xs font-bold text-blue-600 uppercase tracking-widest flex items-center gap-2 group/link cursor-pointer">
+                                {lang === 'en' ? "Learn More" : "了解更多"} <ArrowRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
+                            </span>
+                        </div>
+                    </div>
+                </Reveal>
+            );
+        };
+
+        const Navbar = ({ lang, setLang }) => {
+            const [isScrolled, setIsScrolled] = useState(false);
+            const [isOpen, setIsOpen] = useState(false);
+
+            useEffect(() => {
+                const handleScroll = () => setIsScrolled(window.scrollY > 50);
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+            
+            const toggleLang = () => setLang(prev => prev === 'en' ? 'zh' : 'en');
+
+            const navItems = {
+                about: { en: "About", zh: "關於我們" },
+                structure: { en: "Structure", zh: "組織架構" },
+                business: { en: "Business", zh: "業務板塊" },
+                contact: { en: "Contact", zh: "聯繫我們" }
+            };
+            
+            return (
+                <React.Fragment>
+                    <nav className={`fixed w-full z-50 transition-all duration-500 ${
+                        isScrolled ? "bg-white/90 backdrop-blur-md shadow-md py-3 md:py-4" : "bg-transparent py-4 md:py-6"
+                    }`}>
+                        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
+                            <div className="flex justify-between items-center">
+                                {/* Logo */}
+                                <div className="flex items-center group cursor-pointer z-50 relative">
+                                    <div className={`p-2 rounded transition-colors ${isScrolled || isOpen ? "bg-blue-600 text-white" : "bg-white text-slate-900"}`}>
+                                        <Globe size={20} className="md:w-6 md:h-6" />
+                                    </div>
+                                    <div className="ml-2 md:ml-3 flex flex-col">
+                                        <span className={`text-lg md:text-xl font-bold tracking-tight leading-none ${isScrolled || isOpen ? "text-slate-900" : "text-white"}`}>
+                                            DATA<span className={isScrolled || isOpen ? "text-blue-600" : "text-blue-200"}>ENERGY</span>
+                                        </span>
+                                        <span className={`text-[9px] md:text-[10px] uppercase tracking-[0.2em] font-medium mt-0.5 md:mt-1 ${isScrolled || isOpen ? "text-slate-500" : "text-slate-300"}`}>
+                                            {lang === 'en' ? "Holdings Pte Ltd" : "控股私人有限公司"}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                {/* Desktop Menu */}
+                                <div className="hidden md:flex items-center space-x-12">
+                                    {Object.entries(navItems).map(([key, label]) => (
+                                        <a 
+                                            key={key} 
+                                            href={`#${key}`} 
+                                            className={`text-sm font-semibold uppercase tracking-widest hover:text-blue-400 transition-colors relative group ${
+                                                isScrolled ? "text-slate-700" : "text-slate-200"
+                                            }`}
+                                        >
+                                            {lang === 'en' ? label.en : label.zh}
+                                            <span className="absolute -bottom-2 left-0 w-0 h-0.5 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
+                                        </a>
+                                    ))}
+                                    
+                                    <button 
+                                        onClick={toggleLang}
+                                        className={`flex items-center gap-2 px-4 py-1.5 border rounded-full transition-all duration-300 ${
+                                            isScrolled 
+                                                ? "border-slate-300 text-slate-600 hover:bg-slate-100" 
+                                                : "border-white/30 text-white hover:bg-white/10"
+                                        }`}
+                                    >
+                                        <Languages size={14} />
+                                        <span className="text-xs font-bold tracking-wider">{lang === 'en' ? '繁' : 'EN'}</span>
+                                    </button>
+                                </div>
+
+                                {/* Mobile Menu Toggle & Lang */}
+                                <div className="md:hidden flex items-center gap-3 z-50 relative">
+                                    <button onClick={toggleLang} className={`text-xs font-bold px-3 py-1.5 rounded-full transition-all duration-300 ${isScrolled || isOpen ? "text-slate-900 border border-slate-300 bg-white/50" : "text-white border border-white/30 bg-black/20"}`}>
+                                        {lang === 'en' ? '繁' : 'EN'}
+                                    </button>
+                                    <button onClick={() => setIsOpen(!isOpen)} className={`p-1 rounded-full transition-all duration-300 ${isOpen ? "bg-slate-100 text-slate-900" : (isScrolled ? "text-slate-900" : "text-white")}`}>
+                                        {isOpen ? <X size={24} /> : <Menu size={24} />}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+
+                    {/* Mobile Full Screen Menu Overlay */}
+                    <div className={`fixed inset-0 bg-white/95 backdrop-blur-xl z-40 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${isOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none"}`}>
+                        <div className="flex flex-col items-center justify-center h-full space-y-8 p-6">
+                            {Object.entries(navItems).map(([key, label], idx) => (
+                                <a 
+                                    key={key} 
+                                    href={`#${key}`} 
+                                    onClick={() => setIsOpen(false)} 
+                                    className={`text-2xl font-bold text-slate-800 tracking-tight transform transition-all duration-700 ${isOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}`}
+                                    style={{ transitionDelay: `${idx * 100}ms` }}
+                                >
+                                    {lang === 'en' ? label.en : label.zh}
+                                </a>
+                            ))}
+                            <div className={`w-12 h-1 bg-blue-600 rounded-full mt-4 transform transition-all duration-700 delay-500 ${isOpen ? "scale-x-100" : "scale-x-0"}`}></div>
+                            <p className={`text-slate-400 text-sm mt-8 uppercase tracking-widest transition-opacity duration-1000 delay-700 ${isOpen ? "opacity-100" : "opacity-0"}`}>
+                                Global Headquarters
+                            </p>
+                        </div>
+                    </div>
+                </React.Fragment>
+            );
+        };
+
+        const Hero = ({ lang }) => (
+            <div className="relative h-screen min-h-[600px] bg-slate-900 overflow-hidden flex items-center">
+                <div className="absolute inset-0 z-0">
+                    <div className="absolute inset-0 bg-slate-900/60 z-10 mix-blend-multiply"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent z-10"></div>
+                    <img 
+                        src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop" 
+                        alt="Data Connectivity" 
+                        className="w-full h-full object-cover opacity-60 animate-slow-zoom"
+                    />
+                    <div className="md:hidden absolute left-0 w-full h-32 bg-gradient-to-b from-blue-500/0 via-blue-400/20 to-blue-500/0 z-10 animate-scan pointer-events-none"></div>
+                </div>
+                
+                <div className="relative z-20 max-w-7xl mx-auto px-4 md:px-6 lg:px-12 w-full pt-16 md:pt-20">
+                    <Reveal delay={200} className="md:w-3/4 lg:w-2/3">
+                        <div className="inline-block px-3 py-1 mb-6 border border-blue-400/30 rounded-full bg-blue-900/30 backdrop-blur-sm">
+                            <span className="text-blue-300 text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase">
+                                {lang === 'en' ? "Infrastructure for the AI Era" : "AI 時代的基礎設施"}
+                            </span>
+                        </div>
+                        
+                        {lang === 'en' ? (
+                            <React.Fragment>
+                                <h1 className="text-4xl md:text-7xl font-extrabold text-white tracking-tight mb-6 md:mb-8 leading-[1.15]">
+                                    Bridging Capital, <br/>
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
+                                        Technology
+                                    </span> & Assets.
+                                </h1>
+                                <p className="text-base md:text-xl text-slate-300 mb-8 md:mb-12 leading-relaxed max-w-xl font-light border-l-2 border-blue-500 pl-4 md:pl-6">
+                                    DataEnergy Holding is the premier Singapore-based platform integrating investment, compliance, and manufacturing for next-gen data centers.
+                                </p>
+                            </React.Fragment>
+                        ) : (
+                            <React.Fragment>
+                                <h1 className="text-4xl md:text-7xl font-bold text-white tracking-tight mb-6 md:mb-8 leading-[1.25]">
+                                    連接資本，<br/>
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
+                                        技術
+                                    </span>與資產。
+                                </h1>
+                                <p className="text-base md:text-xl text-slate-300 mb-8 md:mb-12 leading-relaxed max-w-xl font-light border-l-2 border-blue-500 pl-4 md:pl-6">
+                                    DataEnergy 是總部位於新加坡的領先平台，整合投資、合規與製造，賦能下一代數據中心。
+                                </p>
+                            </React.Fragment>
+                        )}
+                        
+                        <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
+                            <Button primary className="w-full sm:w-auto">
+                                {lang === 'en' ? "Our Portfolio" : "業務組合"} 
+                                <ArrowRight className="ml-2 h-4 w-4" />
+                            </Button>
+                            <Button className="w-full sm:w-auto">
+                                {lang === 'en' ? "Corporate Structure" : "組織架構"}
+                            </Button>
+                        </div>
+                    </Reveal>
+                </div>
+
+                <div className="absolute bottom-6 md:bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center animate-bounce-slow opacity-50 z-20">
+                    <span className="text-[9px] md:text-[10px] text-white uppercase tracking-widest mb-1 md:mb-2">Scroll</span>
+                    <ArrowDown size={20} className="text-white" />
+                </div>
+            </div>
+        );
+
+        const App = () => {
+            const [lang, setLang] = useState('en');
+
+            return (
+                <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-blue-100 selection:text-blue-900">
+                    <Navbar lang={lang} setLang={setLang} />
+                    
+                    <Hero lang={lang} />
+
+                    {/* About Section */}
+                    <section id="about" className="py-16 md:py-24 bg-white relative">
+                        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
+                            <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+                                <Reveal>
+                                    <h2 className="text-xs font-bold text-blue-600 uppercase tracking-[0.2em] mb-4">
+                                        {lang === 'en' ? "About Us" : "關於我們"}
+                                    </h2>
+                                    <h3 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6 md:mb-8 leading-tight">
+                                        {lang === 'en' 
+                                            ? "Strategic Capital & Ownership Platform" 
+                                            : "戰略資本與所有權平台"
+                                        }
+                                    </h3>
+                                    
+                                    <p className="text-base md:text-lg text-slate-600 leading-relaxed font-light mb-8 border-l-4 border-slate-200 pl-4 md:pl-6">
+                                        {lang === 'en' 
+                                            ? "Headquartered in Singapore, DataEnergy Holding serves as the central hub for equity investment, financing, and intellectual property control. We act as the bridge between capital markets and industrial innovation."
+                                            : "DataEnergy 控股總部位於新加坡，是股權投資、融資及知識產權控制的中心樞紐。我們是資本市場與產業創新的橋樑。"
+                                        }
+                                    </p>
+
+                                    <div className="grid grid-cols-2 gap-6 md:gap-12 mt-8 md:mt-12">
+                                        <div className="flex flex-col">
+                                            <Globe className="text-blue-900 mb-3 h-6 w-6 md:h-8 md:w-8" />
+                                            <span className="font-bold text-slate-900 text-sm md:text-base">{lang === 'en' ? "Global HQ" : "全球總部"}</span>
+                                            <span className="text-xs md:text-sm text-slate-500">Singapore CBD</span>
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <ShieldCheck className="text-blue-900 mb-3 h-6 w-6 md:h-8 md:w-8" />
+                                            <span className="font-bold text-slate-900 text-sm md:text-base">{lang === 'en' ? "Risk Control" : "風險控制"}</span>
+                                            <span className="text-xs md:text-sm text-slate-500">IP & Compliance</span>
+                                        </div>
+                                    </div>
+                                </Reveal>
+
+                                <div className="relative mt-8 md:mt-0">
+                                    <Reveal delay={200}>
+                                        <div className="aspect-[4/3] md:aspect-[4/5] bg-slate-900 relative z-10 overflow-hidden rounded-lg md:rounded-none">
+                                            <img 
+                                                src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+                                                alt="Architecture" 
+                                                className="w-full h-full object-cover opacity-80 hover:scale-105 transition-transform duration-1000"
+                                            />
+                                            <div className="hidden md:block absolute -bottom-8 -left-8 w-48 h-48 border-2 border-slate-200 z-0"></div>
+                                            <div className="absolute top-4 right-4 md:top-8 md:right-8 w-12 h-12 md:w-20 md:h-20 bg-blue-600/20 backdrop-blur-md z-20"></div>
+                                        </div>
+                                    </Reveal>
+                                </div>
+                            </div>
+
+                            <div className="mt-16 md:mt-24 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 border-t border-slate-100 pt-8 md:pt-12">
+                                <StatItem value="SG" label="Headquarters" delay={300} />
+                                <StatItem value="3+" label="Strategic SPVs" delay={400} />
+                                <StatItem value="100%" label="Compliance" delay={500} />
+                                <StatItem value="ASEAN" label="Focus Region" delay={600} />
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Structure Section */}
+                    <section id="structure" className="py-16 md:py-32 bg-slate-50 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-1/3 h-full bg-slate-100 skew-x-12 transform origin-top-right"></div>
+                        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12 relative z-10">
+                            <SectionTitle 
+                                lang={lang}
+                                title="Corporate Structure" 
+                                titleCn="公司組織架構"
+                                subtitle="A clear hierarchy designed for operational efficiency, compliance, and strategic growth across ASEAN."
+                                subtitleCn="清晰的層級結構旨在提高運營效率、確保合規性，並推動在東盟地區的戰略增長。"
+                            />
+                            
+                            <div className="mt-8 md:mt-16">
+                                <InteractiveOrgChart lang={lang} />
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Business Units Section */}
+                    <section id="business" className="py-16 md:py-32 bg-white">
+                        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
+                            <div className="flex flex-col md:flex-row justify-between items-end mb-12 md:mb-20">
+                                <div className="md:w-2/3">
+                                    <h2 className="text-xs font-bold text-blue-600 uppercase tracking-[0.2em] mb-4">
+                                        {lang === 'en' ? "Our Expertise" : "我們的專長"}
+                                    </h2>
+                                    <h3 className="text-3xl md:text-4xl font-bold text-slate-900 leading-tight">
+                                        {lang === 'en' ? "Synergistic Business Units" : "協同業務板塊"}
+                                    </h3>
+                                </div>
+                                <div className="md:w-1/3 text-right hidden md:block">
+                                    <button className="text-sm font-bold border-b border-slate-900 pb-1 hover:text-blue-600 hover:border-blue-600 transition-colors">
+                                        {lang === 'en' ? "View All Projects" : "查看所有項目"}
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <BusinessCard 
+                                    lang={lang}
+                                    delay={0}
+                                    title="DCDeepTech"
+                                    titleCn="技術與合規"
+                                    icon={Cpu}
+                                    description="Singapore-based technical and local compliance platform ensuring seamless regulatory alignment."
+                                    descriptionCn="基於新加坡的技術與本地合規平台，確保與監管要求無縫對接。"
+                                    features={[
+                                        { en: "EMA / BCA / IMDA Liaison", cn: "監管機構聯絡" },
+                                        { en: "Local Certification", cn: "本地認證" },
+                                        { en: "Risk Audits", cn: "風險審計" }
+                                    ]}
+                                />
+                                
+                                <BusinessCard 
+                                    lang={lang}
+                                    delay={200}
+                                    title="AxiomDeta"
+                                    titleCn="基礎設施"
+                                    icon={Zap}
+                                    description="OCP & AI Data Center Infrastructure Platform serving enterprise and hyperscale clients."
+                                    descriptionCn="服務於企業與超大規模客戶的 OCP 及 AI 數據中心基礎設施平台。"
+                                    features={[
+                                        { en: "OCP Racks & Power", cn: "OCP 機櫃與電力" },
+                                        { en: "Cooling Modules", cn: "冷卻模組" },
+                                        { en: "Hyperscale Solutions", cn: "超大規模方案" }
+                                    ]}
+                                />
+
+                                <BusinessCard 
+                                    lang={lang}
+                                    delay={400}
+                                    title="DataEnergy MY"
+                                    titleCn="製造基地"
+                                    icon={Factory}
+                                    description="Our manufacturing base in Malaysia, optimizing supply chain and production efficiency."
+                                    descriptionCn="我們位於馬來西亞的製造基地，優化供應鏈與生產效率。"
+                                    features={[
+                                        { en: "Rack Production", cn: "機櫃生產" },
+                                        { en: "Supply Chain Ops", cn: "供應鏈運營" },
+                                        { en: "Cost Optimization", cn: "成本優化" }
+                                    ]}
+                                />
+
+                                <BusinessCard 
+                                    lang={lang}
+                                    delay={600}
+                                    title="Property SPVs"
+                                    titleCn="資產管理"
+                                    icon={Building}
+                                    description="Strategic asset holdings supporting the incubation of our operating companies."
+                                    descriptionCn="支持運營公司孵化的戰略資產持有平台。"
+                                    features={[
+                                        { en: "Commercial Property", cn: "商業地產" },
+                                        { en: "Industrial Land", cn: "工業用地" },
+                                        { en: "Asset Management", cn: "資產管理" }
+                                    ]}
+                                />
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Contact Section */}
+                    <section id="contact" className="bg-slate-900 text-white py-16 md:py-24 relative overflow-hidden">
+                        <div className="absolute -left-20 -top-20 w-96 h-96 bg-blue-900/20 rounded-full blur-3xl"></div>
+                        <div className="absolute right-0 bottom-0 w-[500px] h-[500px] bg-indigo-900/20 rounded-full blur-3xl"></div>
+
+                        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12 relative z-10">
+                            <div className="grid md:grid-cols-2 gap-12 md:gap-20">
+                                <Reveal>
+                                    <h2 className="text-3xl md:text-5xl font-bold mb-6">
+                                        {lang === 'en' ? "Let's Build the Future" : "共建未來"}
+                                    </h2>
+                                    <p className="text-slate-400 mb-8 md:mb-12 text-base md:text-lg font-light leading-relaxed max-w-md">
+                                        {lang === 'en' 
+                                            ? "Interested in partnership, investment, or our infrastructure solutions? Connect with our global headquarters."
+                                            : "對合作夥伴關係、投資或我們的基礎設施解決方案感興趣？請聯繫我們的全球總部。"
+                                        }
+                                    </p>
+
+                                    <div className="space-y-6 md:space-y-8">
+                                        <div className="flex items-start gap-6 group">
+                                            <div className="p-3 md:p-4 bg-white/5 border border-white/10 rounded-none group-hover:bg-blue-600 transition-colors duration-300">
+                                                <MapPin size={20} className="text-white md:w-6 md:h-6" />
+                                            </div>
+                                            <div>
+                                                <h4 className="text-xs md:text-sm font-bold uppercase tracking-widest text-slate-500 mb-1">{lang === 'en' ? "Visit Us" : "地址"}</h4>
+                                                <p className="text-white text-base md:text-lg">71 Ayer Rajah Crescent, Singapore 139951</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-start gap-6 group">
+                                            <div className="p-3 md:p-4 bg-white/5 border border-white/10 rounded-none group-hover:bg-blue-600 transition-colors duration-300">
+                                                <Mail size={20} className="text-white md:w-6 md:h-6" />
+                                            </div>
+                                            <div>
+                                                <h4 className="text-xs md:text-sm font-bold uppercase tracking-widest text-slate-500 mb-1">{lang === 'en' ? "Email Us" : "郵箱"}</h4>
+                                                <p className="text-white text-base md:text-lg">luoxi.sg@gmail.com</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-start gap-6 group">
+                                            <div className="p-3 md:p-4 bg-white/5 border border-white/10 rounded-none group-hover:bg-blue-600 transition-colors duration-300">
+                                                <Phone size={20} className="text-white md:w-6 md:h-6" />
+                                            </div>
+                                            <div>
+                                                <h4 className="text-xs md:text-sm font-bold uppercase tracking-widest text-slate-500 mb-1">{lang === 'en' ? "WhatsApp" : "WhatsApp"}</h4>
+                                                <p className="text-white text-base md:text-lg">+65 83785069</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Reveal>
+                                
+                                <Reveal delay={200} className="bg-white p-6 md:p-10 shadow-2xl rounded-lg md:rounded-none">
+                                    <form className="space-y-4 md:space-y-6">
+                                        <div className="grid grid-cols-2 gap-4 md:gap-6">
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-bold text-slate-900 uppercase tracking-wide">
+                                                    {lang === 'en' ? "First Name" : "名字"}
+                                                </label>
+                                                <input type="text" className="w-full bg-slate-50 border-b-2 border-slate-200 p-2 md:p-3 text-slate-900 focus:outline-none focus:border-blue-600 transition-colors placeholder-transparent" placeholder="Name" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-bold text-slate-900 uppercase tracking-wide">
+                                                    {lang === 'en' ? "Last Name" : "姓氏"}
+                                                </label>
+                                                <input type="text" className="w-full bg-slate-50 border-b-2 border-slate-200 p-2 md:p-3 text-slate-900 focus:outline-none focus:border-blue-600 transition-colors placeholder-transparent" placeholder="Name" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-900 uppercase tracking-wide">
+                                                {lang === 'en' ? "Email" : "電郵"}
+                                            </label>
+                                            <input type="email" className="w-full bg-slate-50 border-b-2 border-slate-200 p-2 md:p-3 text-slate-900 focus:outline-none focus:border-blue-600 transition-colors placeholder-transparent" placeholder="Email" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-900 uppercase tracking-wide">
+                                                {lang === 'en' ? "Message" : "留言"}
+                                            </label>
+                                            <textarea rows="4" className="w-full bg-slate-50 border-b-2 border-slate-200 p-2 md:p-3 text-slate-900 focus:outline-none focus:border-blue-600 transition-colors placeholder-transparent" placeholder="Message"></textarea>
+                                        </div>
+                                        <button className="w-full bg-slate-900 text-white font-bold py-3 md:py-4 uppercase tracking-widest hover:bg-blue-800 transition-colors flex justify-center items-center gap-2">
+                                            {lang === 'en' ? "Send Message" : "發送訊息"}
+                                            <ArrowRight size={16} />
+                                        </button>
+                                    </form>
+                                </Reveal>
+                            </div>
+                            
+                            <div className="border-t border-slate-800 mt-16 md:mt-24 pt-8 md:pt-12 flex flex-col md:flex-row justify-between items-center text-slate-500 text-xs md:text-sm">
+                                <p>&copy; {new Date().getFullYear()} DataEnergy Holding Pte. Ltd.</p>
+                                <div className="flex gap-6 md:gap-8 mt-4 md:mt-0">
+                                    <span className="hover:text-white cursor-pointer transition-colors">Privacy Policy</span>
+                                    <span className="hover:text-white cursor-pointer transition-colors">Terms of Service</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
