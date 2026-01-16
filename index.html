@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DataEnergy | Intelligent Energy Infrastructure</title>
+    <title>DataEnergy | Cognitive Energy Infrastructure</title>
     
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -15,26 +15,15 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Tailwind Configuration for Custom Colors/Animations -->
+    <!-- Tailwind Configuration -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        slate: {
-                            850: '#151e2e',
-                            950: '#020617',
-                        },
-                        cyan: {
-                            400: '#22d3ee',
-                            500: '#06b6d4',
-                            950: '#083344',
-                        },
-                        emerald: {
-                            400: '#34d399',
-                            500: '#10b981',
-                            950: '#022c22',
-                        }
+                        slate: { 850: '#151e2e', 950: '#020617' },
+                        cyan: { 400: '#22d3ee', 500: '#06b6d4', 950: '#083344' },
+                        emerald: { 400: '#34d399', 500: '#10b981', 950: '#022c22' }
                     },
                     animation: {
                         'spin-slow': 'spin 10s linear infinite',
@@ -64,84 +53,25 @@
     </script>
 
     <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0f172a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #22d3ee;
-        }
-
-        /* Glassmorphism Utilities */
-        .glass {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .glass-strong {
-            background: rgba(2, 6, 23, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        /* Neon Border Effect */
-        .neon-border {
-            position: relative;
-            border-radius: 0.5rem;
-            z-index: 1;
-            overflow: hidden;
-        }
-        .neon-border::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(transparent, transparent, transparent, #06b6d4, transparent);
-            animation: rotate 4s linear infinite;
-            z-index: -2;
-        }
-        .neon-border::after {
-            content: '';
-            position: absolute;
-            inset: 1px;
-            background: #020617; /* Slate-950 */
-            border-radius: 0.5rem;
-            z-index: -1;
-        }
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Reveal Animation Class */
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
-        }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #22d3ee; }
+        .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .glass-strong { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .neon-border { position: relative; border-radius: 0.5rem; z-index: 1; overflow: hidden; }
+        .neon-border::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(transparent, transparent, transparent, #06b6d4, transparent); animation: rotate 4s linear infinite; z-index: -2; }
+        .neon-border::after { content: ''; position: absolute; inset: 1px; background: #020617; border-radius: 0.5rem; z-index: -1; }
+        @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.5, 0, 0, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 antialiased overflow-x-hidden selection:bg-cyan-500 selection:text-white">
     <div id="root"></div>
 
     <script type="text/babel">
-        // --- ICONS (Embedded SVGs to avoid dependency issues) ---
+        // --- ICONS ---
         const Icons = {
             Sun: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>,
             Battery: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="16" height="10" x="2" y="7" rx="2" ry="2"/><line x1="22" x2="22" y1="11" y2="13"/></svg>,
@@ -168,10 +98,9 @@
             Gauge: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>
         };
 
-        // --- PARTICLE BACKGROUND COMPONENT (The "Show-off" Feature) ---
+        // --- PARTICLE BACKGROUND ---
         const ParticleBackground = () => {
             const canvasRef = React.useRef(null);
-
             React.useEffect(() => {
                 const canvas = canvasRef.current;
                 const ctx = canvas.getContext('2d');
@@ -190,7 +119,6 @@
 
                 const initParticles = () => {
                     particles = [];
-                    // Less particles on mobile for performance
                     const count = width < 768 ? 40 : 80;
                     for (let i = 0; i < count; i++) {
                         particles.push({
@@ -205,60 +133,48 @@
 
                 const draw = () => {
                     ctx.clearRect(0, 0, width, height);
-                    
-                    // Draw connections
                     ctx.lineWidth = 0.5;
                     for (let i = 0; i < particles.length; i++) {
                         for (let j = i + 1; j < particles.length; j++) {
                             const dx = particles[i].x - particles[j].x;
                             const dy = particles[i].y - particles[j].y;
                             const dist = Math.sqrt(dx * dx + dy * dy);
-                            
                             if (dist < 150) {
                                 ctx.beginPath();
-                                ctx.strokeStyle = `rgba(6, 182, 212, ${1 - dist / 150})`; // Cyan with alpha
+                                ctx.strokeStyle = `rgba(6, 182, 212, ${1 - dist / 150})`;
                                 ctx.moveTo(particles[i].x, particles[i].y);
                                 ctx.lineTo(particles[j].x, particles[j].y);
                                 ctx.stroke();
                             }
                         }
                     }
-
-                    // Draw particles
                     particles.forEach(p => {
                         p.x += p.vx;
                         p.y += p.vy;
-
                         if (p.x < 0 || p.x > width) p.vx *= -1;
                         if (p.y < 0 || p.y > height) p.vy *= -1;
-
                         ctx.beginPath();
                         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                         ctx.fillStyle = '#22d3ee';
                         ctx.fill();
                     });
-
                     animationFrameId = requestAnimationFrame(draw);
                 };
-
                 window.addEventListener('resize', resize);
                 resize();
                 draw();
-
                 return () => {
                     window.removeEventListener('resize', resize);
                     cancelAnimationFrame(animationFrameId);
                 };
             }, []);
-
             return <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none opacity-40 z-0" />;
         };
 
-        // --- SCROLL REVEAL WRAPPER ---
+        // --- REVEAL WRAPPER ---
         const Reveal = ({ children, delay = 0 }) => {
             const ref = React.useRef(null);
             const [isActive, setIsActive] = React.useState(false);
-
             React.useEffect(() => {
                 const observer = new IntersectionObserver(([entry]) => {
                     if (entry.isIntersecting) {
@@ -266,11 +182,9 @@
                         observer.unobserve(entry.target);
                     }
                 }, { threshold: 0.1 });
-
                 if (ref.current) observer.observe(ref.current);
                 return () => observer.disconnect();
             }, []);
-
             return (
                 <div ref={ref} className={`reveal ${isActive ? 'active' : ''}`} style={{ transitionDelay: `${delay}ms` }}>
                     {children}
@@ -278,21 +192,18 @@
             );
         };
 
-        // --- MAIN APP COMPONENT ---
+        // --- MAIN APP ---
         const DataEnergyWebsite = () => {
             const [lang, setLang] = React.useState('zh'); 
             const [isMenuOpen, setIsMenuOpen] = React.useState(false);
             const [scrolled, setScrolled] = React.useState(false);
 
             React.useEffect(() => {
-                const handleScroll = () => {
-                    setScrolled(window.scrollY > 20);
-                };
+                const handleScroll = () => { setScrolled(window.scrollY > 20); };
                 window.addEventListener('scroll', handleScroll);
                 return () => window.removeEventListener('scroll', handleScroll);
             }, []);
 
-            // Content Data Dictionary (Copied from previous versions and refined)
             const content = {
                 en: {
                     nav: {
@@ -304,8 +215,8 @@
                         switchBtn: "中文"
                     },
                     hero: {
-                        title: "Powering Singapore's Grid with Physics-Informed Intelligence",
-                        subtitle: "The convergence of Advanced HJT Hardware and DC Deep Tech Edge AI. A regulatory-compliant VPP interface for the EMA Sandbox.",
+                        title: "Building the Cognitive Energy Infrastructure",
+                        subtitle: "Integrating Tier-1 HJT Technology with Edge AI to Power Singapore's Next-Gen Grid.",
                         cta: "Explore Platform",
                         stat1: "22.4% Efficiency",
                         stat2: "<1% SOH Error",
@@ -313,9 +224,9 @@
                     },
                     stack: {
                         title: "The Deep Tech Stack",
-                        muscle: { title: "HJT Hyper-ion", desc: "-0.24%/°C temp coeff. Built for SG heat.", tag: "Advanced PV" },
-                        brain: { title: "Edge AI Core", desc: "RK3588 & PINN. Millisecond response.", tag: "Deep Tech" },
-                        shield: { title: "Yuan ESS", desc: "Three-in-One safety. Liquid-cooled.", tag: "Infrastructure" }
+                        muscle: { title: "HJT Smart Series", desc: "-0.24%/°C temp coeff. Optimized for tropics.", tag: "Tier-1 HJT Partner" },
+                        brain: { title: "Edge AI Core", desc: "RK3588 & PINN. Real-time cognitive processing.", tag: "DC Deep Tech" },
+                        shield: { title: "Yuan ESS", desc: "Three-in-One safety. Liquid-cooled active defense.", tag: "Infrastructure" }
                     },
                     ai: {
                         title: "AI Empowerment Ecosystem",
@@ -334,9 +245,9 @@
                         tagline: "Low Latency • Privacy • Control",
                         cards: [
                             { title: "Predictive Maint.", desc: "Vibration analysis preventing motor failure.", icon: "gauge" },
-                            { title: "Defect Detection", desc: "RK3588 NPU spotting scratches.", icon: "scan" },
+                            { title: "Visual Inspection", desc: "Edge AI drone/robot defect detection.", icon: "scan" },
                             { title: "Safety AI", desc: "PPE detection & geofencing.", icon: "alert" },
-                            { title: "Energy Optimization", desc: "Dynamic load balancing.", icon: "factory" }
+                            { title: "Smart Tracking", desc: "Cloud-sensing micro-tracking brackets.", icon: "factory" }
                         ]
                     },
                     safety: {
@@ -368,8 +279,8 @@
                         switchBtn: "EN"
                     },
                     hero: {
-                        title: "以物理感知智能，重塑新加坡能源网络",
-                        subtitle: "先进 HJT 硬件与 DC Deep Tech 边缘 AI 的深度融合。专为 EMA 沙盒打造的合规虚拟电厂(VPP)接口。",
+                        title: "构建认知型能源基础设施",
+                        subtitle: "全球一级 HJT 技术与边缘 AI 的深度融合，赋能新加坡下一代电网。",
                         cta: "探索平台",
                         stat1: "22.4% 转换效率",
                         stat2: "<1% SOH 误差",
@@ -377,9 +288,9 @@
                     },
                     stack: {
                         title: "深度科技堆栈",
-                        muscle: { title: "肌肉：HJT Hyper-ion", desc: "-0.24%/°C 极低温系，专为热带设计。", tag: "先进光伏" },
-                        brain: { title: "大脑：边缘 AI 核心", desc: "RK3588 + PINN。毫秒响应，无延迟。", tag: "Deep Tech" },
-                        shield: { title: "护盾：元 (Yuan) 储能", desc: "三合一安全体系，液冷主动抑制。", tag: "基础设施" }
+                        muscle: { title: "HJT 智能组件系列", desc: "-0.24%/°C 极低温系，专为热带优化。", tag: "Tier-1 HJT 合作伙伴" },
+                        brain: { title: "大脑：边缘 AI 核心", desc: "RK3588 + PINN。实时认知处理能力。", tag: "Deep Tech" },
+                        shield: { title: "护盾：元 (Yuan) 储能", desc: "三合一安全体系，液冷主动防御。", tag: "基础设施" }
                     },
                     ai: {
                         title: "AI 赋能中心",
@@ -398,9 +309,9 @@
                         tagline: "超低延迟 • 隐私优先 • 实时控制",
                         cards: [
                             { title: "预测性维护", desc: "边缘频谱分析，预判电机故障。", icon: "gauge" },
-                            { title: "视觉缺陷检测", desc: "RK3588 驱动高速瑕疵识别。", icon: "scan" },
+                            { title: "视觉缺陷检测", desc: "边缘 AI 驱动的无人机/机器人巡检。", icon: "scan" },
                             { title: "工厂安全 AI", desc: "PPE 穿戴检测与入侵报警。", icon: "alert" },
-                            { title: "智能能效优化", desc: "基于电价的动态负载均衡。", icon: "factory" }
+                            { title: "智能微跟踪", desc: "基于云层感知的动态支架调节。", icon: "factory" }
                         ]
                     },
                     safety: {
@@ -425,8 +336,6 @@
             };
 
             const t = content[lang];
-
-            // Helper for Icons
             const getIcon = (type, className) => {
                 const props = { className: className };
                 switch(type) {
@@ -442,12 +351,9 @@
                     default: return <Icons.Cpu {...props} />;
                 }
             };
-
-            // Calculator Logic
             const [area, setArea] = React.useState(1000);
             const [savings, setSavings] = React.useState(0);
             const [techBonus, setTechBonus] = React.useState(0);
-
             React.useEffect(() => {
                 const capacityKW = area * 0.224;
                 const dailyGen = capacityKW * 4.5;
@@ -459,7 +365,6 @@
 
             return (
                 <div className="min-h-screen relative">
-                    {/* Navigation */}
                     <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'glass-strong border-b border-slate-800 py-2' : 'bg-transparent py-4'}`}>
                         <div className="max-w-7xl mx-auto px-4">
                             <div className="flex items-center justify-between">
@@ -469,21 +374,16 @@
                                     </div>
                                     <span className="font-bold text-xl tracking-tighter text-white">DATA<span className="text-cyan-400">ENERGY</span></span>
                                 </div>
-                                
                                 <div className="hidden md:flex items-center space-x-6">
                                     {['tech', 'ai', 'industrial', 'safety'].map(key => (
                                         <a key={key} href={`#${key}`} className="text-sm font-medium text-slate-300 hover:text-cyan-400 transition-colors uppercase tracking-wide">
                                             {t.nav[key]}
                                         </a>
                                     ))}
-                                    <button 
-                                        onClick={() => setLang(lang === 'en' ? 'zh' : 'en')}
-                                        className="border border-slate-600 px-3 py-1 rounded text-xs hover:border-cyan-400 transition-colors text-slate-300"
-                                    >
+                                    <button onClick={() => setLang(lang === 'en' ? 'zh' : 'en')} className="border border-slate-600 px-3 py-1 rounded text-xs hover:border-cyan-400 transition-colors text-slate-300">
                                         {t.nav.switchBtn}
                                     </button>
                                 </div>
-
                                 <div className="md:hidden">
                                     <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-slate-300">
                                         {isMenuOpen ? <Icons.X /> : <Icons.Menu />}
@@ -491,7 +391,6 @@
                                 </div>
                             </div>
                         </div>
-                        {/* Mobile Menu */}
                         {isMenuOpen && (
                             <div className="md:hidden absolute top-full left-0 w-full glass-strong border-b border-slate-800 animate-fade-in-down">
                                 <div className="flex flex-col p-4 space-y-4">
@@ -508,11 +407,9 @@
                         )}
                     </nav>
 
-                    {/* HERO SECTION */}
                     <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
                         <ParticleBackground />
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent z-10"></div>
-                        
                         <div className="relative z-20 max-w-7xl mx-auto px-4 text-center">
                             <Reveal>
                                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/40 border border-cyan-800 text-cyan-400 text-xs font-bold mb-6 backdrop-blur-sm">
@@ -523,9 +420,7 @@
                                     EMA Sandbox Ready
                                 </div>
                                 <h1 className="text-5xl md:text-7xl font-extrabold text-white tracking-tight mb-6 leading-tight">
-                                    {t.hero.title.split(' ').map((word, i) => (
-                                        <span key={i} className="inline-block hover:text-cyan-400 transition-colors duration-300 cursor-default">{word} </span>
-                                    ))}
+                                    {t.hero.title}
                                 </h1>
                                 <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
                                     {t.hero.subtitle}
@@ -539,7 +434,6 @@
                         </div>
                     </section>
 
-                    {/* STATS STRIP (Mobile Scroll Snap) */}
                     <div className="relative z-20 -mt-20 mb-20">
                         <div className="max-w-7xl mx-auto px-4">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -559,7 +453,6 @@
                         </div>
                     </div>
 
-                    {/* TECH STACK */}
                     <section id="tech" className="py-20 relative">
                         <div className="max-w-7xl mx-auto px-4">
                             <Reveal>
@@ -588,7 +481,6 @@
                         </div>
                     </section>
 
-                    {/* AI EMPOWERMENT (Show-off Grids) */}
                     <section id="ai" className="py-20 bg-slate-900/50 relative overflow-hidden">
                         <div className="absolute top-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-900 to-transparent"></div>
                         <div className="max-w-7xl mx-auto px-4 relative z-10">
@@ -598,14 +490,11 @@
                                     <p className="text-slate-400">{t.ai.subtitle}</p>
                                 </div>
                             </Reveal>
-
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {t.ai.platforms.map((platform, i) => (
                                     <Reveal key={i} delay={i * 100}>
                                         <div className="relative group bg-slate-950 p-6 rounded-xl border border-slate-800 hover:border-purple-500/50 transition-all overflow-hidden">
-                                            {/* Hover Glow Effect */}
                                             <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                            
                                             <div className="relative z-10 flex items-start gap-4">
                                                 <div className="p-3 bg-slate-900 rounded-lg border border-slate-700 text-purple-400 group-hover:text-purple-300 transition-colors">
                                                     {getIcon(platform.icon, "w-6 h-6")}
@@ -625,7 +514,6 @@
                         </div>
                     </section>
 
-                    {/* INDUSTRIAL EDGE (Neon Borders) */}
                     <section id="industrial" className="py-24 relative overflow-hidden">
                         <div className="max-w-7xl mx-auto px-4 relative z-10">
                             <Reveal>
@@ -635,7 +523,6 @@
                                     <p className="text-xl text-slate-400">{t.industrial.subtitle}</p>
                                 </div>
                             </Reveal>
-
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                 {t.industrial.cards.map((card, i) => (
                                     <Reveal key={i} delay={i * 150}>
@@ -660,7 +547,6 @@
                         </div>
                     </section>
 
-                    {/* SAFETY (Visual) */}
                     <section id="safety" className="py-20 bg-slate-900/30">
                         <div className="max-w-7xl mx-auto px-4">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -680,10 +566,8 @@
                                         </div>
                                     </div>
                                 </Reveal>
-                                
                                 <Reveal delay={200}>
                                     <div className="relative h-80 bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden flex items-center justify-center">
-                                        {/* Simple CSS Animation for Battery Scan */}
                                         <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(6,182,212,0.1)_50%,transparent_75%)] bg-[length:250%_250%] animate-shimmer"></div>
                                         <div className="grid grid-cols-4 gap-2 opacity-30">
                                             {[...Array(16)].map((_,i) => <div key={i} className="w-8 h-12 bg-emerald-500 rounded-sm"></div>)}
@@ -698,7 +582,6 @@
                         </div>
                     </section>
 
-                    {/* CALCULATOR */}
                     <section className="py-20">
                         <div className="max-w-3xl mx-auto px-4">
                             <Reveal>
@@ -706,7 +589,6 @@
                                     <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-3">
                                         <Icons.TrendingUp className="text-cyan-400" /> {t.calc.title}
                                     </h2>
-                                    
                                     <div className="space-y-8">
                                         <div>
                                             <div className="flex justify-between text-slate-300 mb-2 text-sm">
@@ -719,7 +601,6 @@
                                                 className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"
                                             />
                                         </div>
-                                        
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="bg-slate-900 p-4 rounded-lg border border-slate-800 text-center">
                                                 <div className="text-xs text-slate-500 uppercase">{t.calc.advantage}</div>
@@ -736,10 +617,10 @@
                         </div>
                     </section>
 
-                    {/* FOOTER */}
                     <footer className="py-8 border-t border-slate-900 text-center text-slate-600 text-sm">
                         <p>{t.footer.rights}</p>
                         <p className="mt-1">{t.footer.address}</p>
+                        <p className="mt-1 text-xs text-slate-700">Cognitive Energy Infrastructure for the AI Era.</p>
                     </footer>
                 </div>
             );
