@@ -1,819 +1,752 @@
  <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DataEnergy Holding Pte. Ltd.</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DataEnergy | Intelligent Energy Infrastructure</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- React & ReactDOM (使用 cdnjs 以提高稳定性) -->
-    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-    
-    <!-- Babel for JSX -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Tailwind Configuration for Custom Colors/Animations -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            850: '#151e2e',
+                            950: '#020617',
+                        },
+                        cyan: {
+                            400: '#22d3ee',
+                            500: '#06b6d4',
+                            950: '#083344',
+                        },
+                        emerald: {
+                            400: '#34d399',
+                            500: '#10b981',
+                            950: '#022c22',
+                        }
+                    },
+                    animation: {
+                        'spin-slow': 'spin 10s linear infinite',
+                        'pulse-fast': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'shimmer': 'shimmer 2s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'border-flow': 'borderFlow 3s linear infinite',
+                    },
+                    keyframes: {
+                        shimmer: {
+                            '0%': { backgroundPosition: '-1000px 0' },
+                            '100%': { backgroundPosition: '1000px 0' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        borderFlow: {
+                            '0%': { backgroundPosition: '0% 50%' },
+                            '50%': { backgroundPosition: '100% 50%' },
+                            '100%': { backgroundPosition: '0% 50%' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
     <style>
-        body {
-            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-        @keyframes slow-zoom {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.1); }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
         }
-        .animate-slow-zoom {
-            animation: slow-zoom 20s infinite alternate linear;
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
         }
-        .animate-bounce-slow {
-            animation: bounce 3s infinite;
+        ::-webkit-scrollbar-thumb:hover {
+            background: #22d3ee;
         }
-        @keyframes scan {
-            0% { top: -10%; opacity: 0; }
-            15% { opacity: 0.5; }
-            85% { opacity: 0.5; }
-            100% { top: 110%; opacity: 0; }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .animate-scan {
-            animation: scan 4s ease-in-out infinite;
+
+        .glass-strong {
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Neon Border Effect */
+        .neon-border {
+            position: relative;
+            border-radius: 0.5rem;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .neon-border::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent, transparent, transparent, #06b6d4, transparent);
+            animation: rotate 4s linear infinite;
+            z-index: -2;
+        }
+        .neon-border::after {
+            content: '';
+            position: absolute;
+            inset: 1px;
+            background: #020617; /* Slate-950 */
+            border-radius: 0.5rem;
+            z-index: -1;
+        }
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Reveal Animation Class */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
-<body class="bg-white text-slate-900">
+<body class="bg-slate-950 text-slate-100 antialiased overflow-x-hidden selection:bg-cyan-500 selection:text-white">
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+        // --- ICONS (Embedded SVGs to avoid dependency issues) ---
+        const Icons = {
+            Sun: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>,
+            Battery: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="16" height="10" x="2" y="7" rx="2" ry="2"/><line x1="22" x2="22" y1="11" y2="13"/></svg>,
+            Cpu: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>,
+            Shield: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>,
+            Zap: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>,
+            Globe: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>,
+            ArrowRight: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>,
+            Activity: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>,
+            Server: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></svg>,
+            CheckCircle: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>,
+            Menu: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            X: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>,
+            TrendingUp: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>,
+            Thermometer: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></svg>,
+            BrainCircuit: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M9 13a4.5 4.5 0 0 0 3-4"/><path d="M6.003 5.125A3 3 0 0 1 19.506 13"/><path d="M12 18a4 4 0 0 0 4-3.464 6.506 6.506 0 0 0 .98-3.396"/><path d="M20.2 17.2a4.5 4.5 0 0 1-6.6 2.4"/></svg>,
+            Network: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg>,
+            Layers: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>,
+            Tag: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></svg>,
+            Sparkles: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/></svg>,
+            Factory: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg>,
+            Scan: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>,
+            AlertTriangle: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>,
+            Gauge: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>
+        };
 
-        // --- Icons (SVG Definitions) ---
-        const IconBase = ({ children, size = 24, className = "", ...props }) => (
-            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>{children}</svg>
-        );
+        // --- PARTICLE BACKGROUND COMPONENT (The "Show-off" Feature) ---
+        const ParticleBackground = () => {
+            const canvasRef = React.useRef(null);
 
-        const ChevronDown = (props) => <IconBase {...props}><path d="m6 9 6 6 6-6"/></IconBase>;
-        const ArrowRight = (props) => <IconBase {...props}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></IconBase>;
-        const Activity = (props) => <IconBase {...props}><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></IconBase>;
-        const Globe = (props) => <IconBase {...props}><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></IconBase>;
-        const Cpu = (props) => <IconBase {...props}><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></IconBase>;
-        const Factory = (props) => <IconBase {...props}><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></IconBase>;
-        const Building = (props) => <IconBase {...props}><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></IconBase>;
-        const Users = (props) => <IconBase {...props}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></IconBase>;
-        const Menu = (props) => <IconBase {...props}><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></IconBase>;
-        const X = (props) => <IconBase {...props}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></IconBase>;
-        const Mail = (props) => <IconBase {...props}><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></IconBase>;
-        const MapPin = (props) => <IconBase {...props}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></IconBase>;
-        const Phone = (props) => <IconBase {...props}><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></IconBase>;
-        const CheckCircle2 = (props) => <IconBase {...props}><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></IconBase>;
-        const Languages = (props) => <IconBase {...props}><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></IconBase>;
-        const ArrowDown = (props) => <IconBase {...props}><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></IconBase>;
-        const ShieldCheck = (props) => <IconBase {...props}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></IconBase>;
-        const Zap = (props) => <IconBase {...props}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></IconBase>;
+            React.useEffect(() => {
+                const canvas = canvasRef.current;
+                const ctx = canvas.getContext('2d');
+                let animationFrameId;
+                let particles = [];
+                let width = window.innerWidth;
+                let height = window.innerHeight;
 
-        // --- Animation & Utility Hooks ---
-        const useOnScreen = (options) => {
-            const ref = useRef(null);
-            const [isVisible, setIsVisible] = useState(false);
+                const resize = () => {
+                    width = window.innerWidth;
+                    height = window.innerHeight;
+                    canvas.width = width;
+                    canvas.height = height;
+                    initParticles();
+                };
 
-            useEffect(() => {
-                const observer = new IntersectionObserver(([entry]) => {
-                    if (entry.isIntersecting) {
-                        setIsVisible(true);
-                        observer.unobserve(entry.target);
+                const initParticles = () => {
+                    particles = [];
+                    // Less particles on mobile for performance
+                    const count = width < 768 ? 40 : 80;
+                    for (let i = 0; i < count; i++) {
+                        particles.push({
+                            x: Math.random() * width,
+                            y: Math.random() * height,
+                            vx: (Math.random() - 0.5) * 0.5,
+                            vy: (Math.random() - 0.5) * 0.5,
+                            size: Math.random() * 2 + 1
+                        });
                     }
-                }, options);
+                };
 
-                if (ref.current) {
-                    observer.observe(ref.current);
-                }
+                const draw = () => {
+                    ctx.clearRect(0, 0, width, height);
+                    
+                    // Draw connections
+                    ctx.lineWidth = 0.5;
+                    for (let i = 0; i < particles.length; i++) {
+                        for (let j = i + 1; j < particles.length; j++) {
+                            const dx = particles[i].x - particles[j].x;
+                            const dy = particles[i].y - particles[j].y;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+                            
+                            if (dist < 150) {
+                                ctx.beginPath();
+                                ctx.strokeStyle = `rgba(6, 182, 212, ${1 - dist / 150})`; // Cyan with alpha
+                                ctx.moveTo(particles[i].x, particles[i].y);
+                                ctx.lineTo(particles[j].x, particles[j].y);
+                                ctx.stroke();
+                            }
+                        }
+                    }
+
+                    // Draw particles
+                    particles.forEach(p => {
+                        p.x += p.vx;
+                        p.y += p.vy;
+
+                        if (p.x < 0 || p.x > width) p.vx *= -1;
+                        if (p.y < 0 || p.y > height) p.vy *= -1;
+
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                        ctx.fillStyle = '#22d3ee';
+                        ctx.fill();
+                    });
+
+                    animationFrameId = requestAnimationFrame(draw);
+                };
+
+                window.addEventListener('resize', resize);
+                resize();
+                draw();
 
                 return () => {
-                    if (ref.current) observer.unobserve(ref.current);
+                    window.removeEventListener('resize', resize);
+                    cancelAnimationFrame(animationFrameId);
                 };
-            }, [ref, options]);
+            }, []);
 
-            return [ref, isVisible];
+            return <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none opacity-40 z-0" />;
         };
 
-        const Reveal = ({ children, delay = 0, className = "" }) => {
-            const [ref, isVisible] = useOnScreen({ threshold: 0.1 });
-            
+        // --- SCROLL REVEAL WRAPPER ---
+        const Reveal = ({ children, delay = 0 }) => {
+            const ref = React.useRef(null);
+            const [isActive, setIsActive] = React.useState(false);
+
+            React.useEffect(() => {
+                const observer = new IntersectionObserver(([entry]) => {
+                    if (entry.isIntersecting) {
+                        setIsActive(true);
+                        observer.unobserve(entry.target);
+                    }
+                }, { threshold: 0.1 });
+
+                if (ref.current) observer.observe(ref.current);
+                return () => observer.disconnect();
+            }, []);
+
             return (
-                <div
-                    ref={ref}
-                    className={`transition-all duration-1000 ease-out transform ${
-                        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-                    } ${className}`}
-                    style={{ transitionDelay: `${delay}ms` }}
-                >
+                <div ref={ref} className={`reveal ${isActive ? 'active' : ''}`} style={{ transitionDelay: `${delay}ms` }}>
                     {children}
                 </div>
             );
         };
 
-        // --- Shared Components ---
-        const SectionTitle = ({ title, subtitle, titleCn, subtitleCn, lang }) => (
-            <Reveal className="text-center mb-12 md:mb-16 px-4">
-                <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-4 md:mb-6 tracking-tight">
-                    {lang === 'en' ? title : titleCn}
-                </h2>
-                <div className="h-1.5 w-20 md:w-24 bg-blue-600 mx-auto mb-6"></div>
-                <p className="text-slate-600 max-w-3xl mx-auto text-base md:text-xl font-light leading-relaxed">
-                    {lang === 'en' ? subtitle : subtitleCn}
-                </p>
-            </Reveal>
-        );
+        // --- MAIN APP COMPONENT ---
+        const DataEnergyWebsite = () => {
+            const [lang, setLang] = React.useState('zh'); 
+            const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+            const [scrolled, setScrolled] = React.useState(false);
 
-        const Button = ({ children, primary = false, className = "", onClick }) => (
-            <button onClick={onClick} className={`w-full md:w-auto px-8 py-4 rounded-none text-sm uppercase tracking-widest font-bold transition-all duration-500 relative overflow-hidden group active:scale-95 ${
-                primary 
-                    ? "bg-blue-900 text-white hover:bg-blue-800" 
-                    : "bg-transparent text-white border border-white hover:bg-white hover:text-slate-900"
-            } ${className}`}>
-                <span className="relative z-10 flex items-center justify-center">{children}</span>
-            </button>
-        );
-
-        // --- Org Chart Components ---
-        const OrgCard = ({ title, titleCn, subtitle, subtitleCn, role, roleCn, functions, functionsCn, ownership, ownershipCn, className = "", icon: Icon, lang, delay = 0, isRoot = false }) => {
-            const [ref, isVisible] = useOnScreen({ threshold: 0.1 });
-
-            return (
-                <div 
-                    ref={ref}
-                    style={{ transitionDelay: `${delay}ms` }}
-                    className={`bg-white border-t-4 border-slate-800 shadow-sm hover:shadow-2xl active:scale-[0.98] transition-all duration-700 p-5 md:p-6 flex flex-col gap-3 relative z-10 w-full md:w-64 text-sm group transform ${
-                        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                    } ${isRoot ? "md:w-80 md:scale-105 border-t-blue-800" : ""} ${className}`}
-                >
-                    <div className="flex items-start justify-between mb-1">
-                        <div className="font-bold text-slate-900 text-base md:text-lg leading-tight group-hover:text-blue-700 transition-colors">
-                            {Icon && <Icon className="w-5 h-5 md:w-6 md:h-6 mb-2 text-slate-400 group-hover:text-blue-600 transition-colors" />}
-                            <div className="block">{lang === 'en' ? title : titleCn}</div>
-                        </div>
-                    </div>
-                    {(lang === 'en' ? subtitle : subtitleCn) && (
-                        <div className="text-slate-400 font-medium text-xs uppercase tracking-wider mb-2 border-b border-slate-100 pb-2">
-                            {lang === 'en' ? subtitle : subtitleCn}
-                        </div>
-                    )}
-                    
-                    <div className="space-y-3 mt-1">
-                        {role && (
-                            <div className="text-xs">
-                                <span className="font-bold text-slate-700 block mb-1 uppercase text-[10px] tracking-wide">{lang === 'en' ? "Role" : "角色"}</span> 
-                                <span className="text-slate-600 text-sm leading-relaxed block">{lang === 'en' ? role : roleCn}</span>
-                            </div>
-                        )}
-                        {functions && (
-                            <div className="text-xs">
-                                <span className="font-bold text-slate-700 block mb-1 uppercase text-[10px] tracking-wide">{lang === 'en' ? "Functions" : "職能"}</span> 
-                                <div className="text-slate-600 mt-0.5 leading-snug">{lang === 'en' ? functions : functionsCn}</div>
-                            </div>
-                        )}
-                        {ownership && (
-                            <div className="text-xs pt-3 border-t border-slate-100 mt-1 bg-slate-50 -mx-5 -mb-5 p-4 md:-mx-6 md:-mb-6">
-                                <span className="font-bold text-slate-700 block mb-1 uppercase text-[10px] tracking-wide">{lang === 'en' ? "Ownership" : "股權 / 股東"}</span> 
-                                <div className="text-slate-600 italic">{lang === 'en' ? ownership : ownershipCn}</div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            );
-        };
-
-        const MobileOrgNode = ({ children, isLast = false }) => (
-            <div className="flex gap-4">
-                <div className="flex flex-col items-center">
-                    <div className="w-3 h-3 rounded-full bg-blue-600 mt-6 shadow-[0_0_0_4px_rgba(37,99,235,0.1)]"></div>
-                    {!isLast && <div className="w-0.5 flex-grow bg-slate-200 my-1"></div>}
-                </div>
-                <div className="pb-8 w-full">
-                    {children}
-                </div>
-            </div>
-        );
-
-        const InteractiveOrgChart = ({ lang }) => {
-            return (
-                <div className="bg-slate-50/50 rounded-xl border border-slate-100 md:p-12">
-                    {/* Desktop View (Horizontal Tree) */}
-                    <div className="hidden md:block overflow-x-auto pb-8">
-                        <div className="min-w-[900px] max-w-6xl mx-auto pt-8">
-                            
-                            {/* Level 1: DataEnergy Holding (Mother Company) */}
-                            <div className="flex justify-center items-start gap-32 mb-24 relative">
-                                <div className="relative z-20">
-                                    <OrgCard 
-                                        isRoot={true}
-                                        lang={lang}
-                                        icon={Globe}
-                                        title="DataEnergy Holding Pte. Ltd."
-                                        titleCn="DataEnergy 控股私人有限公司"
-                                        subtitle="(Singapore)"
-                                        subtitleCn="(新加坡)"
-                                        role="Group Mother Company / Capital Platform"
-                                        roleCn="集團母公司 / 資本與所有權平台"
-                                        functions="Equity Investment, Banking & Financing, IP & Brand Control"
-                                        functionsCn="股權投資、銀行融資、知識產權與品牌控制"
-                                        ownership="Shareholders: Chinese Industrial Capital, SG Founding Team"
-                                        ownershipCn="股東：中國產業資本、新加坡創始團隊"
-                                        className="bg-white shadow-xl"
-                                        delay={200}
-                                    />
-                                </div>
-                                
-                                {/* Dashed Line to JV */}
-                                <div className="absolute left-[60%] top-20 w-[140px] border-t-2 border-dashed border-blue-300 opacity-60">
-                                    <ArrowRight className="absolute -right-1 -top-[9px] text-blue-300 w-4 h-4" />
-                                </div>
-
-                                <div className="relative z-20 mt-8">
-                                    <OrgCard 
-                                        lang={lang}
-                                        icon={Activity}
-                                        title="HHE JV Pte. Ltd."
-                                        titleCn="HHE 合資公司"
-                                        subtitle="(Singapore)"
-                                        subtitleCn="(新加坡)"
-                                        role="EaaS Platform"
-                                        roleCn="EaaS 服務平台"
-                                        ownership="30% Owned by DataEnergy"
-                                        ownershipCn="DataEnergy 持股 30%"
-                                        className="w-64 opacity-80 hover:opacity-100"
-                                        delay={400}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Level 2: Subsidiaries Tree */}
-                            <div className="relative h-16 w-full max-w-6xl mx-auto -mt-20 mb-8 opacity-60">
-                                <div className="absolute left-[41.5%] -translate-x-1/2 -top-0 h-16 w-px bg-slate-300"></div>
-                                <div className="absolute top-16 left-[12.5%] right-[20%] h-px bg-slate-300"></div>
-                                
-                                <div className="absolute top-16 left-[12.5%] h-8 w-px bg-slate-300"><ChevronDown className="absolute -bottom-1 -left-1.5 text-slate-300 w-4 h-4" /></div>
-                                <div className="absolute top-16 left-[35.5%] h-8 w-px bg-slate-300">
-                                    <div className="absolute top-0 -left-px h-full border-l-2 border-dashed border-slate-300 bg-transparent"></div>
-                                    <span className="absolute -top-4 left-2 text-[10px] bg-yellow-50 px-2 py-0.5 border border-yellow-200 text-yellow-800 uppercase tracking-wider font-bold shadow-sm">
-                                        {lang === 'en' ? "Strategic Inv." : "戰略投資"}
-                                    </span>
-                                    <ChevronDown className="absolute -bottom-1 -left-1.5 text-slate-300 w-4 h-4" />
-                                </div>
-                                <div className="absolute top-16 left-[58.5%] h-8 w-px bg-slate-300"><ChevronDown className="absolute -bottom-1 -left-1.5 text-slate-300 w-4 h-4" /></div>
-                                <div className="absolute top-16 left-[80%] h-8 w-px bg-slate-300"><ChevronDown className="absolute -bottom-1 -left-1.5 text-slate-300 w-4 h-4" /></div>
-                            </div>
-
-                            {/* Level 2 Cards */}
-                            <div className="grid grid-cols-4 gap-6 max-w-7xl mx-auto items-start">
-                                <OrgCard lang={lang} delay={600} icon={Cpu} title="DCDeepTech" titleCn="DCDeepTech" subtitle="(Singapore)" subtitleCn="(新加坡)" role="Tech Compliance" roleCn="技術與合規平台" functions="EMA / BCA Liaison, Audit" functionsCn="監管聯絡、合規審計" className="w-full" />
-                                <OrgCard lang={lang} delay={700} icon={Zap} title="AxiomDeta" titleCn="AxiomDeta" subtitle="(Singapore)" subtitleCn="(新加坡)" role="Data Center Infra" roleCn="數據中心基礎設施平台" functions="OCP Racks, Power & Cooling" functionsCn="OCP 機櫃、電力與冷卻系統" ownership="Strategic Minority (20-40%)" ownershipCn="戰略少數股權 (20-40%)" className="w-full border-t-yellow-500" />
-                                <OrgCard lang={lang} delay={800} icon={Factory} title="DataEnergy MY" titleCn="DataEnergy MY" subtitle="(Malaysia)" subtitleCn="(馬來西亞)" role="Manufacturing Base" roleCn="製造基地 / 柔佛工廠" functions="Production, Supply Chain" functionsCn="生產製造、供應鏈運營" ownership="Majority / 100% Owned" ownershipCn="控股或 100% 全資擁有" className="w-full border-t-emerald-600" />
-                                <OrgCard lang={lang} delay={900} icon={Building} title="Property SPVs" titleCn="Property SPVs" subtitle="(SG / CN)" subtitleCn="(新加坡 / 中國)" role="Asset Holdings" roleCn="資產持有平台" functions="Commercial Property, Land" functionsCn="商業地產、工業用地持有" className="w-full" />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Mobile View (Vertical Timeline) */}
-                    <div className="md:hidden px-4 py-8">
-                        <MobileOrgNode>
-                            <div className="text-xs font-bold text-blue-600 mb-2 uppercase tracking-wider">{lang === 'en' ? "Group Mother Company" : "集團母公司"}</div>
-                            <OrgCard 
-                                isRoot={true}
-                                lang={lang} icon={Globe} title="DataEnergy Holding Pte. Ltd." titleCn="DataEnergy 控股私人有限公司" subtitle="(Singapore)" subtitleCn="(新加坡)"
-                                role="Capital & Ownership Platform" roleCn="資本與所有權平台" functions="Equity Investment, Banking & Financing" functionsCn="股權投資、銀行融資"
-                                ownership="Shareholders: Chinese Industrial Capital, SG Founding Team"
-                                ownershipCn="股東：中國產業資本、新加坡創始團隊"
-                                className="bg-white border-t-blue-800 w-full"
-                            />
-                        </MobileOrgNode>
-
-                        <MobileOrgNode>
-                            <div className="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider pl-2 border-l-2 border-dashed border-slate-300 ml-1">
-                                {lang === 'en' ? "Joint Venture" : "合資企業"}
-                            </div>
-                            <OrgCard 
-                                lang={lang} icon={Activity} title="HHE JV Pte. Ltd." titleCn="HHE 合資公司" subtitle="(Singapore)" subtitleCn="(新加坡)"
-                                role="EaaS Platform" roleCn="EaaS 服務平台" ownership="30% Owned" ownershipCn="DataEnergy 持股 30%"
-                                className="w-full opacity-90"
-                            />
-                        </MobileOrgNode>
-
-                        <MobileOrgNode isLast={true}>
-                            <div className="text-xs font-bold text-slate-500 mb-4 uppercase tracking-wider">{lang === 'en' ? "Subsidiaries" : "子公司"}</div>
-                            <div className="space-y-6">
-                                <OrgCard lang={lang} icon={Cpu} title="DCDeepTech" titleCn="DCDeepTech" subtitle="(Singapore)" subtitleCn="(新加坡)" role="Tech Compliance" roleCn="技術與合規平台" className="w-full" />
-                                <div className="relative">
-                                    <div className="absolute -top-3 left-0 bg-yellow-100 text-yellow-800 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide border border-yellow-200">
-                                    {lang === 'en' ? "Strategic Inv." : "戰略投資"}
-                                    </div>
-                                    <OrgCard lang={lang} icon={Zap} title="AxiomDeta" titleCn="AxiomDeta" subtitle="(Singapore)" subtitleCn="(新加坡)" role="Data Center Infra" roleCn="數據中心基礎設施平台" ownership="Strategic Minority (20-40%)" ownershipCn="戰略少數股權 (20-40%)" className="w-full border-t-yellow-500" />
-                                </div>
-                                <OrgCard lang={lang} icon={Factory} title="DataEnergy MY" titleCn="DataEnergy MY" subtitle="(Malaysia)" subtitleCn="(馬來西亞)" role="Manufacturing Base" roleCn="製造基地" className="w-full border-t-emerald-600" />
-                                <OrgCard lang={lang} icon={Building} title="Property SPVs" titleCn="Property SPVs" subtitle="(SG / CN)" subtitleCn="(新加坡 / 中國)" role="Asset Holdings" roleCn="資產持有平台" className="w-full" />
-                            </div>
-                        </MobileOrgNode>
-                    </div>
-                </div>
-            );
-        };
-
-        const StatItem = ({ value, label, delay }) => (
-            <Reveal delay={delay} className="flex flex-col items-center p-4 bg-slate-50/50 rounded-lg md:bg-transparent">
-                <div className="text-3xl md:text-5xl font-bold text-blue-900 mb-1 md:mb-2 font-mono">{value}</div>
-                <div className="text-[10px] md:text-xs uppercase tracking-widest text-slate-500 font-semibold text-center">{label}</div>
-            </Reveal>
-        );
-
-        const BusinessCard = ({ title, titleCn, icon: Icon, description, descriptionCn, features, color = "blue", lang, delay }) => {
-            return (
-                <Reveal delay={delay} className="h-full">
-                    <div className="group bg-white h-full p-6 md:p-8 border border-slate-200 hover:border-blue-600 transition-all duration-500 hover:shadow-2xl relative overflow-hidden flex flex-col active:scale-[0.98]">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-bl-full -mr-16 -mt-16 transition-transform duration-700 group-hover:scale-150 group-hover:bg-blue-50"></div>
-                        
-                        <div className="relative z-10 mb-6">
-                            <div className="w-12 h-12 md:w-14 md:h-14 bg-slate-900 text-white flex items-center justify-center mb-6 group-hover:bg-blue-600 transition-colors duration-300 rounded-lg md:rounded-none">
-                                <Icon size={24} strokeWidth={1.5} className="md:w-[28px] md:h-[28px]" />
-                            </div>
-                            <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-2 group-hover:text-blue-700 transition-colors">
-                                {lang === 'en' ? title : titleCn}
-                            </h3>
-                            <div className="h-0.5 w-12 bg-slate-200 mb-4 group-hover:bg-blue-400 group-hover:w-20 transition-all duration-500"></div>
-                        </div>
-                        
-                        <div className="relative z-10 flex-grow">
-                            <p className="text-slate-600 text-sm leading-relaxed mb-6 font-light">
-                                {lang === 'en' ? description : descriptionCn}
-                            </p>
-                            
-                            <ul className="space-y-3 md:space-y-4">
-                                {features.map((feature, idx) => (
-                                    <li key={idx} className="flex items-start text-sm text-slate-700">
-                                        <CheckCircle2 className="h-4 w-4 text-blue-500 mr-3 mt-0.5 flex-shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 delay-100" />
-                                        <span className="md:-ml-7 md:group-hover:ml-0 transition-all duration-500">
-                                            {lang === 'en' ? feature.en : feature.cn}
-                                        </span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        <div className="relative z-10 mt-8 pt-6 border-t border-slate-100">
-                            <span className="text-xs font-bold text-blue-600 uppercase tracking-widest flex items-center gap-2 group/link cursor-pointer">
-                                {lang === 'en' ? "Learn More" : "了解更多"} <ArrowRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
-                            </span>
-                        </div>
-                    </div>
-                </Reveal>
-            );
-        };
-
-        const Navbar = ({ lang, setLang }) => {
-            const [isScrolled, setIsScrolled] = useState(false);
-            const [isOpen, setIsOpen] = useState(false);
-
-            useEffect(() => {
-                const handleScroll = () => setIsScrolled(window.scrollY > 50);
+            React.useEffect(() => {
+                const handleScroll = () => {
+                    setScrolled(window.scrollY > 20);
+                };
                 window.addEventListener('scroll', handleScroll);
                 return () => window.removeEventListener('scroll', handleScroll);
             }, []);
-            
-            const toggleLang = () => setLang(prev => prev === 'en' ? 'zh' : 'en');
 
-            const navItems = {
-                about: { en: "About", zh: "關於我們" },
-                structure: { en: "Structure", zh: "組織架構" },
-                business: { en: "Business", zh: "業務板塊" },
-                contact: { en: "Contact", zh: "聯繫我們" }
+            // Content Data Dictionary (Copied from previous versions and refined)
+            const content = {
+                en: {
+                    nav: {
+                        tech: "Tech",
+                        ai: "AI Hub", 
+                        industrial: "Industry",
+                        safety: "Safety",
+                        contact: "Contact",
+                        switchBtn: "中文"
+                    },
+                    hero: {
+                        title: "Powering Singapore's Grid with Physics-Informed Intelligence",
+                        subtitle: "The convergence of Advanced HJT Hardware and DC Deep Tech Edge AI. A regulatory-compliant VPP interface for the EMA Sandbox.",
+                        cta: "Explore Platform",
+                        stat1: "22.4% Efficiency",
+                        stat2: "<1% SOH Error",
+                        stat3: "OpenADR 2.0b"
+                    },
+                    stack: {
+                        title: "The Deep Tech Stack",
+                        muscle: { title: "HJT Hyper-ion", desc: "-0.24%/°C temp coeff. Built for SG heat.", tag: "Advanced PV" },
+                        brain: { title: "Edge AI Core", desc: "RK3588 & PINN. Millisecond response.", tag: "Deep Tech" },
+                        shield: { title: "Yuan ESS", desc: "Three-in-One safety. Liquid-cooled.", tag: "Infrastructure" }
+                    },
+                    ai: {
+                        title: "AI Empowerment Ecosystem",
+                        subtitle: "Five Pillars of Intelligent Energy",
+                        platforms: [
+                            { title: "Machine Learning", desc: "Automated load forecasting pipelines.", icon: "ml" },
+                            { title: "Knowledge Graph", desc: "Causal analysis of grid assets.", icon: "kg" },
+                            { title: "Deep Learning", desc: "PINN solving PDEs in real-time.", icon: "dl" },
+                            { title: "Smart Annotation", desc: "Auto-labeling thermal data.", icon: "ia" },
+                            { title: "Large Models (VLM)", desc: "Qwen & Gemini 3 agents.", icon: "vlm", highlight: "GenAI" }
+                        ]
+                    },
+                    industrial: {
+                        title: "Industrial Edge Intelligence",
+                        subtitle: "Localized AI for Manufacturing",
+                        tagline: "Low Latency • Privacy • Control",
+                        cards: [
+                            { title: "Predictive Maint.", desc: "Vibration analysis preventing motor failure.", icon: "gauge" },
+                            { title: "Defect Detection", desc: "RK3588 NPU spotting scratches.", icon: "scan" },
+                            { title: "Safety AI", desc: "PPE detection & geofencing.", icon: "alert" },
+                            { title: "Energy Optimization", desc: "Dynamic load balancing.", icon: "factory" }
+                        ]
+                    },
+                    safety: {
+                        title: "Redefining Safety",
+                        subtitle: "Three-in-One Defense System",
+                        l1: { t: "Level 1: AI Prediction", d: "Detect internal shorts early." },
+                        l2: { t: "Level 2: Gas Sensing", d: "H2/CO detection in ms." },
+                        l3: { t: "Level 3: Suppression", d: "Active fire suppression." }
+                    },
+                    calc: {
+                        title: "ROI Calculator",
+                        desc: "Est. yield advantage with HJT.",
+                        areaLabel: "Roof Area (sqm)",
+                        result: "Est. Savings",
+                        advantage: "Tech Bonus"
+                    },
+                    footer: {
+                        rights: "© 2026 DataEnergy. All Rights Reserved.",
+                        address: "71 Ayer Rajah Crescent, Singapore"
+                    }
+                },
+                zh: {
+                    nav: {
+                        tech: "核心技术",
+                        ai: "AI 赋能",
+                        industrial: "工业智能",
+                        safety: "极致安全",
+                        contact: "联系",
+                        switchBtn: "EN"
+                    },
+                    hero: {
+                        title: "以物理感知智能，重塑新加坡能源网络",
+                        subtitle: "先进 HJT 硬件与 DC Deep Tech 边缘 AI 的深度融合。专为 EMA 沙盒打造的合规虚拟电厂(VPP)接口。",
+                        cta: "探索平台",
+                        stat1: "22.4% 转换效率",
+                        stat2: "<1% SOH 误差",
+                        stat3: "OpenADR 2.0b"
+                    },
+                    stack: {
+                        title: "深度科技堆栈",
+                        muscle: { title: "肌肉：HJT Hyper-ion", desc: "-0.24%/°C 极低温系，专为热带设计。", tag: "先进光伏" },
+                        brain: { title: "大脑：边缘 AI 核心", desc: "RK3588 + PINN。毫秒响应，无延迟。", tag: "Deep Tech" },
+                        shield: { title: "护盾：元 (Yuan) 储能", desc: "三合一安全体系，液冷主动抑制。", tag: "基础设施" }
+                    },
+                    ai: {
+                        title: "AI 赋能中心",
+                        subtitle: "智能能源管理的五大基石",
+                        platforms: [
+                            { title: "机器学习平台", desc: "边缘侧负荷预测与维护模型训练。", icon: "ml" },
+                            { title: "知识图谱平台", desc: "全链路电网资产因果分析。", icon: "kg" },
+                            { title: "深度学习平台", desc: "PINN 实时求解微分方程。", icon: "dl" },
+                            { title: "智能标注平台", desc: "热成像数据自动化标注。", icon: "ia" },
+                            { title: "大模型 (VLM)", desc: "Qwen 与 Gemini 3 多模态智能体。", icon: "vlm", highlight: "GenAI" }
+                        ]
+                    },
+                    industrial: {
+                        title: "边缘 AI 工业解决方案",
+                        subtitle: "本地化算力重塑智能制造",
+                        tagline: "超低延迟 • 隐私优先 • 实时控制",
+                        cards: [
+                            { title: "预测性维护", desc: "边缘频谱分析，预判电机故障。", icon: "gauge" },
+                            { title: "视觉缺陷检测", desc: "RK3588 驱动高速瑕疵识别。", icon: "scan" },
+                            { title: "工厂安全 AI", desc: "PPE 穿戴检测与入侵报警。", icon: "alert" },
+                            { title: "智能能效优化", desc: "基于电价的动态负载均衡。", icon: "factory" }
+                        ]
+                    },
+                    safety: {
+                        title: "重新定义安全",
+                        subtitle: "数据中心级“三合一”防御",
+                        l1: { t: "防线 1：AI 预测", d: "PINN 提前数周识别内短路。" },
+                        l2: { t: "防线 2：气体探测", d: "毫秒级探测 H2/CO 气体。" },
+                        l3: { t: "防线 3：主动抑制", d: "全氟己酮阻断火灾蔓延。" }
+                    },
+                    calc: {
+                        title: "收益计算器",
+                        desc: "基于 HJT 卓越温系测算增益。",
+                        areaLabel: "屋顶面积 (m²)",
+                        result: "预估年省",
+                        advantage: "技术溢价"
+                    },
+                    footer: {
+                        rights: "© 2026 DataEnergy. 版权所有.",
+                        address: "新加坡 Ayer Rajah Crescent 71号"
+                    }
+                }
             };
-            
+
+            const t = content[lang];
+
+            // Helper for Icons
+            const getIcon = (type, className) => {
+                const props = { className: className };
+                switch(type) {
+                    case 'ml': return <Icons.BrainCircuit {...props} />;
+                    case 'kg': return <Icons.Network {...props} />;
+                    case 'dl': return <Icons.Layers {...props} />;
+                    case 'ia': return <Icons.Tag {...props} />;
+                    case 'vlm': return <Icons.Sparkles {...props} />;
+                    case 'gauge': return <Icons.Gauge {...props} />;
+                    case 'scan': return <Icons.Scan {...props} />;
+                    case 'alert': return <Icons.AlertTriangle {...props} />;
+                    case 'factory': return <Icons.Factory {...props} />;
+                    default: return <Icons.Cpu {...props} />;
+                }
+            };
+
+            // Calculator Logic
+            const [area, setArea] = React.useState(1000);
+            const [savings, setSavings] = React.useState(0);
+            const [techBonus, setTechBonus] = React.useState(0);
+
+            React.useEffect(() => {
+                const capacityKW = area * 0.224;
+                const dailyGen = capacityKW * 4.5;
+                const baseAnnual = dailyGen * 365 * 0.30;
+                const bonus = baseAnnual * 0.05; 
+                setSavings(Math.round(baseAnnual + bonus));
+                setTechBonus(Math.round(bonus));
+            }, [area]);
+
             return (
-                <React.Fragment>
-                    <nav className={`fixed w-full z-50 transition-all duration-500 ${
-                        isScrolled ? "bg-white/90 backdrop-blur-md shadow-md py-3 md:py-4" : "bg-transparent py-4 md:py-6"
-                    }`}>
-                        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
-                            <div className="flex justify-between items-center">
-                                {/* Logo */}
-                                <div className="flex items-center group cursor-pointer z-50 relative">
-                                    <div className={`p-2 rounded transition-colors ${isScrolled || isOpen ? "bg-blue-600 text-white" : "bg-white text-slate-900"}`}>
-                                        <Globe size={20} className="md:w-6 md:h-6" />
+                <div className="min-h-screen relative">
+                    {/* Navigation */}
+                    <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'glass-strong border-b border-slate-800 py-2' : 'bg-transparent py-4'}`}>
+                        <div className="max-w-7xl mx-auto px-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 bg-cyan-500 rounded flex items-center justify-center transform rotate-45 shadow-[0_0_15px_rgba(6,182,212,0.5)]">
+                                        <div className="w-4 h-4 bg-slate-950 transform -rotate-45" />
                                     </div>
-                                    <div className="ml-2 md:ml-3 flex flex-col">
-                                        <span className={`text-lg md:text-xl font-bold tracking-tight leading-none ${isScrolled || isOpen ? "text-slate-900" : "text-white"}`}>
-                                            DATA<span className={isScrolled || isOpen ? "text-blue-600" : "text-blue-200"}>ENERGY</span>
-                                        </span>
-                                        <span className={`text-[9px] md:text-[10px] uppercase tracking-[0.2em] font-medium mt-0.5 md:mt-1 ${isScrolled || isOpen ? "text-slate-500" : "text-slate-300"}`}>
-                                            {lang === 'en' ? "Holdings Pte Ltd" : "控股私人有限公司"}
-                                        </span>
-                                    </div>
+                                    <span className="font-bold text-xl tracking-tighter text-white">DATA<span className="text-cyan-400">ENERGY</span></span>
                                 </div>
                                 
-                                {/* Desktop Menu */}
-                                <div className="hidden md:flex items-center space-x-12">
-                                    {Object.entries(navItems).map(([key, label]) => (
-                                        <a 
-                                            key={key} 
-                                            href={`#${key}`} 
-                                            className={`text-sm font-semibold uppercase tracking-widest hover:text-blue-400 transition-colors relative group ${
-                                                isScrolled ? "text-slate-700" : "text-slate-200"
-                                            }`}
-                                        >
-                                            {lang === 'en' ? label.en : label.zh}
-                                            <span className="absolute -bottom-2 left-0 w-0 h-0.5 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
+                                <div className="hidden md:flex items-center space-x-6">
+                                    {['tech', 'ai', 'industrial', 'safety'].map(key => (
+                                        <a key={key} href={`#${key}`} className="text-sm font-medium text-slate-300 hover:text-cyan-400 transition-colors uppercase tracking-wide">
+                                            {t.nav[key]}
                                         </a>
                                     ))}
-                                    
                                     <button 
-                                        onClick={toggleLang}
-                                        className={`flex items-center gap-2 px-4 py-1.5 border rounded-full transition-all duration-300 ${
-                                            isScrolled 
-                                                ? "border-slate-300 text-slate-600 hover:bg-slate-100" 
-                                                : "border-white/30 text-white hover:bg-white/10"
-                                        }`}
+                                        onClick={() => setLang(lang === 'en' ? 'zh' : 'en')}
+                                        className="border border-slate-600 px-3 py-1 rounded text-xs hover:border-cyan-400 transition-colors text-slate-300"
                                     >
-                                        <Languages size={14} />
-                                        <span className="text-xs font-bold tracking-wider">{lang === 'en' ? '繁' : 'EN'}</span>
+                                        {t.nav.switchBtn}
                                     </button>
                                 </div>
 
-                                {/* Mobile Menu Toggle & Lang */}
-                                <div className="md:hidden flex items-center gap-3 z-50 relative">
-                                    <button onClick={toggleLang} className={`text-xs font-bold px-3 py-1.5 rounded-full transition-all duration-300 ${isScrolled || isOpen ? "text-slate-900 border border-slate-300 bg-white/50" : "text-white border border-white/30 bg-black/20"}`}>
-                                        {lang === 'en' ? '繁' : 'EN'}
-                                    </button>
-                                    <button onClick={() => setIsOpen(!isOpen)} className={`p-1 rounded-full transition-all duration-300 ${isOpen ? "bg-slate-100 text-slate-900" : (isScrolled ? "text-slate-900" : "text-white")}`}>
-                                        {isOpen ? <X size={24} /> : <Menu size={24} />}
+                                <div className="md:hidden">
+                                    <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-slate-300">
+                                        {isMenuOpen ? <Icons.X /> : <Icons.Menu />}
                                     </button>
                                 </div>
                             </div>
                         </div>
+                        {/* Mobile Menu */}
+                        {isMenuOpen && (
+                            <div className="md:hidden absolute top-full left-0 w-full glass-strong border-b border-slate-800 animate-fade-in-down">
+                                <div className="flex flex-col p-4 space-y-4">
+                                    {['tech', 'ai', 'industrial', 'safety'].map(key => (
+                                        <a key={key} href={`#${key}`} onClick={() => setIsMenuOpen(false)} className="text-base font-bold text-slate-300 hover:text-cyan-400">
+                                            {t.nav[key]}
+                                        </a>
+                                    ))}
+                                    <button onClick={() => { setLang(lang === 'en' ? 'zh' : 'en'); setIsMenuOpen(false); }} className="text-left text-base font-bold text-cyan-500">
+                                        {t.nav.switchBtn}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </nav>
 
-                    {/* Mobile Full Screen Menu Overlay */}
-                    <div className={`fixed inset-0 bg-white/95 backdrop-blur-xl z-40 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${isOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none"}`}>
-                        <div className="flex flex-col items-center justify-center h-full space-y-8 p-6">
-                            {Object.entries(navItems).map(([key, label], idx) => (
-                                <a 
-                                    key={key} 
-                                    href={`#${key}`} 
-                                    onClick={() => setIsOpen(false)} 
-                                    className={`text-2xl font-bold text-slate-800 tracking-tight transform transition-all duration-700 ${isOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}`}
-                                    style={{ transitionDelay: `${idx * 100}ms` }}
-                                >
-                                    {lang === 'en' ? label.en : label.zh}
-                                </a>
-                            ))}
-                            <div className={`w-12 h-1 bg-blue-600 rounded-full mt-4 transform transition-all duration-700 delay-500 ${isOpen ? "scale-x-100" : "scale-x-0"}`}></div>
-                            <p className={`text-slate-400 text-sm mt-8 uppercase tracking-widest transition-opacity duration-1000 delay-700 ${isOpen ? "opacity-100" : "opacity-0"}`}>
-                                Global Headquarters
-                            </p>
-                        </div>
-                    </div>
-                </React.Fragment>
-            );
-        };
-
-        const Hero = ({ lang }) => (
-            <div className="relative h-screen min-h-[600px] bg-slate-900 overflow-hidden flex items-center">
-                <div className="absolute inset-0 z-0">
-                    <div className="absolute inset-0 bg-slate-900/60 z-10 mix-blend-multiply"></div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent z-10"></div>
-                    <img 
-                        src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop" 
-                        alt="Data Connectivity" 
-                        className="w-full h-full object-cover opacity-60 animate-slow-zoom"
-                    />
-                    <div className="md:hidden absolute left-0 w-full h-32 bg-gradient-to-b from-blue-500/0 via-blue-400/20 to-blue-500/0 z-10 animate-scan pointer-events-none"></div>
-                </div>
-                
-                <div className="relative z-20 max-w-7xl mx-auto px-4 md:px-6 lg:px-12 w-full pt-16 md:pt-20">
-                    <Reveal delay={200} className="md:w-3/4 lg:w-2/3">
-                        <div className="inline-block px-3 py-1 mb-6 border border-blue-400/30 rounded-full bg-blue-900/30 backdrop-blur-sm">
-                            <span className="text-blue-300 text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase">
-                                {lang === 'en' ? "Infrastructure for the AI Era" : "AI 時代的基礎設施"}
-                            </span>
-                        </div>
+                    {/* HERO SECTION */}
+                    <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+                        <ParticleBackground />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent z-10"></div>
                         
-                        {lang === 'en' ? (
-                            <React.Fragment>
-                                <h1 className="text-4xl md:text-7xl font-extrabold text-white tracking-tight mb-6 md:mb-8 leading-[1.15]">
-                                    Bridging Capital, <br/>
-                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
-                                        Technology
-                                    </span> & Assets.
+                        <div className="relative z-20 max-w-7xl mx-auto px-4 text-center">
+                            <Reveal>
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/40 border border-cyan-800 text-cyan-400 text-xs font-bold mb-6 backdrop-blur-sm">
+                                    <span className="relative flex h-2 w-2">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                                    </span>
+                                    EMA Sandbox Ready
+                                </div>
+                                <h1 className="text-5xl md:text-7xl font-extrabold text-white tracking-tight mb-6 leading-tight">
+                                    {t.hero.title.split(' ').map((word, i) => (
+                                        <span key={i} className="inline-block hover:text-cyan-400 transition-colors duration-300 cursor-default">{word} </span>
+                                    ))}
                                 </h1>
-                                <p className="text-base md:text-xl text-slate-300 mb-8 md:mb-12 leading-relaxed max-w-xl font-light border-l-2 border-blue-500 pl-4 md:pl-6">
-                                    DataEnergy Holding is the premier Singapore-based platform integrating investment, compliance, and manufacturing for next-gen data centers.
+                                <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+                                    {t.hero.subtitle}
                                 </p>
-                            </React.Fragment>
-                        ) : (
-                            <React.Fragment>
-                                <h1 className="text-4xl md:text-7xl font-bold text-white tracking-tight mb-6 md:mb-8 leading-[1.25]">
-                                    連接資本，<br/>
-                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
-                                        技術
-                                    </span>與資產。
-                                </h1>
-                                <p className="text-base md:text-xl text-slate-300 mb-8 md:mb-12 leading-relaxed max-w-xl font-light border-l-2 border-blue-500 pl-4 md:pl-6">
-                                    DataEnergy 是總部位於新加坡的領先平台，整合投資、合規與製造，賦能下一代數據中心。
-                                </p>
-                            </React.Fragment>
-                        )}
-                        
-                        <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
-                            <Button primary className="w-full sm:w-auto">
-                                {lang === 'en' ? "Our Portfolio" : "業務組合"} 
-                                <ArrowRight className="ml-2 h-4 w-4" />
-                            </Button>
-                            <Button className="w-full sm:w-auto">
-                                {lang === 'en' ? "Corporate Structure" : "組織架構"}
-                            </Button>
+                                <button className="group relative px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg transition-all shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_rgba(6,182,212,0.6)]">
+                                    <span className="flex items-center gap-2">
+                                        {t.hero.cta} <Icons.ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                                    </span>
+                                </button>
+                            </Reveal>
                         </div>
-                    </Reveal>
-                </div>
+                    </section>
 
-                <div className="absolute bottom-6 md:bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center animate-bounce-slow opacity-50 z-20">
-                    <span className="text-[9px] md:text-[10px] text-white uppercase tracking-widest mb-1 md:mb-2">Scroll</span>
-                    <ArrowDown size={20} className="text-white" />
-                </div>
-            </div>
-        );
-
-        const App = () => {
-            const [lang, setLang] = useState('en');
-
-            return (
-                <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-blue-100 selection:text-blue-900">
-                    <Navbar lang={lang} setLang={setLang} />
-                    
-                    <Hero lang={lang} />
-
-                    {/* About Section */}
-                    <section id="about" className="py-16 md:py-24 bg-white relative">
-                        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
-                            <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
-                                <Reveal>
-                                    <h2 className="text-xs font-bold text-blue-600 uppercase tracking-[0.2em] mb-4">
-                                        {lang === 'en' ? "About Us" : "關於我們"}
-                                    </h2>
-                                    <h3 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6 md:mb-8 leading-tight">
-                                        {lang === 'en' 
-                                            ? "Strategic Capital & Ownership Platform" 
-                                            : "戰略資本與所有權平台"
-                                        }
-                                    </h3>
-                                    
-                                    <p className="text-base md:text-lg text-slate-600 leading-relaxed font-light mb-8 border-l-4 border-slate-200 pl-4 md:pl-6">
-                                        {lang === 'en' 
-                                            ? "Headquartered in Singapore, DataEnergy Holding serves as the central hub for equity investment, financing, and intellectual property control. We act as the bridge between capital markets and industrial innovation."
-                                            : "DataEnergy 控股總部位於新加坡，是股權投資、融資及知識產權控制的中心樞紐。我們是資本市場與產業創新的橋樑。"
-                                        }
-                                    </p>
-
-                                    <div className="grid grid-cols-2 gap-6 md:gap-12 mt-8 md:mt-12">
-                                        <div className="flex flex-col">
-                                            <Globe className="text-blue-900 mb-3 h-6 w-6 md:h-8 md:w-8" />
-                                            <span className="font-bold text-slate-900 text-sm md:text-base">{lang === 'en' ? "Global HQ" : "全球總部"}</span>
-                                            <span className="text-xs md:text-sm text-slate-500">Singapore CBD</span>
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <ShieldCheck className="text-blue-900 mb-3 h-6 w-6 md:h-8 md:w-8" />
-                                            <span className="font-bold text-slate-900 text-sm md:text-base">{lang === 'en' ? "Risk Control" : "風險控制"}</span>
-                                            <span className="text-xs md:text-sm text-slate-500">IP & Compliance</span>
-                                        </div>
-                                    </div>
-                                </Reveal>
-
-                                <div className="relative mt-8 md:mt-0">
-                                    <Reveal delay={200}>
-                                        <div className="aspect-[4/3] md:aspect-[4/5] bg-slate-900 relative z-10 overflow-hidden rounded-lg md:rounded-none">
-                                            <img 
-                                                src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
-                                                alt="Architecture" 
-                                                className="w-full h-full object-cover opacity-80 hover:scale-105 transition-transform duration-1000"
-                                            />
-                                            <div className="hidden md:block absolute -bottom-8 -left-8 w-48 h-48 border-2 border-slate-200 z-0"></div>
-                                            <div className="absolute top-4 right-4 md:top-8 md:right-8 w-12 h-12 md:w-20 md:h-20 bg-blue-600/20 backdrop-blur-md z-20"></div>
+                    {/* STATS STRIP (Mobile Scroll Snap) */}
+                    <div className="relative z-20 -mt-20 mb-20">
+                        <div className="max-w-7xl mx-auto px-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {[
+                                    { icon: Icons.Sun, color: "text-yellow-400", val: t.hero.stat1 },
+                                    { icon: Icons.Activity, color: "text-cyan-400", val: t.hero.stat2 },
+                                    { icon: Icons.Globe, color: "text-emerald-400", val: t.hero.stat3 }
+                                ].map((stat, i) => (
+                                    <Reveal key={i} delay={i * 100}>
+                                        <div className="glass p-6 rounded-xl flex items-center gap-4 border border-slate-800">
+                                            <stat.icon className={`w-8 h-8 ${stat.color}`} />
+                                            <span className="text-xl font-bold text-white">{stat.val}</span>
                                         </div>
                                     </Reveal>
-                                </div>
+                                ))}
                             </div>
+                        </div>
+                    </div>
 
-                            <div className="mt-16 md:mt-24 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 border-t border-slate-100 pt-8 md:pt-12">
-                                <StatItem value="SG" label="Headquarters" delay={300} />
-                                <StatItem value="3+" label="Strategic SPVs" delay={400} />
-                                <StatItem value="100%" label="Compliance" delay={500} />
-                                <StatItem value="ASEAN" label="Focus Region" delay={600} />
+                    {/* TECH STACK */}
+                    <section id="tech" className="py-20 relative">
+                        <div className="max-w-7xl mx-auto px-4">
+                            <Reveal>
+                                <h2 className="text-3xl font-bold text-white mb-12 text-center bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-emerald-400">
+                                    {t.stack.title}
+                                </h2>
+                            </Reveal>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                {[
+                                    { ...t.stack.muscle, icon: Icons.Sun, color: "text-yellow-400", border: "hover:border-yellow-500/50" },
+                                    { ...t.stack.brain, icon: Icons.Cpu, color: "text-cyan-400", border: "hover:border-cyan-500/50" },
+                                    { ...t.stack.shield, icon: Icons.Shield, color: "text-emerald-400", border: "hover:border-emerald-500/50" }
+                                ].map((item, i) => (
+                                    <Reveal key={i} delay={i * 150}>
+                                        <div className={`group glass p-8 rounded-2xl border border-slate-800 transition-all duration-500 hover:-translate-y-2 ${item.border}`}>
+                                            <div className="mb-6 inline-block p-3 rounded-full bg-slate-900 border border-slate-700 group-hover:scale-110 transition-transform">
+                                                <item.icon className={`w-8 h-8 ${item.color}`} />
+                                            </div>
+                                            <div className="text-xs font-mono text-slate-500 mb-2 uppercase tracking-widest">{item.tag}</div>
+                                            <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
+                                            <p className="text-slate-400 leading-relaxed">{item.desc}</p>
+                                        </div>
+                                    </Reveal>
+                                ))}
                             </div>
                         </div>
                     </section>
 
-                    {/* Structure Section */}
-                    <section id="structure" className="py-16 md:py-32 bg-slate-50 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-1/3 h-full bg-slate-100 skew-x-12 transform origin-top-right"></div>
-                        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12 relative z-10">
-                            <SectionTitle 
-                                lang={lang}
-                                title="Corporate Structure" 
-                                titleCn="公司組織架構"
-                                subtitle="A clear hierarchy designed for operational efficiency, compliance, and strategic growth across ASEAN."
-                                subtitleCn="清晰的層級結構旨在提高運營效率、確保合規性，並推動在東盟地區的戰略增長。"
-                            />
-                            
-                            <div className="mt-8 md:mt-16">
-                                <InteractiveOrgChart lang={lang} />
+                    {/* AI EMPOWERMENT (Show-off Grids) */}
+                    <section id="ai" className="py-20 bg-slate-900/50 relative overflow-hidden">
+                        <div className="absolute top-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-900 to-transparent"></div>
+                        <div className="max-w-7xl mx-auto px-4 relative z-10">
+                            <Reveal>
+                                <div className="text-center mb-16">
+                                    <h2 className="text-3xl font-bold text-white mb-4">{t.ai.title}</h2>
+                                    <p className="text-slate-400">{t.ai.subtitle}</p>
+                                </div>
+                            </Reveal>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {t.ai.platforms.map((platform, i) => (
+                                    <Reveal key={i} delay={i * 100}>
+                                        <div className="relative group bg-slate-950 p-6 rounded-xl border border-slate-800 hover:border-purple-500/50 transition-all overflow-hidden">
+                                            {/* Hover Glow Effect */}
+                                            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                            
+                                            <div className="relative z-10 flex items-start gap-4">
+                                                <div className="p-3 bg-slate-900 rounded-lg border border-slate-700 text-purple-400 group-hover:text-purple-300 transition-colors">
+                                                    {getIcon(platform.icon, "w-6 h-6")}
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-bold text-white mb-1 flex items-center gap-2">
+                                                        {platform.title}
+                                                        {platform.highlight && <span className="text-[10px] bg-purple-900 text-purple-200 px-1.5 py-0.5 rounded">{platform.highlight}</span>}
+                                                    </h3>
+                                                    <p className="text-sm text-slate-400">{platform.desc}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Reveal>
+                                ))}
                             </div>
                         </div>
                     </section>
 
-                    {/* Business Units Section */}
-                    <section id="business" className="py-16 md:py-32 bg-white">
-                        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
-                            <div className="flex flex-col md:flex-row justify-between items-end mb-12 md:mb-20">
-                                <div className="md:w-2/3">
-                                    <h2 className="text-xs font-bold text-blue-600 uppercase tracking-[0.2em] mb-4">
-                                        {lang === 'en' ? "Our Expertise" : "我們的專長"}
-                                    </h2>
-                                    <h3 className="text-3xl md:text-4xl font-bold text-slate-900 leading-tight">
-                                        {lang === 'en' ? "Synergistic Business Units" : "協同業務板塊"}
-                                    </h3>
+                    {/* INDUSTRIAL EDGE (Neon Borders) */}
+                    <section id="industrial" className="py-24 relative overflow-hidden">
+                        <div className="max-w-7xl mx-auto px-4 relative z-10">
+                            <Reveal>
+                                <div className="mb-12">
+                                    <span className="text-cyan-400 text-xs font-bold tracking-widest uppercase mb-2 block">Industrial 4.0</span>
+                                    <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">{t.industrial.title}</h2>
+                                    <p className="text-xl text-slate-400">{t.industrial.subtitle}</p>
                                 </div>
-                                <div className="md:w-1/3 text-right hidden md:block">
-                                    <button className="text-sm font-bold border-b border-slate-900 pb-1 hover:text-blue-600 hover:border-blue-600 transition-colors">
-                                        {lang === 'en' ? "View All Projects" : "查看所有項目"}
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                <BusinessCard 
-                                    lang={lang}
-                                    delay={0}
-                                    title="DCDeepTech"
-                                    titleCn="技術與合規"
-                                    icon={Cpu}
-                                    description="Singapore-based technical and local compliance platform ensuring seamless regulatory alignment."
-                                    descriptionCn="基於新加坡的技術與本地合規平台，確保與監管要求無縫對接。"
-                                    features={[
-                                        { en: "EMA / BCA / IMDA Liaison", cn: "監管機構聯絡" },
-                                        { en: "Local Certification", cn: "本地認證" },
-                                        { en: "Risk Audits", cn: "風險審計" }
-                                    ]}
-                                />
-                                
-                                <BusinessCard 
-                                    lang={lang}
-                                    delay={200}
-                                    title="AxiomDeta"
-                                    titleCn="基礎設施"
-                                    icon={Zap}
-                                    description="OCP & AI Data Center Infrastructure Platform serving enterprise and hyperscale clients."
-                                    descriptionCn="服務於企業與超大規模客戶的 OCP 及 AI 數據中心基礎設施平台。"
-                                    features={[
-                                        { en: "OCP Racks & Power", cn: "OCP 機櫃與電力" },
-                                        { en: "Cooling Modules", cn: "冷卻模組" },
-                                        { en: "Hyperscale Solutions", cn: "超大規模方案" }
-                                    ]}
-                                />
+                            </Reveal>
 
-                                <BusinessCard 
-                                    lang={lang}
-                                    delay={400}
-                                    title="DataEnergy MY"
-                                    titleCn="製造基地"
-                                    icon={Factory}
-                                    description="Our manufacturing base in Malaysia, optimizing supply chain and production efficiency."
-                                    descriptionCn="我們位於馬來西亞的製造基地，優化供應鏈與生產效率。"
-                                    features={[
-                                        { en: "Rack Production", cn: "機櫃生產" },
-                                        { en: "Supply Chain Ops", cn: "供應鏈運營" },
-                                        { en: "Cost Optimization", cn: "成本優化" }
-                                    ]}
-                                />
-
-                                <BusinessCard 
-                                    lang={lang}
-                                    delay={600}
-                                    title="Property SPVs"
-                                    titleCn="資產管理"
-                                    icon={Building}
-                                    description="Strategic asset holdings supporting the incubation of our operating companies."
-                                    descriptionCn="支持運營公司孵化的戰略資產持有平台。"
-                                    features={[
-                                        { en: "Commercial Property", cn: "商業地產" },
-                                        { en: "Industrial Land", cn: "工業用地" },
-                                        { en: "Asset Management", cn: "資產管理" }
-                                    ]}
-                                />
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                {t.industrial.cards.map((card, i) => (
+                                    <Reveal key={i} delay={i * 150}>
+                                        <div className="neon-border bg-slate-950 p-6 h-full flex flex-col justify-between group cursor-default">
+                                            <div>
+                                                <div className="flex justify-between items-start mb-4">
+                                                    <div className="text-cyan-400 group-hover:scale-110 transition-transform duration-300">
+                                                        {getIcon(card.icon, "w-10 h-10")}
+                                                    </div>
+                                                    <span className="text-slate-700 font-mono text-xs">0{i+1}</span>
+                                                </div>
+                                                <h3 className="text-lg font-bold text-white mb-2">{card.title}</h3>
+                                                <p className="text-sm text-slate-400">{card.desc}</p>
+                                            </div>
+                                            <div className="w-full h-0.5 bg-slate-800 mt-4 overflow-hidden rounded-full">
+                                                <div className="h-full bg-cyan-400 w-0 group-hover:w-full transition-all duration-700"></div>
+                                            </div>
+                                        </div>
+                                    </Reveal>
+                                ))}
                             </div>
                         </div>
                     </section>
 
-                    {/* Contact Section */}
-                    <section id="contact" className="bg-slate-900 text-white py-16 md:py-24 relative overflow-hidden">
-                        <div className="absolute -left-20 -top-20 w-96 h-96 bg-blue-900/20 rounded-full blur-3xl"></div>
-                        <div className="absolute right-0 bottom-0 w-[500px] h-[500px] bg-indigo-900/20 rounded-full blur-3xl"></div>
-
-                        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12 relative z-10">
-                            <div className="grid md:grid-cols-2 gap-12 md:gap-20">
+                    {/* SAFETY (Visual) */}
+                    <section id="safety" className="py-20 bg-slate-900/30">
+                        <div className="max-w-7xl mx-auto px-4">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                                 <Reveal>
-                                    <h2 className="text-3xl md:text-5xl font-bold mb-6">
-                                        {lang === 'en' ? "Let's Build the Future" : "共建未來"}
-                                    </h2>
-                                    <p className="text-slate-400 mb-8 md:mb-12 text-base md:text-lg font-light leading-relaxed max-w-md">
-                                        {lang === 'en' 
-                                            ? "Interested in partnership, investment, or our infrastructure solutions? Connect with our global headquarters."
-                                            : "對合作夥伴關係、投資或我們的基礎設施解決方案感興趣？請聯繫我們的全球總部。"
-                                        }
-                                    </p>
-
-                                    <div className="space-y-6 md:space-y-8">
-                                        <div className="flex items-start gap-6 group">
-                                            <div className="p-3 md:p-4 bg-white/5 border border-white/10 rounded-none group-hover:bg-blue-600 transition-colors duration-300">
-                                                <MapPin size={20} className="text-white md:w-6 md:h-6" />
-                                            </div>
-                                            <div>
-                                                <h4 className="text-xs md:text-sm font-bold uppercase tracking-widest text-slate-500 mb-1">{lang === 'en' ? "Visit Us" : "地址"}</h4>
-                                                <p className="text-white text-base md:text-lg">71 Ayer Rajah Crescent, Singapore 139951</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-start gap-6 group">
-                                            <div className="p-3 md:p-4 bg-white/5 border border-white/10 rounded-none group-hover:bg-blue-600 transition-colors duration-300">
-                                                <Mail size={20} className="text-white md:w-6 md:h-6" />
-                                            </div>
-                                            <div>
-                                                <h4 className="text-xs md:text-sm font-bold uppercase tracking-widest text-slate-500 mb-1">{lang === 'en' ? "Email Us" : "郵箱"}</h4>
-                                                <p className="text-white text-base md:text-lg">luoxi.sg@gmail.com</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-start gap-6 group">
-                                            <div className="p-3 md:p-4 bg-white/5 border border-white/10 rounded-none group-hover:bg-blue-600 transition-colors duration-300">
-                                                <Phone size={20} className="text-white md:w-6 md:h-6" />
-                                            </div>
-                                            <div>
-                                                <h4 className="text-xs md:text-sm font-bold uppercase tracking-widest text-slate-500 mb-1">{lang === 'en' ? "WhatsApp" : "WhatsApp"}</h4>
-                                                <p className="text-white text-base md:text-lg">+65 83785069</p>
-                                            </div>
+                                    <div>
+                                        <h2 className="text-3xl font-bold text-white mb-6">{t.safety.title}</h2>
+                                        <div className="space-y-6">
+                                            {[t.safety.l1, t.safety.l2, t.safety.l3].map((level, i) => (
+                                                <div key={i} className="flex gap-4 p-4 rounded-lg bg-emerald-950/20 border border-emerald-900/50 hover:border-emerald-500/50 transition-colors">
+                                                    <div className="w-8 h-8 rounded-full bg-emerald-900 flex items-center justify-center text-emerald-400 font-bold shrink-0">{i+1}</div>
+                                                    <div>
+                                                        <h4 className="text-emerald-300 font-bold">{level.t}</h4>
+                                                        <p className="text-slate-400 text-sm">{level.d}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
                                 </Reveal>
                                 
-                                <Reveal delay={200} className="bg-white p-6 md:p-10 shadow-2xl rounded-lg md:rounded-none">
-                                    <form className="space-y-4 md:space-y-6">
-                                        <div className="grid grid-cols-2 gap-4 md:gap-6">
-                                            <div className="space-y-2">
-                                                <label className="text-xs font-bold text-slate-900 uppercase tracking-wide">
-                                                    {lang === 'en' ? "First Name" : "名字"}
-                                                </label>
-                                                <input type="text" className="w-full bg-slate-50 border-b-2 border-slate-200 p-2 md:p-3 text-slate-900 focus:outline-none focus:border-blue-600 transition-colors placeholder-transparent" placeholder="Name" />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-xs font-bold text-slate-900 uppercase tracking-wide">
-                                                    {lang === 'en' ? "Last Name" : "姓氏"}
-                                                </label>
-                                                <input type="text" className="w-full bg-slate-50 border-b-2 border-slate-200 p-2 md:p-3 text-slate-900 focus:outline-none focus:border-blue-600 transition-colors placeholder-transparent" placeholder="Name" />
-                                            </div>
+                                <Reveal delay={200}>
+                                    <div className="relative h-80 bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden flex items-center justify-center">
+                                        {/* Simple CSS Animation for Battery Scan */}
+                                        <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(6,182,212,0.1)_50%,transparent_75%)] bg-[length:250%_250%] animate-shimmer"></div>
+                                        <div className="grid grid-cols-4 gap-2 opacity-30">
+                                            {[...Array(16)].map((_,i) => <div key={i} className="w-8 h-12 bg-emerald-500 rounded-sm"></div>)}
                                         </div>
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-900 uppercase tracking-wide">
-                                                {lang === 'en' ? "Email" : "電郵"}
-                                            </label>
-                                            <input type="email" className="w-full bg-slate-50 border-b-2 border-slate-200 p-2 md:p-3 text-slate-900 focus:outline-none focus:border-blue-600 transition-colors placeholder-transparent" placeholder="Email" />
+                                        <div className="absolute bottom-4 right-4 text-xs font-mono text-emerald-500 flex items-center gap-2">
+                                            <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                                            SYSTEM SECURE
                                         </div>
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-900 uppercase tracking-wide">
-                                                {lang === 'en' ? "Message" : "留言"}
-                                            </label>
-                                            <textarea rows="4" className="w-full bg-slate-50 border-b-2 border-slate-200 p-2 md:p-3 text-slate-900 focus:outline-none focus:border-blue-600 transition-colors placeholder-transparent" placeholder="Message"></textarea>
-                                        </div>
-                                        <button className="w-full bg-slate-900 text-white font-bold py-3 md:py-4 uppercase tracking-widest hover:bg-blue-800 transition-colors flex justify-center items-center gap-2">
-                                            {lang === 'en' ? "Send Message" : "發送訊息"}
-                                            <ArrowRight size={16} />
-                                        </button>
-                                    </form>
+                                    </div>
                                 </Reveal>
-                            </div>
-                            
-                            <div className="border-t border-slate-800 mt-16 md:mt-24 pt-8 md:pt-12 flex flex-col md:flex-row justify-between items-center text-slate-500 text-xs md:text-sm">
-                                <p>&copy; {new Date().getFullYear()} DataEnergy Holding Pte. Ltd.</p>
-                                <div className="flex gap-6 md:gap-8 mt-4 md:mt-0">
-                                    <span className="hover:text-white cursor-pointer transition-colors">Privacy Policy</span>
-                                    <span className="hover:text-white cursor-pointer transition-colors">Terms of Service</span>
-                                </div>
                             </div>
                         </div>
                     </section>
+
+                    {/* CALCULATOR */}
+                    <section className="py-20">
+                        <div className="max-w-3xl mx-auto px-4">
+                            <Reveal>
+                                <div className="glass-strong rounded-2xl p-8 border border-slate-700 shadow-2xl">
+                                    <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-3">
+                                        <Icons.TrendingUp className="text-cyan-400" /> {t.calc.title}
+                                    </h2>
+                                    
+                                    <div className="space-y-8">
+                                        <div>
+                                            <div className="flex justify-between text-slate-300 mb-2 text-sm">
+                                                <span>{t.calc.areaLabel}</span>
+                                                <span className="text-cyan-400 font-mono">{area} m²</span>
+                                            </div>
+                                            <input 
+                                                type="range" min="100" max="5000" step="100" 
+                                                value={area} onChange={(e) => setArea(Number(e.target.value))}
+                                                className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                                            />
+                                        </div>
+                                        
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="bg-slate-900 p-4 rounded-lg border border-slate-800 text-center">
+                                                <div className="text-xs text-slate-500 uppercase">{t.calc.advantage}</div>
+                                                <div className="text-emerald-400 font-mono font-bold text-lg">+${techBonus}</div>
+                                            </div>
+                                            <div className="bg-cyan-950/30 p-4 rounded-lg border border-cyan-900 text-center">
+                                                <div className="text-xs text-cyan-500 uppercase">{t.calc.result}</div>
+                                                <div className="text-white font-mono font-bold text-2xl">${savings}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Reveal>
+                        </div>
+                    </section>
+
+                    {/* FOOTER */}
+                    <footer className="py-8 border-t border-slate-900 text-center text-slate-600 text-sm">
+                        <p>{t.footer.rights}</p>
+                        <p className="mt-1">{t.footer.address}</p>
+                    </footer>
                 </div>
             );
         };
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+        root.render(<DataEnergyWebsite />);
     </script>
 </body>
 </html>
