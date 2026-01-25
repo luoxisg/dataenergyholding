@@ -1,1 +1,966 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>wetblueai - Open Technical Initiative</title>
+    <meta name="description" content="An open technical initiative for vision-assisted defect grading and process optimisation of wet blue leather.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        /* Safe area for sticky header anchor scrolling */
+        section { scroll-margin-top: 5rem; }
+    </style>
+
+    <script>
+        // --- Content Configuration ---
+        const CONTENT = {
+            en: {
+                nav: {
+                    home: 'Home', about: 'About', background: 'Background', vision: 'Vision',
+                    interpretation: 'Interpretation', data: 'Data', dataset: 'Dataset',
+                    vlm: 'VLM', dataset_vlm: 'Dataset×VLM', process: 'Process',
+                    system: 'System', alignment: 'Alignment', open: 'Open',
+                    scope: 'Scope', notes: 'Notes', disclaimer: 'Disclaimer', contact: 'Contact'
+                },
+                home: {
+                    pill: 'Research Discussion',
+                    headline: 'An open technical initiative for vision-assisted defect grading and process optimisation of wet blue leather.',
+                    subhead: 'Facilitating technical exchange on data representation, assistive interpretation, and non-overview process strategies.',
+                    card1_title: "Defect Interpretation", card1_text: "Standardising observational semantics for process-relevant defect characterisation.",
+                    card2_title: "Grading Methodology", card2_text: "Exploring region-based logic and multi-temporal vision acquisition strategies.",
+                    card3_title: "Process Optimisation", card3_text: "Mapping visual data directly to cutting and trimming execution strategies.",
+                    is_title: "WHAT WETBLUEAI IS", is_text: "An open initiative for research discussion and technical exchange regarding leather processing technology.",
+                    isnot_title: "WHAT WETBLUEAI IS NOT", isnot_text: "We are not a certification body, we do not set official grading standards, and we do not provide commercial endorsement."
+                },
+                about: {
+                    title: "About",
+                    main: "The inherent variability in manual wet blue grading creates challenges for downstream automation. This initiative seeks to bridge the gap between visual observation and process decisions through structured data and shared definitions.",
+                    policyTitle: "Non-Engagement Policy",
+                    policyList: ["No certification or compliance auditing services.", "No issuance of official quality grades or labels.", "No representation of any specific commercial entity."]
+                },
+                background: {
+                    title: "Technical Background",
+                    stageTitle: "The Wet Blue Stage",
+                    stageText: "Wet blue is a critical intermediate stage in leather processing where hides are chrome-tanned but not yet dried, dyed, or finished. Defects identified at this stage have a profound impact on the potential yield and utility of the final leather.",
+                    impactTitle: "Downstream Impact",
+                    impactList: ["Determines cut-ability for specific patterns.", "Influences trimming strategies to maximise area utilisation.", "Dictates sorting logic for finishing batches."]
+                },
+                vision: {
+                    title: "Vision Methodology",
+                    intro: "Traditional vision systems often rely on a single static overview. Our approach explores line-scan, moving field-of-view, and multi-temporal acquisition to capture the depth and texture of wet blue hides.",
+                    cardTitle: "The Non-Overview Design Principle",
+                    noOverviewTitle: "No Simultaneous Overview",
+                    noOverviewText: "Systems should process local regions sequentially, mirroring the manual inspection process where attention is focused, not distributed.",
+                    processDrivenTitle: "Process-Driven Acquisition",
+                    processDrivenText: "Imaging resolution and lighting should adapt dynamically based on the region being inspected (e.g., belly vs. butt).",
+                    edgeAiTitle: "Edge AI Inspection",
+                    edgeAiText: "Deploying lightweight inference models directly on acquisition hardware to enable immediate defect flagging during the wet process.",
+                    themesTitle: "Visual Feature Themes",
+                    themes: ['Texture Continuity', 'Boundary Ambiguity', 'Regional Characteristics', 'Surface Topography']
+                },
+                interpretation: {
+                    title: "Defect Interpretation",
+                    intro: "We distinguish between raw observation (what is seen) and judgement (what should be done). Defects are grouped by their impact on the process rather than absolute quality labels.",
+                    obsTitle: "Observation", obsText: 'Objective description of visual phenomena (e.g., "discolouration," "open scar," "vein tracks"). Focus on reproducibility.',
+                    impactTitle: "Process Impact", impactText: 'Context-aware categorisation (e.g., "cut-through risk," "surface aesthetic defect," "structural weakness").'
+                },
+                data: {
+                    title: "Data & Representation",
+                    intro: "Data structures must reflect the physical reality of the material. We advocate for representations that are:",
+                    list_titles: ["Spatial", "Temporal", "Defect-Centric", "Process-Aware"],
+                    list_descs: ["Region-based coordinates rather than bounding boxes.", "Linked data across processing stages (wet blue → crust).", "Grouping pixels by defect entity, not just class labels.", "Metadata describing the intended application of the hide."],
+                    quote: "Annotations in this initiative are research-oriented tools for discussion, not ground truth or authoritative grading standards."
+                },
+                dataset: {
+                    title: "Dataset Discussion",
+                    text: "The dataset served by wetblueai is a medium for discussion, not a benchmarking leaderboard. It consists of visual sequences and regional descriptors designed to challenge interpretation logic.",
+                    scopeTitle: "Scope & Limitations",
+                    list: ["Not a standard dataset for commercial model training.", "Not designed for ranking algorithm performance (no mAP leaderboards).", "Not valid for regulatory or compliance testing."]
+                },
+                vlm: {
+                    title: "Vision–Language Models",
+                    intro: "Vision-Language Models (VLMs) offer a bridge between visual features and the linguistic reasoning used by expert graders.",
+                    cardTitle: "Role: Assistive Interpretation",
+                    cardText: "The VLM acts as an interpretation layer, translating visual inputs into structured process descriptors. It does not make autonomous decisions or control machinery.",
+                    inputsTitle: "Inputs (Abstract)",
+                    outputsTitle: "Outputs (Structured)"
+                },
+                dataset_vlm: {
+                    title: "Dataset × VLM Interaction",
+                    intro: "This section explores the pipeline from raw data to semantic interpretation.",
+                    distinctionTitle: "Important Distinction",
+                    distinctionText: "This initiative explores interpretation assistance. We do NOT discuss model training, foundation model development, or performance benchmarking.",
+                    feedbackTitle: "Feedback Loops",
+                    list: ["Observational Feedback: Refining how defects are described based on VLM outputs.", "Strategy Refinement: Adjusting cutting logic based on interpretation consistency.", "Static Knowledge: The system does not employ 'continuous learning' in production."]
+                },
+                process: {
+                    title: "Process-Oriented Optimisation",
+                    intro: "Moving from interpretation to strategy. We map defect regions to specific cutting instructions (e.g., for waterjet or die cutting).",
+                    r1_t: "No-Cut Regions", r1_d: "Strict exclusion zones due to structural failure risk.",
+                    r2_t: "Degraded-Cut", r2_d: "Acceptable for low-visibility or reinforced parts.",
+                    r3_t: "Trimming", r3_d: "Removal of unusable edges to improve handling.",
+                    exampleTitle: "Technology Focus: Waterjet for Wet Blue",
+                    list: ["Contactless cutting prevents deformation of wet hides.", "Eliminates blade drag and surface distortion.", "Supports complex nesting without physical dies."]
+                },
+                system: {
+                    title: "System-Level View",
+                    intro: "A modular architecture decoupling interpretation from execution.",
+                    l1_t: "Vision Layer", l1_d: "Acquisition & Pre-processing",
+                    l2_t: "Interpretation Layer", l2_d: "VLM & Semantic Logic",
+                    l3_t: "Strategy Layer", l3_d: "Cutting Map Generation",
+                    principle: "Principle: The interpretation layer assists but does not control equipment directly."
+                },
+                alignment: {
+                    title: "Industry Alignment",
+                    quote: '"The terminology and evaluation approach explored by wetblueai are aligned with commonly accepted practices in leather technology, including those discussed within international technical communities such as the IULTCS framework."',
+                    whyTitle: "Why Alignment Matters",
+                    list: ["Ensures consistency in technical terminology.", "Facilitates clearer technical communication across borders.", "Allows for comparable research outcomes."],
+                    note: "Note: Mention of frameworks is for contextual alignment only and does not imply membership or endorsement."
+                },
+                open: {
+                    title: "Open Initiative",
+                    principlesTitle: "Principles",
+                    principlesList: ["Open Discussion: Methods and data structures are shared for peer review.", "Transparent Methodology: No black-box 'magic' algorithms.", "No Commercial Promises: Research output, not a product."],
+                    audienceTitle: "Intended Audience",
+                    audienceTags: ['Leather Technologists', 'Computer Vision Researchers', 'System Engineers', 'Process Optimisation Specialists']
+                },
+                scope: {
+                    title: "Research Scope",
+                    inScopeTitle: "In Scope",
+                    inScopeText: "Methodology exploration, technical discussion, process understanding, data representation standards.",
+                    limitationsTitle: "Limitations",
+                    limitationsList: ["Not a decision authority for commercial trade.", "Not a replacement for human expertise in quality control.", "Not a regulatory reference or legal standard."]
+                },
+                notes: {
+                    title: "Technical Notes",
+                    items: ['Process Semantics', 'Region Representation', 'Assistive VLM', 'Data Schemas', 'Optical Setup', 'Cutting Logic']
+                },
+                disclaimer: {
+                    p1: "wetblueai is an open technical initiative intended for research discussion and technical exchange only.",
+                    p2: "References to industry practices or international frameworks are made for contextual alignment and do not imply any formal affiliation, endorsement, or certification by any organisation.",
+                    p3: "The content provided herein does not constitute certification, compliance assessment, or professional advice. No organisation logos are used, and no endorsement is claimed."
+                },
+                contact: {
+                    title: "Contact",
+                    heading: "Technical Exchange",
+                    text: "We welcome correspondence regarding data representation and vision methodology.",
+                    subtext: "Technical exchange only; no sales inquiries."
+                },
+                footer: {
+                    copy: "wetblueai. Open Technical Initiative.",
+                    top: "Back to top"
+                }
+            },
+            zh: {
+                nav: {
+                    home: '首页', about: '关于', background: '背景', vision: '视觉',
+                    interpretation: '解读', data: '数据', dataset: '数据集',
+                    vlm: 'VLM', dataset_vlm: '数据集×VLM', process: '工艺',
+                    system: '系统', alignment: '对齐', open: '开放',
+                    scope: '范围', notes: '笔记', disclaimer: '免责声明', contact: '联系'
+                },
+                home: {
+                    pill: '研究探讨',
+                    headline: '针对蓝湿革视觉辅助缺陷分级与工艺优化的开放技术倡议。',
+                    subhead: '促进关于数据表示、辅助解读和非全景工艺策略的技术交流。',
+                    card1_title: "缺陷解读", card1_text: "标准化观测语义，用于与工艺相关的缺陷表征。",
+                    card2_title: "分级方法论", card2_text: "探索基于区域的逻辑和多时序视觉采集策略。",
+                    card3_title: "工艺优化", card3_text: "将视觉数据直接映射到裁剪和修边执行策略。",
+                    is_title: "WETBLUEAI 是什么", is_text: "一个关于皮革加工技术的研究探讨和技术交流的开放倡议。",
+                    isnot_title: "WETBLUEAI 不是什么", isnot_text: "我们不是认证机构，不制定官方分级标准，也不提供商业背书。"
+                },
+                about: {
+                    title: "关于",
+                    main: "人工蓝湿革分级的内在可变性为下游自动化带来了挑战。本倡议旨在通过结构化数据和共享定义，弥合视觉观察与工艺决策之间的差距。",
+                    policyTitle: "非参与政策",
+                    policyList: ["不提供认证或合规审计服务。", "不发布官方质量等级或标签。", "不代表任何特定的商业实体。"]
+                },
+                background: {
+                    title: "技术背景",
+                    stageTitle: "蓝湿革阶段",
+                    stageText: "蓝湿革是皮革加工中的关键中间阶段，此时生皮已经过铬鞣处理但尚未干燥、染色或涂饰。在此阶段识别出的缺陷对最终皮革的潜在出材率和用途有深远影响。",
+                    impactTitle: "下游影响",
+                    impactList: ["决定特定样板的可裁剪性。", "影响修边策略以最大化利用面积。", "指导后续批次的分类逻辑。"]
+                },
+                vision: {
+                    title: "视觉方法论",
+                    intro: "传统的视觉系统通常依赖单一的静态全景图。我们的方法探索线扫描、移动视场和多时序采集，以捕捉蓝湿革的深度和纹理。",
+                    cardTitle: "非全景设计原则",
+                    noOverviewTitle: "无同步全景",
+                    noOverviewText: "系统应按顺序处理局部区域，模仿人工检查过程（注意力聚焦而非分散）。",
+                    processDrivenTitle: "工艺驱动采集",
+                    processDrivenText: "成像分辨率和照明应根据被检查区域（例如腹部与臀背部）动态调整。",
+                    edgeAiTitle: "边缘 AI 检测",
+                    edgeAiText: "在采集硬件上直接部署轻量级推理模型，以便在湿加工过程中即时标记缺陷。",
+                    themesTitle: "视觉特征主题",
+                    themes: ['纹理连续性', '边界模糊性', '区域特征', '表面拓扑']
+                },
+                interpretation: {
+                    title: "缺陷解读",
+                    intro: "我们区分原始观察（看到的现象）和判断（应采取的措施）。缺陷根据其对工艺的影响进行分组，而非绝对的质量标签。",
+                    obsTitle: "观察", obsText: '视觉现象的客观描述（例如“变色”、“开放性疤痕”、“血管纹路”）。注重可重复性。',
+                    impactTitle: "工艺影响", impactText: '上下文感知的分类（例如“穿透风险”、“表面美观缺陷”、“结构弱点”）。'
+                },
+                data: {
+                    title: "数据与表示",
+                    intro: "数据结构必须反映材料的物理现实。我们主张以下表示形式：",
+                    list_titles: ["空间性", "时序性", "缺陷中心", "工艺感知"],
+                    list_descs: ["基于区域的坐标，而非简单的边界框。", "跨加工阶段（蓝湿革 → 坯革）的关联数据。", "按缺陷实体分组像素，而非仅按类别标签。", "描述皮革预期用途的元数据。"],
+                    quote: "本倡议中的标注是用于讨论的研究工具，而非基本真值或权威分级标准。"
+                },
+                dataset: {
+                    title: "数据集讨论",
+                    text: "wetblueai 提供的数据集是讨论的媒介，而非基准测试排行榜。它由旨在挑战解读逻辑的视觉序列和区域描述符组成。",
+                    scopeTitle: "范围与限制",
+                    list: ["不是用于商业模型训练的标准数据集。", "不用于算法性能排名（无 mAP 排行榜）。", "不适用于监管或合规测试。"]
+                },
+                vlm: {
+                    title: "视觉语言模型 (VLM)",
+                    intro: "视觉语言模型 (VLM) 在视觉特征与专家分级员使用的语言推理之间架起了一座桥梁。",
+                    cardTitle: "角色：辅助解读",
+                    cardText: "VLM 充当解读层，将视觉输入转化为结构化的工艺描述符。它不做出自主决策或控制机械设备。",
+                    inputsTitle: "输入 (抽象)",
+                    outputsTitle: "输出 (结构化)"
+                },
+                dataset_vlm: {
+                    title: "数据集 × VLM 交互",
+                    intro: "本节探讨从原始数据到语义解读的流程。",
+                    distinctionTitle: "重要区别",
+                    distinctionText: "本倡议探讨的是解读辅助。我们不讨论模型训练、基础模型开发或性能基准测试。",
+                    feedbackTitle: "反馈循环",
+                    list: ["观察反馈：根据 VLM 输出完善缺陷描述方式。", "策略优化：根据解读的一致性调整裁剪逻辑。", "静态知识：系统在生产中不采用“持续学习”。"]
+                },
+                process: {
+                    title: "工艺导向优化",
+                    intro: "从解读到策略。我们将缺陷区域映射到具体的裁剪指令（例如水刀或模具裁剪）。",
+                    r1_t: "禁裁区", r1_d: "因结构失效风险而严格排除的区域。",
+                    r2_t: "降级区", r2_d: "对于低可见度或加固部件可接受的区域。",
+                    r3_t: "修边区", r3_d: "切除不可用边缘以改善操作性。",
+                    exampleTitle: "技术聚焦：水刀切割",
+                    list: ["非接触式切割防止湿皮变形。", "消除刀片拖拽和表面扭曲。", "无需物理模具即可支持复杂的排版嵌套。"]
+                },
+                system: {
+                    title: "系统级视图",
+                    intro: "解耦解读与执行的模块化架构。",
+                    l1_t: "视觉层", l1_d: "采集与预处理",
+                    l2_t: "解读层", l2_d: "VLM 与语义逻辑",
+                    l3_t: "策略层", l3_d: "裁剪图谱生成",
+                    principle: "原则：解读层仅提供辅助，不直接控制设备。"
+                },
+                alignment: {
+                    title: "行业对齐",
+                    quote: '“wetblueai 探索的术语和评估方法与皮革技术中普遍接受的实践保持一致，包括 IULTCS 框架等国际技术社区讨论的实践。”',
+                    whyTitle: "为何对齐很重要",
+                    list: ["确保技术术语的一致性。", "促进跨国界更清晰的技术交流。", "允许具有可比性的研究成果。"],
+                    note: "注：提及框架仅为上下文对齐，并不暗示成员资格或背书。"
+                },
+                open: {
+                    title: "开放倡议",
+                    principlesTitle: "原则",
+                    principlesList: ["开放讨论：方法和数据结构共享以供同行评审。", "透明方法论：无黑箱“魔法”算法。", "无商业承诺：是研究成果，而非产品。"],
+                    audienceTitle: "目标受众",
+                    audienceTags: ['皮革技术人员', '计算机视觉研究员', '系统工程师', '工艺优化专家']
+                },
+                scope: {
+                    title: "研究范围",
+                    inScopeTitle: "范围内",
+                    inScopeText: "方法论探索、技术讨论、工艺理解、数据表示标准。",
+                    limitationsTitle: "限制",
+                    limitationsList: ["不是商业贸易的决策权威。", "不能替代质量控制中的人类专业知识。", "不是监管参考或法律标准。"]
+                },
+                notes: {
+                    title: "技术笔记",
+                    items: ['工艺语义', '区域表示', '辅助 VLM', '数据模式', '光学设置', '裁剪逻辑']
+                },
+                disclaimer: {
+                    p1: "wetblueai 是一个旨在进行研究讨论和技术交流的开放技术倡议。",
+                    p2: "提及行业惯例或国际框架仅为背景一致性，并不暗示任何组织的正式隶属、背书或认证。",
+                    p3: "本文提供的内容不构成认证、合规评估或专业建议。不使用任何组织徽标，也不主张任何背书。"
+                },
+                contact: {
+                    title: "联系",
+                    heading: "技术交流",
+                    text: "我们欢迎关于数据表示和视觉方法论的通信。",
+                    subtext: "仅限技术交流；谢绝销售咨询。"
+                },
+                footer: {
+                    copy: "wetblueai. 开放技术倡议。",
+                    top: "返回顶部"
+                }
+            }
+        };
+    </script>
+</head>
+<body class="min-h-screen bg-white text-slate-900 selection:bg-slate-200 selection:text-slate-900">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-slate-200 h-16 flex items-center justify-between px-6 shadow-sm">
+        <div class="flex items-center gap-2 cursor-pointer" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+            <div class="w-8 h-8 bg-slate-900 flex items-center justify-center text-white rounded-sm">
+                <span class="font-bold font-mono text-sm">wb</span>
+            </div>
+            <span class="font-bold text-lg tracking-tight text-slate-900">wetblueai</span>
+        </div>
+
+        <!-- Desktop Nav -->
+        <nav id="desktop-nav" class="hidden xl:flex items-center gap-1 overflow-x-auto no-scrollbar mask-linear px-4" style="max-width: calc(100% - 280px)">
+            <!-- Nav Items generated by JS -->
+        </nav>
+
+        <!-- Controls -->
+        <div class="flex items-center gap-2">
+            <button id="lang-toggle" class="flex items-center gap-2 px-3 py-1.5 text-xs font-bold uppercase border border-slate-200 rounded-sm hover:bg-slate-100 transition-colors">
+                <i data-lucide="globe" class="w-3 h-3"></i>
+                <span id="lang-label">EN</span>
+            </button>
+
+            <div class="xl:hidden">
+                <button id="menu-toggle" class="p-2 hover:bg-slate-100 rounded-sm transition-colors" aria-label="Toggle menu">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Drawer -->
+    <div id="mobile-drawer" class="fixed inset-0 top-16 z-40 bg-white flex flex-col overflow-y-auto pb-20 hidden transition-opacity duration-200">
+        <!-- Mobile Nav Items generated by JS -->
+    </div>
+
+    <!-- Main Content -->
+    <main class="pt-16">
+
+        <!-- 1) HOME -->
+        <section id="home" class="min-h-[80vh] flex flex-col justify-center bg-slate-50 py-16 px-6">
+            <div class="max-w-4xl mx-auto w-full">
+                <div class="space-y-6 max-w-3xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-semibold uppercase tracking-wider text-slate-500">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        <span data-i18n="home.pill">Research Discussion</span>
+                    </div>
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 leading-[1.1] tracking-tight" data-i18n="home.headline">
+                        An open technical initiative for vision-assisted defect grading and process optimisation of wet blue leather.
+                    </h1>
+                    <p class="text-xl text-slate-600 max-w-2xl leading-relaxed" data-i18n="home.subhead">
+                        Facilitating technical exchange on data representation, assistive interpretation, and non-overview process strategies.
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6 mt-16">
+                    <div class="bg-white p-6 border-l-2 border-slate-900 shadow-sm">
+                        <i data-lucide="eye" class="w-8 h-8 text-slate-800 mb-4"></i>
+                        <h3 class="font-bold text-slate-900 mb-2" data-i18n="home.card1_title">Defect Interpretation</h3>
+                        <p class="text-sm text-slate-600 leading-relaxed" data-i18n="home.card1_text">Standardising observational semantics.</p>
+                    </div>
+                    <div class="bg-white p-6 border-l-2 border-slate-900 shadow-sm">
+                        <i data-lucide="layers" class="w-8 h-8 text-slate-800 mb-4"></i>
+                        <h3 class="font-bold text-slate-900 mb-2" data-i18n="home.card2_title">Grading Methodology</h3>
+                        <p class="text-sm text-slate-600 leading-relaxed" data-i18n="home.card2_text">Exploring region-based logic.</p>
+                    </div>
+                    <div class="bg-white p-6 border-l-2 border-slate-900 shadow-sm">
+                        <i data-lucide="scissors" class="w-8 h-8 text-slate-800 mb-4"></i>
+                        <h3 class="font-bold text-slate-900 mb-2" data-i18n="home.card3_title">Process Optimisation</h3>
+                        <p class="text-sm text-slate-600 leading-relaxed" data-i18n="home.card3_text">Mapping visual data to cutting.</p>
+                    </div>
+                </div>
+
+                <div class="mt-12 pt-8 border-t border-slate-200 flex flex-col md:flex-row gap-8 text-sm">
+                    <div class="flex-1">
+                        <span class="font-bold block mb-2 text-emerald-700" data-i18n="home.is_title">WHAT WETBLUEAI IS</span>
+                        <p class="text-slate-600" data-i18n="home.is_text">An open initiative...</p>
+                    </div>
+                    <div class="flex-1">
+                        <span class="font-bold block mb-2 text-red-700" data-i18n="home.isnot_title">WHAT WETBLUEAI IS NOT</span>
+                        <p class="text-slate-600" data-i18n="home.isnot_text">We are not a certification body...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2) ABOUT -->
+        <section id="about" class="py-16 md:py-24 border-b border-slate-200">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="flex items-center gap-3 mb-8">
+                    <i data-lucide="info" class="w-6 h-6 text-slate-500"></i>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight uppercase" data-i18n="about.title">About</h2>
+                </div>
+                <p class="text-lg text-slate-700 mb-8 leading-relaxed" data-i18n="about.main">Variability in manual grading...</p>
+                <div class="bg-slate-900 text-slate-300 p-8 rounded-sm">
+                    <h4 class="text-white font-bold uppercase tracking-wider mb-4 text-sm flex items-center gap-2">
+                        <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-500"></i>
+                        <span data-i18n="about.policyTitle">Non-Engagement Policy</span>
+                    </h4>
+                    <ul class="space-y-3 text-sm" id="about-list">
+                        <!-- JS populated -->
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3) BACKGROUND -->
+        <section id="background" class="py-16 md:py-24 border-b border-slate-200">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="flex items-center gap-3 mb-8">
+                    <i data-lucide="layers" class="w-6 h-6 text-slate-500"></i>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight uppercase" data-i18n="background.title">Technical Background</h2>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="font-bold text-slate-900 mb-4" data-i18n="background.stageTitle">The Wet Blue Stage</h3>
+                        <p class="text-slate-700 text-sm leading-relaxed mb-4" data-i18n="background.stageText">Wet blue is a critical...</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-900 mb-4" data-i18n="background.impactTitle">Downstream Impact</h3>
+                        <ul class="space-y-2 mt-4" id="background-list">
+                            <!-- JS populated -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4) VISION -->
+        <section id="vision" class="py-16 md:py-24 border-b border-slate-200">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="flex items-center gap-3 mb-8">
+                    <i data-lucide="eye" class="w-6 h-6 text-slate-500"></i>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight uppercase" data-i18n="vision.title">Vision Methodology</h2>
+                </div>
+                <p class="mb-6 text-slate-700" data-i18n="vision.intro">Traditional vision systems...</p>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-slate-50 border border-slate-200 p-6 rounded-sm">
+                        <h3 class="font-semibold text-slate-800 mb-3 uppercase text-sm tracking-wider" data-i18n="vision.cardTitle">The Non-Overview Design Principle</h3>
+                        <div class="grid gap-4 text-sm text-slate-700">
+                            <div>
+                                <strong class="text-slate-900 block mb-1" data-i18n="vision.noOverviewTitle">No Simultaneous Overview</strong>
+                                <p data-i18n="vision.noOverviewText">Systems should process...</p>
+                            </div>
+                            <div>
+                                <strong class="text-slate-900 block mb-1" data-i18n="vision.processDrivenTitle">Process-Driven Acquisition</strong>
+                                <p data-i18n="vision.processDrivenText">Imaging resolution...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-sm text-slate-300">
+                        <h3 class="font-semibold text-white mb-3 uppercase text-sm tracking-wider flex items-center gap-2">
+                            <i data-lucide="cpu" class="w-4 h-4 text-emerald-400"></i>
+                            <span data-i18n="vision.edgeAiTitle">Edge AI Inspection</span>
+                        </h3>
+                        <p class="text-sm leading-relaxed" data-i18n="vision.edgeAiText">
+                            Deploying lightweight inference models...
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <h4 class="font-bold text-sm uppercase text-slate-500 mb-4" data-i18n="vision.themesTitle">Visual Feature Themes</h4>
+                    <div class="flex flex-wrap gap-3" id="vision-themes">
+                        <!-- JS populated -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5) INTERPRETATION -->
+        <section id="interpretation" class="py-16 md:py-24 border-b border-slate-200">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="flex items-center gap-3 mb-8">
+                    <i data-lucide="file-text" class="w-6 h-6 text-slate-500"></i>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight uppercase" data-i18n="interpretation.title">Defect Interpretation</h2>
+                </div>
+                <p class="text-slate-700 mb-6" data-i18n="interpretation.intro">We distinguish...</p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-slate-50 border border-slate-200 p-6 rounded-sm">
+                        <h3 class="font-semibold text-slate-800 mb-3 uppercase text-sm tracking-wider" data-i18n="interpretation.obsTitle">Observation</h3>
+                        <p class="text-slate-700 text-sm leading-relaxed" data-i18n="interpretation.obsText">Objective description...</p>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 p-6 rounded-sm">
+                        <h3 class="font-semibold text-slate-800 mb-3 uppercase text-sm tracking-wider" data-i18n="interpretation.impactTitle">Process Impact</h3>
+                        <p class="text-slate-700 text-sm leading-relaxed" data-i18n="interpretation.impactText">Context-aware...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6) DATA -->
+        <section id="data" class="py-16 md:py-24 border-b border-slate-200">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="flex items-center gap-3 mb-8">
+                    <i data-lucide="database" class="w-6 h-6 text-slate-500"></i>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight uppercase" data-i18n="data.title">Data & Representation</h2>
+                </div>
+                <p class="mb-6 text-slate-700" data-i18n="data.intro">Data structures...</p>
+                <div class="grid sm:grid-cols-2 gap-4" id="data-list">
+                    <!-- JS Populated -->
+                </div>
+                <div class="mt-8 p-4 bg-slate-50 border border-slate-200 text-sm text-slate-600 italic" data-i18n="data.quote">
+                    "Annotations..."
+                </div>
+            </div>
+        </section>
+
+        <!-- 7) DATASET -->
+        <section id="dataset" class="py-16 md:py-24 border-b border-slate-200">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="flex items-center gap-3 mb-8">
+                    <i data-lucide="database" class="w-6 h-6 text-slate-500"></i>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight uppercase" data-i18n="dataset.title">Dataset Discussion</h2>
+                </div>
+                <div class="prose prose-slate max-w-none">
+                    <p class="text-slate-700" data-i18n="dataset.text">The dataset served...</p>
+                    <h4 class="font-bold text-slate-900 mt-6 mb-2" data-i18n="dataset.scopeTitle">Scope & Limitations</h4>
+                    <ul class="space-y-2 mt-4" id="dataset-list">
+                        <!-- JS populated -->
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8) VLM -->
+        <section id="vlm" class="py-16 md:py-24 border-b border-slate-200">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="flex items-center gap-3 mb-8">
+                    <i data-lucide="cpu" class="w-6 h-6 text-slate-500"></i>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight uppercase" data-i18n="vlm.title">Vision–Language Models</h2>
+                </div>
+                <p class="text-slate-700 mb-6" data-i18n="vlm.intro">Vision-Language Models...</p>
+                <div class="bg-slate-50 border border-slate-200 p-6 rounded-sm mb-6">
+                    <h3 class="font-semibold text-slate-800 mb-3 uppercase text-sm tracking-wider" data-i18n="vlm.cardTitle">Role: Assistive Interpretation</h3>
+                    <p class="text-slate-700 text-sm leading-relaxed" data-i18n="vlm.cardText">The VLM acts as...</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="text-xs font-bold uppercase text-slate-500 mb-2" data-i18n="vlm.inputsTitle">Inputs (Abstract)</h4>
+                        <div class="bg-slate-100 p-4 font-mono text-xs text-slate-700">
+{
+  "visual_features": "vector_embeddings",
+  "region": "butt_area",
+  "prompt": "assess_structural_integrity"
+}
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold uppercase text-slate-500 mb-2" data-i18n="vlm.outputsTitle">Outputs (Structured)</h4>
+                        <div class="bg-slate-100 p-4 font-mono text-xs text-slate-700">
+{
+  "impact": "avoid_for_vamp",
+  "cut_strategy": "navigate_around",
+  "risk_level": "medium"
+}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 9) DATASET x VLM -->
+        <section id="dataset-vlm" class="py-16 md:py-24 border-b border-slate-200">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="flex items-center gap-3 mb-8">
+                    <i data-lucide="git-branch" class="w-6 h-6 text-slate-500"></i>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight uppercase" data-i18n="dataset_vlm.title">Dataset × VLM Interaction</h2>
+                </div>
+                <p class="text-slate-700 mb-6" data-i18n="dataset_vlm.intro">This section explores...</p>
+                <div class="bg-emerald-50 border border-emerald-100 p-6 mb-8 rounded-sm">
+                    <h4 class="text-emerald-800 font-bold uppercase text-sm mb-2" data-i18n="dataset_vlm.distinctionTitle">Important Distinction</h4>
+                    <p class="text-emerald-900 text-sm" data-i18n="dataset_vlm.distinctionText">This initiative explores...</p>
+                </div>
+                <h4 class="font-bold text-slate-900 mb-2" data-i18n="dataset_vlm.feedbackTitle">Feedback Loops</h4>
+                <ul class="space-y-2 mt-4" id="vlm-list">
+                    <!-- JS populated -->
+                </ul>
+            </div>
+        </section>
+
+        <!-- 10) PROCESS -->
+        <section id="process" class="py-16 md:py-24 border-b border-slate-200">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="flex items-center gap-3 mb-8">
+                    <i data-lucide="scissors" class="w-6 h-6 text-slate-500"></i>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight uppercase" data-i18n="process.title">Process-Oriented Optimisation</h2>
+                </div>
+                <p class="text-slate-700 mb-6" data-i18n="process.intro">Moving from interpretation...</p>
+                <div class="grid md:grid-cols-3 gap-4 mb-8">
+                    <div class="p-4 bg-red-50 border border-red-100 text-center">
+                        <span class="block font-bold text-red-800 mb-1" data-i18n="process.r1_t">No-Cut Regions</span>
+                        <span class="text-xs text-red-700" data-i18n="process.r1_d">Strict exclusion...</span>
+                    </div>
+                    <div class="p-4 bg-amber-50 border border-amber-100 text-center">
+                        <span class="block font-bold text-amber-800 mb-1" data-i18n="process.r2_t">Degraded-Cut</span>
+                        <span class="text-xs text-amber-700" data-i18n="process.r2_d">Acceptable for...</span>
+                    </div>
+                    <div class="p-4 bg-blue-50 border border-blue-100 text-center">
+                        <span class="block font-bold text-blue-800 mb-1" data-i18n="process.r3_t">Trimming</span>
+                        <span class="text-xs text-blue-700" data-i18n="process.r3_d">Removal of...</span>
+                    </div>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 p-6 rounded-sm">
+                    <h3 class="font-semibold text-slate-800 mb-3 uppercase text-sm tracking-wider" data-i18n="process.exampleTitle">Technology Focus: Waterjet for Wet Blue</h3>
+                    <ul class="space-y-2 mt-4" id="process-list">
+                        <!-- JS populated -->
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 11) SYSTEM -->
+        <section id="system" class="py-16 md:py-24 border-b border-slate-200">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="flex items-center gap-3 mb-8">
+                    <i data-lucide="terminal" class="w-6 h-6 text-slate-500"></i>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight uppercase" data-i18n="system.title">System-Level View</h2>
+                </div>
+                <p class="text-slate-700 mb-8" data-i18n="system.intro">A modular architecture...</p>
+                <div class="flex flex-col md:flex-row items-stretch justify-center gap-4 text-center">
+                    <div class="flex-1 border border-slate-300 p-6 rounded-sm">
+                        <i data-lucide="eye" class="w-8 h-8 mx-auto text-slate-400 mb-3"></i>
+                        <h4 class="font-bold text-slate-900" data-i18n="system.l1_t">Vision Layer</h4>
+                        <p class="text-xs text-slate-500 mt-2" data-i18n="system.l1_d">Acquisition & Pre-processing</p>
+                    </div>
+                    <div class="hidden md:flex items-center text-slate-300">→</div>
+                    <div class="flex-1 border border-slate-800 bg-slate-900 p-6 rounded-sm shadow-md">
+                        <i data-lucide="cpu" class="w-8 h-8 mx-auto text-white mb-3"></i>
+                        <h4 class="font-bold text-white" data-i18n="system.l2_t">Interpretation Layer</h4>
+                        <p class="text-xs text-slate-400 mt-2" data-i18n="system.l2_d">VLM & Semantic Logic</p>
+                    </div>
+                    <div class="hidden md:flex items-center text-slate-300">→</div>
+                    <div class="flex-1 border border-slate-300 p-6 rounded-sm">
+                        <i data-lucide="scissors" class="w-8 h-8 mx-auto text-slate-400 mb-3"></i>
+                        <h4 class="font-bold text-slate-900" data-i18n="system.l3_t">Strategy Layer</h4>
+                        <p class="text-xs text-slate-500 mt-2" data-i18n="system.l3_d">Cutting Map Generation</p>
+                    </div>
+                </div>
+                <div class="mt-8 text-center text-sm text-slate-500">
+                    <p><strong data-i18n="system.principle">Principle: The interpretation layer...</strong></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 12) ALIGNMENT -->
+        <section id="alignment" class="py-16 md:py-24 border-b border-slate-200">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="flex items-center gap-3 mb-8">
+                    <i data-lucide="activity" class="w-6 h-6 text-slate-500"></i>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight uppercase" data-i18n="alignment.title">Industry Alignment</h2>
+                </div>
+                <div class="bg-slate-50 border-l-4 border-slate-400 p-6">
+                    <p class="text-slate-800 italic leading-relaxed" data-i18n="alignment.quote">
+                        “The terminology...”
+                    </p>
+                </div>
+                <div class="mt-6">
+                    <h4 class="font-bold text-slate-900 text-sm uppercase mb-2" data-i18n="alignment.whyTitle">Why Alignment Matters</h4>
+                    <ul class="space-y-2 mt-4" id="alignment-list">
+                        <!-- JS populated -->
+                    </ul>
+                </div>
+                <p class="mt-6 text-xs text-slate-500 uppercase tracking-wide" data-i18n="alignment.note">Note: Mention of frameworks...</p>
+            </div>
+        </section>
+
+        <!-- 13) OPEN -->
+        <section id="open" class="py-16 md:py-24 border-b border-slate-200">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="flex items-center gap-3 mb-8">
+                    <i data-lucide="file-text" class="w-6 h-6 text-slate-500"></i>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight uppercase" data-i18n="open.title">Open Initiative</h2>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="font-bold text-slate-900 mb-3" data-i18n="open.principlesTitle">Principles</h3>
+                        <ul class="space-y-2 mt-4" id="open-principles">
+                            <!-- JS populated -->
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-900 mb-3" data-i18n="open.audienceTitle">Intended Audience</h3>
+                        <div class="flex flex-wrap gap-2 mt-2" id="open-audience">
+                            <!-- JS populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 14) SCOPE -->
+        <section id="scope" class="py-16 md:py-24 border-b border-slate-200">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="flex items-center gap-3 mb-8">
+                    <i data-lucide="alert-triangle" class="w-6 h-6 text-slate-500"></i>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight uppercase" data-i18n="scope.title">Research Scope</h2>
+                </div>
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="font-bold text-slate-900" data-i18n="scope.inScopeTitle">In Scope</h3>
+                        <p class="text-slate-600 text-sm mt-1" data-i18n="scope.inScopeText">Methodology exploration...</p>
+                    </div>
+                    <div class="border-t border-slate-100 pt-4">
+                        <h3 class="font-bold text-slate-900" data-i18n="scope.limitationsTitle">Limitations</h3>
+                        <ul class="space-y-2 mt-4" id="scope-limitations">
+                            <!-- JS populated -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 15) NOTES -->
+        <section id="notes" class="py-16 md:py-24 border-b border-slate-200">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="flex items-center gap-3 mb-8">
+                    <i data-lucide="file-text" class="w-6 h-6 text-slate-500"></i>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight uppercase" data-i18n="notes.title">Technical Notes</h2>
+                </div>
+                <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4" id="notes-grid">
+                    <!-- JS populated -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 16) DISCLAIMER -->
+        <section id="disclaimer" class="py-16 md:py-24 border-b border-slate-200 bg-slate-50">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="flex items-start gap-4">
+                    <i data-lucide="shield-alert" class="w-8 h-8 text-slate-400 flex-shrink-0"></i>
+                    <div class="text-xs text-slate-500 leading-relaxed space-y-3">
+                        <p>
+                            <strong class="text-slate-700">wetblueai</strong> <span data-i18n="disclaimer.p1">is an open...</span>
+                        </p>
+                        <p data-i18n="disclaimer.p2">References to...</p>
+                        <p data-i18n="disclaimer.p3">The content...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 17) CONTACT -->
+        <section id="contact" class="py-16 md:py-24 border-b border-slate-200">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="flex items-center gap-3 mb-8">
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight uppercase" data-i18n="contact.title">Contact</h2>
+                </div>
+                <div class="bg-slate-900 text-white p-8 md:p-12 text-center rounded-sm">
+                    <h3 class="text-2xl font-bold mb-4" data-i18n="contact.heading">Technical Exchange</h3>
+                    <p class="text-slate-400 mb-8 max-w-lg mx-auto" data-i18n="contact.text">
+                        We welcome correspondence...
+                    </p>
+                    <a href="mailto:info@dcdeeptech.com" class="inline-block bg-white text-slate-900 px-8 py-3 font-bold text-sm tracking-widest uppercase hover:bg-slate-200 transition-colors">
+                        info@dcdeeptech.com
+                    </a>
+                    <p class="mt-6 text-xs text-slate-500" data-i18n="contact.subtext">
+                        Technical exchange only...
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-50 py-8 text-center text-xs text-slate-400 border-t border-slate-200">
+        <p>&copy; <span id="year"></span> <span data-i18n="footer.copy">wetblueai. Open Technical Initiative.</span></p>
+        <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="mt-4 flex items-center gap-1 mx-auto hover:text-slate-600 transition-colors">
+            <span data-i18n="footer.top">Back to top</span> <i data-lucide="chevron-up" class="w-3 h-3"></i>
+        </button>
+    </footer>
+
+    <script>
+        // --- State ---
+        let lang = 'en';
+        const navIds = ['home', 'about', 'background', 'vision', 'interpretation', 'data', 'dataset', 'vlm', 'dataset-vlm', 'process', 'system', 'alignment', 'open', 'scope', 'notes', 'disclaimer', 'contact'];
+
+        // --- Helpers ---
+        function setYear() {
+            document.getElementById('year').textContent = new Date().getFullYear();
+        }
+
+        function createBulletList(items, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = items.map(item => `
+                <li class="flex items-start gap-3 text-slate-700 text-sm md:text-base leading-relaxed">
+                    <span class="mt-1.5 w-1.5 h-1.5 bg-slate-400 flex-shrink-0 rounded-full"></span>
+                    <span>${item}</span>
+                </li>
+            `).join('');
+        }
+
+        // --- Render Functions ---
+        function updateContent() {
+            const t = CONTENT[lang];
+            
+            // 1. Update simple text elements
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const keys = el.dataset.i18n.split('.');
+                let val = t;
+                keys.forEach(k => val = val ? val[k] : '');
+                if (val) el.textContent = val.replace('wetblueai', ''); // simple cleanup if needed
+                if(keys[1] === 'p1') el.textContent = val.replace('wetblueai', '').trim(); // specific fix for disclaimer p1
+                else if (val) el.textContent = val;
+            });
+
+            // 2. Update Dynamic Lists
+            createBulletList(t.about.policyList, 'about-list');
+            createBulletList(t.background.impactList, 'background-list');
+            createBulletList(t.dataset.list, 'dataset-list');
+            createBulletList(t.dataset_vlm.list, 'vlm-list');
+            createBulletList(t.process.list, 'process-list');
+            createBulletList(t.alignment.list, 'alignment-list');
+            createBulletList(t.open.principlesList, 'open-principles');
+            createBulletList(t.scope.limitationsList, 'scope-limitations');
+
+            // 3. Update Complex Components
+            
+            // Vision Themes
+            document.getElementById('vision-themes').innerHTML = t.vision.themes.map(tag => 
+                `<span class="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-mono uppercase border border-slate-200">${tag}</span>`
+            ).join('');
+
+            // Data List
+            document.getElementById('data-list').innerHTML = t.data.list_titles.map((title, i) => `
+                <div class="border-l-4 border-slate-300 pl-4 py-1">
+                    <span class="font-bold text-slate-900 block">${title}</span>
+                    <span class="text-sm text-slate-600">${t.data.list_descs[i]}</span>
+                </div>
+            `).join('');
+
+            // Audience Tags
+            document.getElementById('open-audience').innerHTML = t.open.audienceTags.map(role => 
+                `<span class="bg-slate-100 text-slate-700 px-3 py-1 text-xs font-medium rounded-full">${role}</span>`
+            ).join('');
+
+            // Notes Grid
+            document.getElementById('notes-grid').innerHTML = t.notes.items.map((item, i) => `
+                <div class="aspect-[4/3] bg-slate-50 border border-slate-200 flex flex-col justify-center items-center p-4 text-center hover:border-slate-300 transition-colors">
+                    <span class="text-slate-300 font-bold text-2xl mb-2">0${i+1}</span>
+                    <span class="text-slate-500 text-xs font-mono uppercase">${item}</span>
+                </div>
+            `).join('');
+
+            // Navbar Labels
+            renderNav();
+            
+            // Lang Label
+            document.getElementById('lang-label').textContent = lang === 'en' ? 'EN' : '中文';
+        }
+
+        function renderNav() {
+            const t = CONTENT[lang].nav;
+            const items = navIds.map(id => {
+                const label = t[id.replace('-', '_')] || id;
+                return { id, label };
+            });
+
+            // Desktop
+            const desktopNav = document.getElementById('desktop-nav');
+            desktopNav.innerHTML = items.map(item => `
+                <button onclick="scrollToSection('${item.id}')" 
+                        class="nav-btn px-3 py-1.5 text-xs uppercase tracking-wide font-medium transition-colors whitespace-nowrap rounded-sm text-slate-500 hover:text-slate-900 hover:bg-slate-100"
+                        data-id="${item.id}">
+                    ${item.label}
+                </button>
+            `).join('');
+
+            // Mobile
+            const mobileNav = document.getElementById('mobile-drawer');
+            mobileNav.innerHTML = items.map(item => `
+                <button onclick="scrollToSection('${item.id}'); toggleMenu()" 
+                        class="mobile-nav-btn w-full text-left px-8 py-4 border-b border-slate-100 text-sm uppercase tracking-widest font-medium transition-colors text-slate-500"
+                        data-id="${item.id}">
+                    ${item.label}
+                </button>
+            `).join('');
+            
+            updateActiveState();
+        }
+
+        // --- Interaction ---
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                // 80px offset for sticky header
+                const top = el.getBoundingClientRect().top + window.pageYOffset - 80;
+                window.scrollTo({ top: top, behavior: 'smooth' });
+            }
+        }
+
+        function toggleMenu() {
+            const drawer = document.getElementById('mobile-drawer');
+            drawer.classList.toggle('hidden');
+        }
+
+        // --- Scroll Spy ---
+        let activeId = 'home';
+        function updateActiveState() {
+            // Desktop
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if (btn.dataset.id === activeId) {
+                    btn.classList.remove('text-slate-500', 'hover:bg-slate-100');
+                    btn.classList.add('bg-slate-900', 'text-white');
+                } else {
+                    btn.classList.add('text-slate-500', 'hover:bg-slate-100');
+                    btn.classList.remove('bg-slate-900', 'text-white');
+                }
+            });
+
+            // Mobile
+            document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+                if (btn.dataset.id === activeId) {
+                    btn.classList.add('bg-slate-50', 'text-slate-900', 'border-l-4', 'border-l-slate-900');
+                    btn.classList.remove('text-slate-500');
+                } else {
+                    btn.classList.remove('bg-slate-50', 'text-slate-900', 'border-l-4', 'border-l-slate-900');
+                    btn.classList.add('text-slate-500');
+                }
+            });
+        }
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            setYear();
+            lucide.createIcons();
+            updateContent();
+
+            // Language Toggle
+            document.getElementById('lang-toggle').addEventListener('click', () => {
+                lang = lang === 'en' ? 'zh' : 'en';
+                updateContent();
+                lucide.createIcons(); // re-init icons if any were re-rendered
+            });
+
+            // Mobile Menu Toggle
+            document.getElementById('menu-toggle').addEventListener('click', toggleMenu);
+
+            // Observer for Scroll Spy
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        activeId = entry.target.id;
+                        updateActiveState();
+                    }
+                });
+            }, { rootMargin: '-20% 0px -60% 0px' });
+
+            navIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) observer.observe(el);
+            });
+        });
+
+    </script>
+</body>
+</html>
