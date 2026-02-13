@@ -1,633 +1,1335 @@
  <!DOCTYPE html>
-<html lang="zh-CN" class="scroll-smooth">
+<html lang="en" class="no-js">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DataEnergy | Cognitive Energy Infrastructure</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataEnergy Holding | Green AI Infrastructure</title>
+    <meta name="description" content="Singapore HQ Digital Infrastructure & Energy Holding Company. Powering the Green AI Era with OCP-Ready Solutions.">
     
-    <!-- React & ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
-    <!-- Babel for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Tailwind Configuration -->
+    <style>
+        /* --- CSS VARIABLES & THEME --- */
+        :root {
+            /* Dark Mode (Default) */
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111625;
+            --text-primary: #e0e6ed;
+            --text-secondary: #94a3b8;
+            --accent-cyan: #00f3ff;
+            --accent-blue: #2d6cdf;
+            --glass-bg: rgba(10, 14, 23, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --card-hover: rgba(0, 243, 255, 0.03);
+            --grid-line: rgba(255, 255, 255, 0.03);
+            
+            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --transition-speed: 0.3s;
+            --section-spacing: 120px;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f0f4f8;
+            --bg-secondary: #ffffff;
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --accent-cyan: #0077b6;
+            --accent-blue: #023e8a;
+            --glass-bg: rgba(240, 244, 248, 0.85);
+            --glass-border: rgba(0, 0, 0, 0.05);
+            --card-hover: rgba(0, 119, 182, 0.05);
+            --grid-line: rgba(0, 0, 0, 0.03);
+        }
+
+        /* --- LANGUAGE CONTROL --- */
+        :root:lang(en) .cn { display: none; }
+        :root:lang(zh) .en { display: none; }
+
+        /* --- RESET & BASE --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        html { scroll-behavior: smooth; }
+        
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-stack);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        a { text-decoration: none; color: inherit; transition: color 0.2s; }
+        ul { list-style: none; }
+        img { max-width: 100%; display: block; }
+
+        /* --- UTILITIES --- */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+            background: linear-gradient(90deg, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+            display: block;
+            font-weight: 600;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 32px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            border: 1px solid var(--accent-cyan);
+        }
+
+        .btn-primary {
+            background: rgba(0, 243, 255, 0.1);
+            color: var(--accent-cyan);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-cyan);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+        }
+
+        /* --- ANIMATION UTILS --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- HEADER & NAV --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 20px 0;
+            transition: all 0.3s;
+        }
+
+        header.scrolled {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 15px 0;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -0.03em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-cyan);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            position: relative;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--accent-cyan);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-left: 20px;
+            border-left: 1px solid var(--glass-border);
+            padding-left: 20px;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 5px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .icon-btn:hover {
+            color: var(--accent-cyan);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            width: 24px;
+            height: 2px;
+            background: var(--text-primary);
+            transition: 0.3s;
+        }
+
+        /* --- HERO SECTION --- */
+        #hero {
+            height: 100vh;
+            min-height: 700px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            pointer-events: none; /* Allow click through to canvas */
+        }
+
+        .hero-content > * {
+            pointer-events: auto;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+        }
+
+        /* --- BUSINESS QUADRANTS --- */
+        #businesses {
+            padding: var(--section-spacing) 0;
+            position: relative;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2px;
+            background: var(--grid-line);
+            border: 1px solid var(--grid-line);
+        }
+
+        .card {
+            background: var(--bg-primary);
+            padding: 40px;
+            transition: background 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            background: var(--bg-secondary);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 0;
+            background: var(--accent-cyan);
+            transition: height 0.3s ease;
+        }
+
+        .card:hover::before {
+            height: 100%;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--accent-cyan);
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .card-link {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .card-link svg {
+            width: 16px;
+            height: 16px;
+            margin-left: 5px;
+            transition: transform 0.2s;
+        }
+
+        .card-link:hover svg {
+            transform: translateX(4px);
+        }
+
+        /* --- SUBSIDIARIES --- */
+        #subsidiaries {
+            padding: var(--section-spacing) 0;
+            background: var(--bg-secondary);
+        }
+
+        .subsidiary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .sub-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--glass-border);
+            padding: 30px;
+            border-radius: 12px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .sub-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-color: var(--accent-blue);
+        }
+
+        .sub-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+        
+        .sub-type {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent-blue);
+            background: rgba(45, 108, 223, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            border: 1px solid var(--glass-border);
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .sub-link {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+        
+        .sub-link svg {
+            width: 16px;
+            height: 16px;
+            margin-left: 5px;
+            transition: transform 0.2s;
+        }
+
+        .sub-link:hover svg {
+            transform: translate(3px, -3px);
+        }
+
+        /* --- SOLUTIONS FLOW --- */
+        #solutions {
+            padding: var(--section-spacing) 0;
+        }
+
+        .flow-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 60px;
+            position: relative;
+        }
+
+        .flow-line-bg {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--glass-border);
+            z-index: 0;
+        }
+
+        .flow-step {
+            position: relative;
+            z-index: 1;
+            background: var(--bg-primary);
+            border: 1px solid var(--glass-border);
+            padding: 20px;
+            border-radius: 12px;
+            width: 18%;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .flow-step:hover {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+        }
+
+        .flow-step h4 {
+            margin-bottom: 10px;
+            color: var(--accent-cyan);
+        }
+
+        .kpi-box {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .kpi-val {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* --- INSIGHTS --- */
+        #insights {
+            padding: var(--section-spacing) 0;
+            background: var(--bg-secondary);
+        }
+
+        .doc-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .doc-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px;
+            background: var(--bg-primary);
+            border-left: 4px solid var(--glass-border);
+            transition: 0.3s;
+        }
+
+        .doc-item:hover {
+            border-left-color: var(--accent-cyan);
+            transform: translateX(10px);
+        }
+
+        .doc-meta {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+
+        .doc-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .download-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-cyan);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .download-btn:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-primary);
+        }
+
+        /* --- ABOUT & TIMELINE --- */
+        #about {
+            padding: var(--section-spacing) 0;
+        }
+
+        .timeline {
+            margin-top: 50px;
+            padding-left: 20px;
+            border-left: 2px solid var(--glass-border);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 40px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 5px;
+            width: 10px;
+            height: 10px;
+            background: var(--bg-primary);
+            border: 2px solid var(--accent-cyan);
+            border-radius: 50%;
+        }
+
+        .year {
+            font-weight: 700;
+            color: var(--accent-cyan);
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        /* --- CONTACT --- */
+        #contact {
+            padding: var(--section-spacing) 0;
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            text-align: center;
+        }
+
+        .contact-form {
+            max-width: 600px;
+            margin: 40px auto 0;
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            border-radius: 6px;
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            padding: 50px 0;
+            border-top: 1px solid var(--glass-border);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* --- TOAST --- */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--accent-cyan);
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-weight: 600;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2000;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 992px) {
+            .hero-title { font-size: 3rem; }
+            .grid-4 { grid-template-columns: 1fr; }
+            .flow-container { flex-direction: column; gap: 30px; }
+            .flow-line-bg { width: 2px; height: 100%; left: 50%; top: 0; }
+            .flow-step { width: 80%; }
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 70%;
+                height: 100vh;
+                background: var(--bg-secondary);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: 0.4s;
+                border-left: 1px solid var(--glass-border);
+            }
+            .nav-links.active { right: 0; }
+            .hamburger { display: flex; }
+            .section-title { font-size: 2rem; }
+            .nav-actions {
+                position: absolute;
+                top: 20px;
+                right: 60px;
+                border: none;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { transition: none !important; animation: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header id="navbar">
+        <div class="container nav-container">
+            <a href="#" class="logo">
+                <div class="logo-dot"></div>
+                DATAENERGY
+            </a>
+            <div class="nav-links">
+                <a href="#hero">
+                    <span class="en">Home</span><span class="cn">首页</span>
+                </a>
+                <a href="#businesses">
+                    <span class="en">Capabilities</span><span class="cn">核心能力</span>
+                </a>
+                <a href="#subsidiaries">
+                    <span class="en">Subsidiaries</span><span class="cn">组织架构</span>
+                </a>
+                <a href="#solutions">
+                    <span class="en">Solutions</span><span class="cn">解决方案</span>
+                </a>
+                <a href="#insights">
+                    <span class="en">Insights</span><span class="cn">洞察资源</span>
+                </a>
+                <a href="#contact">
+                    <span class="en">Contact</span><span class="cn">联系我们</span>
+                </a>
+            </div>
+            
+            <div class="nav-actions">
+                <button id="lang-btn" class="icon-btn">EN / 中</button>
+                <button id="theme-btn" class="icon-btn">☀</button>
+            </div>
+
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section id="hero">
+        <canvas id="hero-canvas"></canvas>
+        <div class="container hero-content">
+            <span class="section-subtitle reveal">
+                <span class="en">Singapore HQ</span><span class="cn">新加坡全球总部</span>
+            </span>
+            <h1 class="hero-title reveal">
+                <span class="en">Energy × Compute ×<br>Infrastructure</span>
+                <span class="cn">能源 × 算力 ×<br>基础设施</span>
+            </h1>
+            <p class="hero-subtitle reveal">
+                <span class="en">Powering the Green AI Era with OCP-Ready Standardized Delivery and Intelligent Digital Twins.</span>
+                <span class="cn">以 OCP Ready 标准化交付与智能数字孪生技术，驱动绿色 AI 时代。</span>
+            </p>
+            <div class="reveal">
+                <a href="#businesses" class="btn btn-primary">
+                    <span class="en">Explore Platform</span><span class="cn">探索平台</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quadrant Capabilities -->
+    <section id="businesses">
+        <div class="container">
+            <span class="section-subtitle reveal">
+                <span class="en">Core Pillars</span><span class="cn">核心支柱</span>
+            </span>
+            <h2 class="section-title reveal">
+                <span class="en">Integrated Digital Ecosystem</span><span class="cn">一体化数字生态系统</span>
+            </h2>
+            <div class="grid-4 reveal">
+                <!-- Card 1 -->
+                <div class="card">
+                    <div class="card-icon">▣</div>
+                    <h3>
+                        <span class="en">AIDC Infrastructure</span><span class="cn">AIDC 基础设施</span>
+                    </h3>
+                    <p>
+                        <span class="en">OCP-Ready high-density racks, blind-mate liquid cooling, and optimized structural design for generative AI workloads.</span>
+                        <span class="cn">面向生成式 AI 的 OCP Ready 高密度机架、盲插液冷技术及优化的结构设计。</span>
+                    </p>
+                </div>
+                <!-- Card 2 -->
+                <div class="card">
+                    <div class="card-icon">⚡</div>
+                    <h3>
+                        <span class="en">Green Energy Fusion</span><span class="cn">新能源融合</span>
+                    </h3>
+                    <p>
+                        <span class="en">Solid State Transformers (SST) and Flywheel Energy Storage ensuring microsecond-level grid stability.</span>
+                        <span class="cn">固态变压器 (SST) 与飞轮储能系统，保障微秒级电网稳定性。</span>
+                    </p>
+                </div>
+                <!-- Card 3 -->
+                <div class="card">
+                    <div class="card-icon">◈</div>
+                    <h3>
+                        <span class="en">Intelligent Ops</span><span class="cn">智能运维</span>
+                    </h3>
+                    <p>
+                        <span class="en">Digital Twin platform powered by CDF and MPC algorithms for extreme PUE optimization in tropical climates.</span>
+                        <span class="cn">基于 CDF 与 MPC 算法的数字孪生平台，在热带气候下实现极致 PUE 优化。</span>
+                    </p>
+                    <a href="https://dcdeeptech.com/mpc/" target="_blank" class="card-link">
+                        <span class="en">Explore MPC Algorithms</span><span class="cn">探索 MPC 算法</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+                <!-- Card 4 -->
+                <div class="card">
+                    <div class="card-icon">↗</div>
+                    <h3>
+                        <span class="en">Capital & Advisory</span><span class="cn">资本与咨询</span>
+                    </h3>
+                    <p>
+                        <span class="en">Asset recycling strategies and DC REITs management turning legacy IDCs into ESG-compliant assets.</span>
+                        <span class="cn">通过资产循环战略与 DC REITs 管理，将传统 IDC 转化为符合 ESG 标准的优质资产。</span>
+                    </p>
+                    <a href="https://dcdeeptech.com/fund/" target="_blank" class="card-link">
+                        <span class="en">View Green AIDC Fund</span><span class="cn">查看绿色 AIDC 基金</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Subsidiaries Matrix -->
+    <section id="subsidiaries">
+        <div class="container">
+            <span class="section-subtitle reveal">
+                <span class="en">Global Structure</span><span class="cn">全球架构</span>
+            </span>
+            <h2 class="section-title reveal">
+                <span class="en">Operational Matrix</span><span class="cn">运营矩阵</span>
+            </h2>
+            <div class="subsidiary-grid reveal">
+                
+                <!-- DCDeepTech -->
+                <div class="sub-card">
+                    <div class="sub-type">
+                        <span class="en">R&D & IP Holding</span><span class="cn">研发与知识产权</span>
+                    </div>
+                    <div class="sub-logo">dcdeeptech</div>
+                    <p>
+                        <span class="en">The innovation engine focused on next-gen cooling physics, open standards contribution, and proprietary control algorithms.</span>
+                        <span class="cn">专注于下一代冷却物理、开放标准贡献及专有控制算法的创新引擎。</span>
+                    </p>
+                    <div class="tech-tags">
+                        <span class="tag">OCP Member</span>
+                        <span class="tag">SST IP</span>
+                        <span class="tag">Liquid Cooling</span>
+                    </div>
+                    <a href="https://dcdeeptech.com" target="_blank" class="sub-link">
+                        <span class="en">Visit R&D Lab</span><span class="cn">访问研发实验室</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </a>
+                </div>
+
+                <!-- AxiomDeta -->
+                <div class="sub-card">
+                    <div class="sub-type">
+                        <span class="en">Precision Manufacturing</span><span class="cn">精密制造</span>
+                    </div>
+                    <div class="sub-logo">axiomdeta</div>
+                    <p>
+                        <span class="en">Advanced manufacturing JV ensuring supply chain resilience for high-precision OCP racks, manifolds, and power modules.</span>
+                        <span class="cn">确保高精度 OCP 机架、分水管及电源模块供应链韧性的先进制造合资企业。</span>
+                    </p>
+                    <div class="tech-tags">
+                        <span class="tag">Supply Chain</span>
+                        <span class="tag">Manufacturing</span>
+                        <span class="tag">QA/QC</span>
+                    </div>
+                    <a href="https://axiomdeta.com" target="_blank" class="sub-link">
+                        <span class="en">View Catalog</span><span class="cn">查看产品目录</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </a>
+                </div>
+
+                <!-- Chongqing JV -->
+                <div class="sub-card">
+                    <div class="sub-type">
+                        <span class="en">Strategic Deployment</span><span class="cn">战略部署</span>
+                    </div>
+                    <div class="sub-logo">
+                        <span class="en">Chongqing JV</span><span class="cn">重庆合资公司</span>
+                    </div>
+                    <p>
+                        <span class="en">Anchoring the "East Data West Computing" initiative. A hub for massive scale deployment connecting China and Singapore.</span>
+                        <span class="cn">锚定“东数西算”战略工程。连接中新两地的大规模部署枢纽。</span>
+                    </p>
+                    <div class="tech-tags">
+                        <span class="tag">Mega Campus</span>
+                        <span class="tag">Connectivity</span>
+                        <span class="tag">Cross-Border</span>
+                    </div>
+                    <span class="sub-link" style="opacity:0.5; cursor: default;">
+                        <span class="en">Internal Access Only</span><span class="cn">仅限内部访问</span>
+                    </span>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Solutions Flow -->
+    <section id="solutions">
+        <div class="container">
+            <span class="section-subtitle reveal">
+                <span class="en">End-to-End Value</span><span class="cn">端到端价值</span>
+            </span>
+            <h2 class="section-title reveal">
+                <span class="en">The Efficiency Pipeline</span><span class="cn">能效流水线</span>
+            </h2>
+            
+            <div class="flow-container reveal">
+                <div class="flow-line-bg"></div>
+                
+                <div class="flow-step">
+                    <h4>
+                        <span class="en">Green Energy</span><span class="cn">绿色能源</span>
+                    </h4>
+                    <p>
+                        <span class="en">Renewable Integration</span><span class="cn">可再生能源整合</span>
+                    </p>
+                    <div class="kpi-box"><span class="en">CO2 Impact</span><span class="cn">碳足迹影响</span> <span class="kpi-val" data-target="0">0</span>%</div>
+                </div>
+                
+                <div class="flow-step">
+                    <h4>
+                        <span class="en">Power Dist.</span><span class="cn">电力分发</span>
+                    </h4>
+                    <p>
+                        <span class="en">SST Transformation</span><span class="cn">SST 变压</span>
+                    </p>
+                    <div class="kpi-box"><span class="en">Efficiency</span><span class="cn">效率</span> <span class="kpi-val" data-target="99">0</span>%</div>
+                </div>
+
+                <div class="flow-step">
+                    <h4>
+                        <span class="en">OCP Rack</span><span class="cn">OCP 机架</span>
+                    </h4>
+                    <p>
+                        <span class="en">Blind-mate Ready</span><span class="cn">盲插就绪</span>
+                    </p>
+                    <div class="kpi-box"><span class="en">Deployment</span><span class="cn">部署速度</span> <span class="kpi-val" data-target="3">0</span>x</div>
+                </div>
+
+                <div class="flow-step">
+                    <h4>
+                        <span class="en">Liquid Cooling</span><span class="cn">液冷系统</span>
+                    </h4>
+                    <p>
+                        <span class="en">Direct-to-Chip</span><span class="cn">芯片级直冷</span>
+                    </p>
+                    <div class="kpi-box"><span class="en">Target PUE</span><span class="cn">目标 PUE</span> <span class="kpi-val" data-target="1.15" data-decimal="2">0</span></div>
+                </div>
+
+                <div class="flow-step">
+                    <h4>
+                        <span class="en">AI Compute</span><span class="cn">AI 算力</span>
+                    </h4>
+                    <p>
+                        <span class="en">HPC Optimization</span><span class="cn">高性能计算优化</span>
+                    </p>
+                    <div class="kpi-box"><span class="en">Thermal Safety</span><span class="cn">热安全</span> <span class="kpi-val" data-target="100">0</span>%</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Insights -->
+    <section id="insights">
+        <div class="container">
+            <span class="section-subtitle reveal">
+                <span class="en">Knowledge Base</span><span class="cn">知识库</span>
+            </span>
+            <h2 class="section-title reveal">
+                <span class="en">Technical Insights</span><span class="cn">技术洞察</span>
+            </h2>
+            
+            <div class="doc-list reveal">
+                <div class="doc-item">
+                    <div>
+                        <div class="doc-meta"><span class="en">Whitepaper • 2026</span><span class="cn">白皮书 • 2026</span></div>
+                        <div class="doc-title">
+                            <span class="en">Tropical Climate Data Center Operations: A 26°C Standard</span>
+                            <span class="cn">热带气候数据中心运营：26°C 新标准</span>
+                        </div>
+                    </div>
+                    <button class="download-btn" onclick="showToast('Downloading PDF...')">↓</button>
+                </div>
+
+                <div class="doc-item">
+                    <div>
+                        <div class="doc-meta"><span class="en">Technical Report • Q4 2025</span><span class="cn">技术报告 • 2025 Q4</span></div>
+                        <div class="doc-title">
+                            <span class="en">Stochastic MPC Algorithms for Cooling Optimization</span>
+                            <span class="cn">用于冷却优化的随机 MPC 算法</span>
+                        </div>
+                    </div>
+                    <button class="download-btn" onclick="showToast('Downloading PDF...')">↓</button>
+                </div>
+
+                <div class="doc-item">
+                    <div>
+                        <div class="doc-meta"><span class="en">Case Study • Asset Recycling</span><span class="cn">案例研究 • 资产循环</span></div>
+                        <div class="doc-title">
+                            <span class="en">Retrofitting Legacy IDCs for AI Workloads: ROI Analysis</span>
+                            <span class="cn">传统 IDC 改造以适应 AI 负载：ROI 分析</span>
+                        </div>
+                    </div>
+                    <button class="download-btn" onclick="showToast('Downloading PDF...')">↓</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section id="about">
+        <div class="container">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px;">
+                <div class="reveal">
+                    <span class="section-subtitle">
+                        <span class="en">Governance</span><span class="cn">公司治理</span>
+                    </span>
+                    <h2 class="section-title">
+                        <span class="en">Corporate Milestones</span><span class="cn">企业里程碑</span>
+                    </h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                        <span class="en">Headquartered in Singapore, DataEnergy adheres to the strictest ESG frameworks, providing institutional investors with transparent, verified data on carbon intensity and asset valuation.</span>
+                        <span class="cn">DataEnergy 总部位于新加坡，严格遵循 ESG 框架，为机构投资者提供透明、经过验证的碳强度与资产估值数据。</span>
+                    </p>
+                </div>
+                <div class="timeline reveal">
+                    <div class="timeline-item">
+                        <span class="year">2026</span>
+                        <p>
+                            <span class="en">Strategic Partnership for Chongqing "East Data West Computing" Hub.</span>
+                            <span class="cn">确立重庆“东数西算”枢纽战略合作伙伴关系。</span>
+                        </p>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">2025</span>
+                        <p>
+                            <span class="en">Formation of Manufacturing JV axiomdeta. OCP Membership confirmed.</span>
+                            <span class="cn">成立制造合资企业 axiomdeta。确认 OCP 会员资格。</span>
+                        </p>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">2024</span>
+                        <p>
+                            <span class="en">Established Singapore Global HQ. Launch of dcdeeptech R&D facility.</span>
+                            <span class="cn">设立新加坡全球总部。启动 dcdeeptech 研发设施。</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact">
+        <div class="container reveal">
+            <h2 class="section-title">
+                <span class="en">Connect with HQ</span><span class="cn">联系总部</span>
+            </h2>
+            <p style="color: var(--text-secondary); margin-bottom: 30px;">
+                <span class="en">Request access to our Investor Data Room or schedule a campus tour.</span>
+                <span class="cn">申请访问投资者数据室或预约园区参观。</span>
+            </p>
+
+            <!-- Added Address & WhatsApp Info -->
+            <div style="margin-bottom: 40px; padding: 20px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 8px; display: inline-block; text-align: left; min-width: 300px;">
+                <div style="margin-bottom: 20px;">
+                    <strong style="display:block; color: var(--accent-cyan); font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 5px;">ADDRESS / 地址</strong>
+                    <div style="font-size: 1.1rem; font-weight: 600;">71 Ayer Rajah Crescent, #02-01</div>
+                    <div style="color: var(--text-secondary);">Singapore 139951</div>
+                </div>
+                <div>
+                    <strong style="display:block; color: var(--accent-cyan); font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 5px;">WHATSAPP</strong>
+                    <a href="https://wa.me/6583785068" target="_blank" style="font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                        +65 8378 5068
+                    </a>
+                </div>
+            </div>
+            
+            <form class="contact-form" onsubmit="handleForm(event)">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Full Name / 姓名" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control" placeholder="Corporate Email / 企业邮箱" required>
+                </div>
+                <div class="form-group">
+                    <textarea class="form-control" rows="4" placeholder="Inquiry Details (e.g., Colocation, Hardware, Investment) / 咨询详情" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <span class="en">Submit Request</span><span class="cn">提交申请</span>
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="logo" style="justify-content: center; margin-bottom: 20px;">
+                <div class="logo-dot"></div> DATAENERGY
+            </div>
+            <p>&copy; 2026 DataEnergy Holding Company. All Rights Reserved.</p>
+            <p style="font-size: 0.8rem; margin-top: 10px; opacity: 0.6;">
+                <span class="en">Singapore HQ: 71 Ayer Rajah Crescent, #02-01 Singapore 139951 | Net Zero Commitment</span>
+                <span class="cn">新加坡总部：71 Ayer Rajah Crescent, #02-01 Singapore 139951 | 净零排放承诺</span>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Toast UI -->
+    <div id="toast" class="toast">Message Sent</div>
+
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        slate: { 850: '#151e2e', 950: '#020617' },
-                        cyan: { 400: '#22d3ee', 500: '#06b6d4', 950: '#083344' },
-                        emerald: { 400: '#34d399', 500: '#10b981', 950: '#022c22' }
-                    },
-                    animation: {
-                        'spin-slow': 'spin 10s linear infinite',
-                        'pulse-fast': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'shimmer': 'shimmer 2s linear infinite',
-                        'float': 'float 6s ease-in-out infinite',
-                        'border-flow': 'borderFlow 3s linear infinite',
-                    },
-                    keyframes: {
-                        shimmer: {
-                            '0%': { backgroundPosition: '-1000px 0' },
-                            '100%': { backgroundPosition: '1000px 0' }
-                        },
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' }
-                        },
-                        borderFlow: {
-                            '0%': { backgroundPosition: '0% 50%' },
-                            '50%': { backgroundPosition: '100% 50%' },
-                            '100%': { backgroundPosition: '0% 50%' }
-                        }
+        /* --- 1. THEME SWITCHER --- */
+        const themeBtn = document.getElementById('theme-btn');
+        const root = document.documentElement;
+        
+        themeBtn.addEventListener('click', () => {
+            const currentTheme = root.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            root.setAttribute('data-theme', newTheme);
+            themeBtn.innerText = newTheme === 'light' ? '☾' : '☀';
+        });
+
+        /* --- 2. LANGUAGE SWITCHER --- */
+        const langBtn = document.getElementById('lang-btn');
+        
+        // Set default lang
+        root.setAttribute('lang', 'en');
+
+        langBtn.addEventListener('click', () => {
+            const currentLang = root.getAttribute('lang');
+            const newLang = currentLang === 'en' ? 'zh' : 'en';
+            root.setAttribute('lang', newLang);
+            // langBtn.innerText = newLang === 'en' ? 'EN / 中' : '中 / EN'; 
+            // Button text stays static as "EN / 中" to indicate toggle function, or can update.
+        });
+
+        /* --- 3. MOBILE MENU --- */
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            // Animate hamburger lines if needed, or simple toggle
+        });
+
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+
+        /* --- 4. SCROLL NAVBAR --- */
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        /* --- 5. SCROLL REVEAL & KPI ANIMATION --- */
+        const observerOptions = { threshold: 0.15 };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    
+                    // Trigger KPI counters if inside a reveal block
+                    const counters = entry.target.querySelectorAll('.kpi-val');
+                    counters.forEach(counter => {
+                        animateValue(counter);
+                    });
+                    
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        function animateValue(obj) {
+            const target = parseFloat(obj.getAttribute('data-target'));
+            const isDecimal = obj.getAttribute('data-decimal');
+            let start = 0;
+            const duration = 2000;
+            const startTime = performance.now();
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                // EaseOutQuart
+                const ease = 1 - Math.pow(1 - progress, 4);
+                
+                const current = start + (target - start) * ease;
+                
+                if (isDecimal) {
+                    obj.innerText = current.toFixed(2);
+                } else {
+                    obj.innerText = Math.floor(current);
+                }
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                } else {
+                     if (isDecimal) obj.innerText = target.toFixed(2);
+                     else obj.innerText = target;
+                }
+            }
+            requestAnimationFrame(update);
+        }
+
+        /* --- 6. CANVAS ANIMATION (ENERGY NETWORK) --- */
+        const canvas = document.getElementById('hero-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+        const particleCount = window.innerWidth < 768 ? 40 : 80;
+        
+        // Resize
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Mouse interaction
+        const mouse = { x: null, y: null };
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+        });
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2 + 1;
+                this.pulse = Math.random() * Math.PI; // For pulsing effect
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.pulse += 0.05;
+
+                // Bounce
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+
+                // Mouse Repulsion
+                if (mouse.x != null) {
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx*dx + dy*dy);
+                    if (distance < 100) {
+                        const forceDirectionX = dx / distance;
+                        const forceDirectionY = dy / distance;
+                        const force = (100 - distance) / 100;
+                        this.vx -= forceDirectionX * force * 0.05;
+                        this.vy -= forceDirectionY * force * 0.05;
                     }
                 }
             }
+
+            draw() {
+                // Pulse opacity
+                const opacity = (Math.sin(this.pulse) + 1) / 2 * 0.5 + 0.2;
+                
+                // Determine color based on theme (simplified read)
+                const isDark = root.getAttribute('data-theme') !== 'light';
+                const color = isDark ? `rgba(0, 243, 255, ${opacity})` : `rgba(0, 119, 182, ${opacity})`;
+
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = color;
+                ctx.fill();
+            }
         }
-    </script>
 
-    <style>
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #22d3ee; }
-        .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .glass-strong { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
-        .neon-border { position: relative; border-radius: 0.5rem; z-index: 1; overflow: hidden; }
-        .neon-border::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(transparent, transparent, transparent, #06b6d4, transparent); animation: rotate 4s linear infinite; z-index: -2; }
-        .neon-border::after { content: ''; position: absolute; inset: 1px; background: #020617; border-radius: 0.5rem; z-index: -1; }
-        @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.5, 0, 0, 1); }
-        .reveal.active { opacity: 1; transform: translateY(0); }
-    </style>
-</head>
-<body class="bg-slate-950 text-slate-100 antialiased overflow-x-hidden selection:bg-cyan-500 selection:text-white">
-    <div id="root"></div>
+        // Init Particles
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
 
-    <script type="text/babel">
-        // --- ICONS ---
-        const Icons = {
-            Sun: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>,
-            Battery: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="16" height="10" x="2" y="7" rx="2" ry="2"/><line x1="22" x2="22" y1="11" y2="13"/></svg>,
-            Cpu: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>,
-            Shield: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>,
-            Zap: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>,
-            Globe: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>,
-            ArrowRight: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>,
-            Activity: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>,
-            Server: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></svg>,
-            CheckCircle: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>,
-            Menu: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
-            X: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>,
-            TrendingUp: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>,
-            Thermometer: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></svg>,
-            BrainCircuit: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M9 13a4.5 4.5 0 0 0 3-4"/><path d="M6.003 5.125A3 3 0 0 1 19.506 13"/><path d="M12 18a4 4 0 0 0 4-3.464 6.506 6.506 0 0 0 .98-3.396"/><path d="M20.2 17.2a4.5 4.5 0 0 1-6.6 2.4"/></svg>,
-            Network: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg>,
-            Layers: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>,
-            Tag: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></svg>,
-            Sparkles: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/></svg>,
-            Factory: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg>,
-            Scan: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>,
-            AlertTriangle: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>,
-            Gauge: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>
-        };
+        function animateCanvas() {
+            ctx.clearRect(0, 0, width, height);
+            
+            const isDark = root.getAttribute('data-theme') !== 'light';
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
 
-        // --- PARTICLE BACKGROUND ---
-        const ParticleBackground = () => {
-            const canvasRef = React.useRef(null);
-            React.useEffect(() => {
-                const canvas = canvasRef.current;
-                const ctx = canvas.getContext('2d');
-                let animationFrameId;
-                let particles = [];
-                let width = window.innerWidth;
-                let height = window.innerHeight;
+                // Draw connections
+                for (let j = i; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
 
-                const resize = () => {
-                    width = window.innerWidth;
-                    height = window.innerHeight;
-                    canvas.width = width;
-                    canvas.height = height;
-                    initParticles();
-                };
-
-                const initParticles = () => {
-                    particles = [];
-                    const count = width < 768 ? 40 : 80;
-                    for (let i = 0; i < count; i++) {
-                        particles.push({
-                            x: Math.random() * width,
-                            y: Math.random() * height,
-                            vx: (Math.random() - 0.5) * 0.5,
-                            vy: (Math.random() - 0.5) * 0.5,
-                            size: Math.random() * 2 + 1
-                        });
-                    }
-                };
-
-                const draw = () => {
-                    ctx.clearRect(0, 0, width, height);
-                    ctx.lineWidth = 0.5;
-                    for (let i = 0; i < particles.length; i++) {
-                        for (let j = i + 1; j < particles.length; j++) {
-                            const dx = particles[i].x - particles[j].x;
-                            const dy = particles[i].y - particles[j].y;
-                            const dist = Math.sqrt(dx * dx + dy * dy);
-                            if (dist < 150) {
-                                ctx.beginPath();
-                                ctx.strokeStyle = `rgba(6, 182, 212, ${1 - dist / 150})`;
-                                ctx.moveTo(particles[i].x, particles[i].y);
-                                ctx.lineTo(particles[j].x, particles[j].y);
-                                ctx.stroke();
-                            }
-                        }
-                    }
-                    particles.forEach(p => {
-                        p.x += p.vx;
-                        p.y += p.vy;
-                        if (p.x < 0 || p.x > width) p.vx *= -1;
-                        if (p.y < 0 || p.y > height) p.vy *= -1;
+                    if (distance < 150) {
                         ctx.beginPath();
-                        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                        ctx.fillStyle = '#22d3ee';
-                        ctx.fill();
-                    });
-                    animationFrameId = requestAnimationFrame(draw);
-                };
-                window.addEventListener('resize', resize);
-                resize();
-                draw();
-                return () => {
-                    window.removeEventListener('resize', resize);
-                    cancelAnimationFrame(animationFrameId);
-                };
-            }, []);
-            return <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none opacity-40 z-0" />;
-        };
-
-        // --- REVEAL WRAPPER ---
-        const Reveal = ({ children, delay = 0 }) => {
-            const ref = React.useRef(null);
-            const [isActive, setIsActive] = React.useState(false);
-            React.useEffect(() => {
-                const observer = new IntersectionObserver(([entry]) => {
-                    if (entry.isIntersecting) {
-                        setIsActive(true);
-                        observer.unobserve(entry.target);
-                    }
-                }, { threshold: 0.1 });
-                if (ref.current) observer.observe(ref.current);
-                return () => observer.disconnect();
-            }, []);
-            return (
-                <div ref={ref} className={`reveal ${isActive ? 'active' : ''}`} style={{ transitionDelay: `${delay}ms` }}>
-                    {children}
-                </div>
-            );
-        };
-
-        // --- MAIN APP ---
-        const DataEnergyWebsite = () => {
-            const [lang, setLang] = React.useState('zh'); 
-            const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-            const [scrolled, setScrolled] = React.useState(false);
-
-            React.useEffect(() => {
-                const handleScroll = () => { setScrolled(window.scrollY > 20); };
-                window.addEventListener('scroll', handleScroll);
-                return () => window.removeEventListener('scroll', handleScroll);
-            }, []);
-
-            const content = {
-                en: {
-                    nav: {
-                        tech: "Tech",
-                        ai: "AI Hub", 
-                        industrial: "Industry",
-                        safety: "Safety",
-                        contact: "Contact",
-                        switchBtn: "中文"
-                    },
-                    hero: {
-                        title: "Building the Cognitive Energy Infrastructure",
-                        subtitle: "Integrating Tier-1 HJT Technology with Edge AI to Power Singapore's Next-Gen Grid.",
-                        cta: "Explore Platform",
-                        stat1: "22.4% Efficiency",
-                        stat2: "<1% SOH Error",
-                        stat3: "OpenADR 2.0b"
-                    },
-                    stack: {
-                        title: "The Deep Tech Stack",
-                        muscle: { title: "HJT Smart Series", desc: "-0.24%/°C temp coeff. Optimized for tropics.", tag: "Tier-1 HJT Partner" },
-                        brain: { title: "Edge AI Core", desc: "RK3588 & PINN. Real-time cognitive processing.", tag: "DC Deep Tech" },
-                        shield: { title: "Yuan ESS", desc: "Three-in-One safety. Liquid-cooled active defense.", tag: "Infrastructure" }
-                    },
-                    ai: {
-                        title: "AI Empowerment Ecosystem",
-                        subtitle: "Five Pillars of Intelligent Energy",
-                        platforms: [
-                            { title: "Machine Learning", desc: "Automated load forecasting pipelines.", icon: "ml" },
-                            { title: "Knowledge Graph", desc: "Causal analysis of grid assets.", icon: "kg" },
-                            { title: "Deep Learning", desc: "PINN solving PDEs in real-time.", icon: "dl" },
-                            { title: "Smart Annotation", desc: "Auto-labeling thermal data.", icon: "ia" },
-                            { title: "Large Models (VLM)", desc: "Qwen & Gemini 3 agents.", icon: "vlm", highlight: "GenAI" }
-                        ]
-                    },
-                    industrial: {
-                        title: "Industrial Edge Intelligence",
-                        subtitle: "Localized AI for Manufacturing",
-                        tagline: "Low Latency • Privacy • Control",
-                        cards: [
-                            { title: "Predictive Maint.", desc: "Vibration analysis preventing motor failure.", icon: "gauge" },
-                            { title: "Visual Inspection", desc: "Edge AI drone/robot defect detection.", icon: "scan" },
-                            { title: "Safety AI", desc: "PPE detection & geofencing.", icon: "alert" },
-                            { title: "Smart Tracking", desc: "Cloud-sensing micro-tracking brackets.", icon: "factory" }
-                        ]
-                    },
-                    safety: {
-                        title: "Redefining Safety",
-                        subtitle: "Three-in-One Defense System",
-                        l1: { t: "Level 1: AI Prediction", d: "Detect internal shorts early." },
-                        l2: { t: "Level 2: Gas Sensing", d: "H2/CO detection in ms." },
-                        l3: { t: "Level 3: Suppression", d: "Active fire suppression." }
-                    },
-                    calc: {
-                        title: "ROI Calculator",
-                        desc: "Est. yield advantage with HJT.",
-                        areaLabel: "Roof Area (sqm)",
-                        result: "Est. Savings",
-                        advantage: "Tech Bonus"
-                    },
-                    footer: {
-                        rights: "© 2026 DataEnergy. All Rights Reserved.",
-                        address: "71 Ayer Rajah Crescent, Singapore"
-                    }
-                },
-                zh: {
-                    nav: {
-                        tech: "核心技术",
-                        ai: "AI 赋能",
-                        industrial: "工业智能",
-                        safety: "极致安全",
-                        contact: "联系",
-                        switchBtn: "EN"
-                    },
-                    hero: {
-                        title: "构建认知型能源基础设施",
-                        subtitle: "全球一级 HJT 技术与边缘 AI 的深度融合，赋能新加坡下一代电网。",
-                        cta: "探索平台",
-                        stat1: "22.4% 转换效率",
-                        stat2: "<1% SOH 误差",
-                        stat3: "OpenADR 2.0b"
-                    },
-                    stack: {
-                        title: "深度科技堆栈",
-                        muscle: { title: "HJT 智能组件系列", desc: "-0.24%/°C 极低温系，专为热带优化。", tag: "Tier-1 HJT 合作伙伴" },
-                        brain: { title: "大脑：边缘 AI 核心", desc: "RK3588 + PINN。实时认知处理能力。", tag: "Deep Tech" },
-                        shield: { title: "护盾：元 (Yuan) 储能", desc: "三合一安全体系，液冷主动防御。", tag: "基础设施" }
-                    },
-                    ai: {
-                        title: "AI 赋能中心",
-                        subtitle: "智能能源管理的五大基石",
-                        platforms: [
-                            { title: "机器学习平台", desc: "边缘侧负荷预测与维护模型训练。", icon: "ml" },
-                            { title: "知识图谱平台", desc: "全链路电网资产因果分析。", icon: "kg" },
-                            { title: "深度学习平台", desc: "PINN 实时求解微分方程。", icon: "dl" },
-                            { title: "智能标注平台", desc: "热成像数据自动化标注。", icon: "ia" },
-                            { title: "大模型 (VLM)", desc: "Qwen 与 Gemini 3 多模态智能体。", icon: "vlm", highlight: "GenAI" }
-                        ]
-                    },
-                    industrial: {
-                        title: "边缘 AI 工业解决方案",
-                        subtitle: "本地化算力重塑智能制造",
-                        tagline: "超低延迟 • 隐私优先 • 实时控制",
-                        cards: [
-                            { title: "预测性维护", desc: "边缘频谱分析，预判电机故障。", icon: "gauge" },
-                            { title: "视觉缺陷检测", desc: "边缘 AI 驱动的无人机/机器人巡检。", icon: "scan" },
-                            { title: "工厂安全 AI", desc: "PPE 穿戴检测与入侵报警。", icon: "alert" },
-                            { title: "智能微跟踪", desc: "基于云层感知的动态支架调节。", icon: "factory" }
-                        ]
-                    },
-                    safety: {
-                        title: "重新定义安全",
-                        subtitle: "数据中心级“三合一”防御",
-                        l1: { t: "防线 1：AI 预测", d: "PINN 提前数周识别内短路。" },
-                        l2: { t: "防线 2：气体探测", d: "毫秒级探测 H2/CO 气体。" },
-                        l3: { t: "防线 3：主动抑制", d: "全氟己酮阻断火灾蔓延。" }
-                    },
-                    calc: {
-                        title: "收益计算器",
-                        desc: "基于 HJT 卓越温系测算增益。",
-                        areaLabel: "屋顶面积 (m²)",
-                        result: "预估年省",
-                        advantage: "技术溢价"
-                    },
-                    footer: {
-                        rights: "© 2026 DataEnergy. 版权所有.",
-                        address: "新加坡 Ayer Rajah Crescent 71号"
+                        const alpha = (150 - distance) / 150 * 0.15;
+                        ctx.strokeStyle = isDark ? `rgba(0, 243, 255, ${alpha})` : `rgba(0, 119, 182, ${alpha})`;
+                        ctx.lineWidth = 1;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
                     }
                 }
-            };
+            }
+            requestAnimationFrame(animateCanvas);
+        }
+        animateCanvas();
 
-            const t = content[lang];
-            const getIcon = (type, className) => {
-                const props = { className: className };
-                switch(type) {
-                    case 'ml': return <Icons.BrainCircuit {...props} />;
-                    case 'kg': return <Icons.Network {...props} />;
-                    case 'dl': return <Icons.Layers {...props} />;
-                    case 'ia': return <Icons.Tag {...props} />;
-                    case 'vlm': return <Icons.Sparkles {...props} />;
-                    case 'gauge': return <Icons.Gauge {...props} />;
-                    case 'scan': return <Icons.Scan {...props} />;
-                    case 'alert': return <Icons.AlertTriangle {...props} />;
-                    case 'factory': return <Icons.Factory {...props} />;
-                    default: return <Icons.Cpu {...props} />;
-                }
-            };
-            const [area, setArea] = React.useState(1000);
-            const [savings, setSavings] = React.useState(0);
-            const [techBonus, setTechBonus] = React.useState(0);
-            React.useEffect(() => {
-                const capacityKW = area * 0.224;
-                const dailyGen = capacityKW * 4.5;
-                const baseAnnual = dailyGen * 365 * 0.30;
-                const bonus = baseAnnual * 0.05; 
-                setSavings(Math.round(baseAnnual + bonus));
-                setTechBonus(Math.round(bonus));
-            }, [area]);
+        /* --- 7. FORM & TOAST --- */
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
 
-            return (
-                <div className="min-h-screen relative">
-                    <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'glass-strong border-b border-slate-800 py-2' : 'bg-transparent py-4'}`}>
-                        <div className="max-w-7xl mx-auto px-4">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-8 h-8 bg-cyan-500 rounded flex items-center justify-center transform rotate-45 shadow-[0_0_15px_rgba(6,182,212,0.5)]">
-                                        <div className="w-4 h-4 bg-slate-950 transform -rotate-45" />
-                                    </div>
-                                    <span className="font-bold text-xl tracking-tighter text-white">DATA<span className="text-cyan-400">ENERGY</span></span>
-                                </div>
-                                <div className="hidden md:flex items-center space-x-6">
-                                    {['tech', 'ai', 'industrial', 'safety'].map(key => (
-                                        <a key={key} href={`#${key}`} className="text-sm font-medium text-slate-300 hover:text-cyan-400 transition-colors uppercase tracking-wide">
-                                            {t.nav[key]}
-                                        </a>
-                                    ))}
-                                    <button onClick={() => setLang(lang === 'en' ? 'zh' : 'en')} className="border border-slate-600 px-3 py-1 rounded text-xs hover:border-cyan-400 transition-colors text-slate-300">
-                                        {t.nav.switchBtn}
-                                    </button>
-                                </div>
-                                <div className="md:hidden">
-                                    <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-slate-300">
-                                        {isMenuOpen ? <Icons.X /> : <Icons.Menu />}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        {isMenuOpen && (
-                            <div className="md:hidden absolute top-full left-0 w-full glass-strong border-b border-slate-800 animate-fade-in-down">
-                                <div className="flex flex-col p-4 space-y-4">
-                                    {['tech', 'ai', 'industrial', 'safety'].map(key => (
-                                        <a key={key} href={`#${key}`} onClick={() => setIsMenuOpen(false)} className="text-base font-bold text-slate-300 hover:text-cyan-400">
-                                            {t.nav[key]}
-                                        </a>
-                                    ))}
-                                    <button onClick={() => { setLang(lang === 'en' ? 'zh' : 'en'); setIsMenuOpen(false); }} className="text-left text-base font-bold text-cyan-500">
-                                        {t.nav.switchBtn}
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                    </nav>
+        function handleForm(e) {
+            e.preventDefault();
+            const isEn = root.getAttribute('lang') === 'en';
+            showToast(isEn ? 'Message captured. (Demo Mode)' : '信息已接收 (演示模式)');
+            e.target.reset();
+        }
 
-                    <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
-                        <ParticleBackground />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent z-10"></div>
-                        <div className="relative z-20 max-w-7xl mx-auto px-4 text-center">
-                            <Reveal>
-                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/40 border border-cyan-800 text-cyan-400 text-xs font-bold mb-6 backdrop-blur-sm">
-                                    <span className="relative flex h-2 w-2">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
-                                    </span>
-                                    EMA Sandbox Ready
-                                </div>
-                                <h1 className="text-5xl md:text-7xl font-extrabold text-white tracking-tight mb-6 leading-tight">
-                                    {t.hero.title}
-                                </h1>
-                                <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-                                    {t.hero.subtitle}
-                                </p>
-                                <button className="group relative px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg transition-all shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_rgba(6,182,212,0.6)]">
-                                    <span className="flex items-center gap-2">
-                                        {t.hero.cta} <Icons.ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                                    </span>
-                                </button>
-                            </Reveal>
-                        </div>
-                    </section>
-
-                    <div className="relative z-20 -mt-20 mb-20">
-                        <div className="max-w-7xl mx-auto px-4">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                {[
-                                    { icon: Icons.Sun, color: "text-yellow-400", val: t.hero.stat1 },
-                                    { icon: Icons.Activity, color: "text-cyan-400", val: t.hero.stat2 },
-                                    { icon: Icons.Globe, color: "text-emerald-400", val: t.hero.stat3 }
-                                ].map((stat, i) => (
-                                    <Reveal key={i} delay={i * 100}>
-                                        <div className="glass p-6 rounded-xl flex items-center gap-4 border border-slate-800">
-                                            <stat.icon className={`w-8 h-8 ${stat.color}`} />
-                                            <span className="text-xl font-bold text-white">{stat.val}</span>
-                                        </div>
-                                    </Reveal>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    <section id="tech" className="py-20 relative">
-                        <div className="max-w-7xl mx-auto px-4">
-                            <Reveal>
-                                <h2 className="text-3xl font-bold text-white mb-12 text-center bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-emerald-400">
-                                    {t.stack.title}
-                                </h2>
-                            </Reveal>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                {[
-                                    { ...t.stack.muscle, icon: Icons.Sun, color: "text-yellow-400", border: "hover:border-yellow-500/50" },
-                                    { ...t.stack.brain, icon: Icons.Cpu, color: "text-cyan-400", border: "hover:border-cyan-500/50" },
-                                    { ...t.stack.shield, icon: Icons.Shield, color: "text-emerald-400", border: "hover:border-emerald-500/50" }
-                                ].map((item, i) => (
-                                    <Reveal key={i} delay={i * 150}>
-                                        <div className={`group glass p-8 rounded-2xl border border-slate-800 transition-all duration-500 hover:-translate-y-2 ${item.border}`}>
-                                            <div className="mb-6 inline-block p-3 rounded-full bg-slate-900 border border-slate-700 group-hover:scale-110 transition-transform">
-                                                <item.icon className={`w-8 h-8 ${item.color}`} />
-                                            </div>
-                                            <div className="text-xs font-mono text-slate-500 mb-2 uppercase tracking-widest">{item.tag}</div>
-                                            <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
-                                            <p className="text-slate-400 leading-relaxed">{item.desc}</p>
-                                        </div>
-                                    </Reveal>
-                                ))}
-                            </div>
-                        </div>
-                    </section>
-
-                    <section id="ai" className="py-20 bg-slate-900/50 relative overflow-hidden">
-                        <div className="absolute top-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-900 to-transparent"></div>
-                        <div className="max-w-7xl mx-auto px-4 relative z-10">
-                            <Reveal>
-                                <div className="text-center mb-16">
-                                    <h2 className="text-3xl font-bold text-white mb-4">{t.ai.title}</h2>
-                                    <p className="text-slate-400">{t.ai.subtitle}</p>
-                                </div>
-                            </Reveal>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {t.ai.platforms.map((platform, i) => (
-                                    <Reveal key={i} delay={i * 100}>
-                                        <div className="relative group bg-slate-950 p-6 rounded-xl border border-slate-800 hover:border-purple-500/50 transition-all overflow-hidden">
-                                            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                            <div className="relative z-10 flex items-start gap-4">
-                                                <div className="p-3 bg-slate-900 rounded-lg border border-slate-700 text-purple-400 group-hover:text-purple-300 transition-colors">
-                                                    {getIcon(platform.icon, "w-6 h-6")}
-                                                </div>
-                                                <div>
-                                                    <h3 className="font-bold text-white mb-1 flex items-center gap-2">
-                                                        {platform.title}
-                                                        {platform.highlight && <span className="text-[10px] bg-purple-900 text-purple-200 px-1.5 py-0.5 rounded">{platform.highlight}</span>}
-                                                    </h3>
-                                                    <p className="text-sm text-slate-400">{platform.desc}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Reveal>
-                                ))}
-                            </div>
-                        </div>
-                    </section>
-
-                    <section id="industrial" className="py-24 relative overflow-hidden">
-                        <div className="max-w-7xl mx-auto px-4 relative z-10">
-                            <Reveal>
-                                <div className="mb-12">
-                                    <span className="text-cyan-400 text-xs font-bold tracking-widest uppercase mb-2 block">Industrial 4.0</span>
-                                    <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">{t.industrial.title}</h2>
-                                    <p className="text-xl text-slate-400">{t.industrial.subtitle}</p>
-                                </div>
-                            </Reveal>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                {t.industrial.cards.map((card, i) => (
-                                    <Reveal key={i} delay={i * 150}>
-                                        <div className="neon-border bg-slate-950 p-6 h-full flex flex-col justify-between group cursor-default">
-                                            <div>
-                                                <div className="flex justify-between items-start mb-4">
-                                                    <div className="text-cyan-400 group-hover:scale-110 transition-transform duration-300">
-                                                        {getIcon(card.icon, "w-10 h-10")}
-                                                    </div>
-                                                    <span className="text-slate-700 font-mono text-xs">0{i+1}</span>
-                                                </div>
-                                                <h3 className="text-lg font-bold text-white mb-2">{card.title}</h3>
-                                                <p className="text-sm text-slate-400">{card.desc}</p>
-                                            </div>
-                                            <div className="w-full h-0.5 bg-slate-800 mt-4 overflow-hidden rounded-full">
-                                                <div className="h-full bg-cyan-400 w-0 group-hover:w-full transition-all duration-700"></div>
-                                            </div>
-                                        </div>
-                                    </Reveal>
-                                ))}
-                            </div>
-                        </div>
-                    </section>
-
-                    <section id="safety" className="py-20 bg-slate-900/30">
-                        <div className="max-w-7xl mx-auto px-4">
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                                <Reveal>
-                                    <div>
-                                        <h2 className="text-3xl font-bold text-white mb-6">{t.safety.title}</h2>
-                                        <div className="space-y-6">
-                                            {[t.safety.l1, t.safety.l2, t.safety.l3].map((level, i) => (
-                                                <div key={i} className="flex gap-4 p-4 rounded-lg bg-emerald-950/20 border border-emerald-900/50 hover:border-emerald-500/50 transition-colors">
-                                                    <div className="w-8 h-8 rounded-full bg-emerald-900 flex items-center justify-center text-emerald-400 font-bold shrink-0">{i+1}</div>
-                                                    <div>
-                                                        <h4 className="text-emerald-300 font-bold">{level.t}</h4>
-                                                        <p className="text-slate-400 text-sm">{level.d}</p>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </Reveal>
-                                <Reveal delay={200}>
-                                    <div className="relative h-80 bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden flex items-center justify-center">
-                                        <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(6,182,212,0.1)_50%,transparent_75%)] bg-[length:250%_250%] animate-shimmer"></div>
-                                        <div className="grid grid-cols-4 gap-2 opacity-30">
-                                            {[...Array(16)].map((_,i) => <div key={i} className="w-8 h-12 bg-emerald-500 rounded-sm"></div>)}
-                                        </div>
-                                        <div className="absolute bottom-4 right-4 text-xs font-mono text-emerald-500 flex items-center gap-2">
-                                            <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                                            SYSTEM SECURE
-                                        </div>
-                                    </div>
-                                </Reveal>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section className="py-20">
-                        <div className="max-w-3xl mx-auto px-4">
-                            <Reveal>
-                                <div className="glass-strong rounded-2xl p-8 border border-slate-700 shadow-2xl">
-                                    <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-3">
-                                        <Icons.TrendingUp className="text-cyan-400" /> {t.calc.title}
-                                    </h2>
-                                    <div className="space-y-8">
-                                        <div>
-                                            <div className="flex justify-between text-slate-300 mb-2 text-sm">
-                                                <span>{t.calc.areaLabel}</span>
-                                                <span className="text-cyan-400 font-mono">{area} m²</span>
-                                            </div>
-                                            <input 
-                                                type="range" min="100" max="5000" step="100" 
-                                                value={area} onChange={(e) => setArea(Number(e.target.value))}
-                                                className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"
-                                            />
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="bg-slate-900 p-4 rounded-lg border border-slate-800 text-center">
-                                                <div className="text-xs text-slate-500 uppercase">{t.calc.advantage}</div>
-                                                <div className="text-emerald-400 font-mono font-bold text-lg">+${techBonus}</div>
-                                            </div>
-                                            <div className="bg-cyan-950/30 p-4 rounded-lg border border-cyan-900 text-center">
-                                                <div className="text-xs text-cyan-500 uppercase">{t.calc.result}</div>
-                                                <div className="text-white font-mono font-bold text-2xl">${savings}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Reveal>
-                        </div>
-                    </section>
-
-                    <footer className="py-8 border-t border-slate-900 text-center text-slate-600 text-sm">
-                        <p>{t.footer.rights}</p>
-                        <p className="mt-1">{t.footer.address}</p>
-                        <p className="mt-1 text-xs text-slate-700">Cognitive Energy Infrastructure for the AI Era.</p>
-                    </footer>
-                </div>
-            );
-        };
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<DataEnergyWebsite />);
     </script>
 </body>
 </html>
