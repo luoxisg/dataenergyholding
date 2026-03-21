@@ -195,27 +195,127 @@ section{position:relative;z-index:2}
 .eco-card:nth-child(3) .eco-link{color:var(--gold)}
 .eco-card:hover .eco-link{opacity:1; transform:translateX(5px)}
 
-/* ECOSYSTEM REFERENCES */
-#references{padding:140px 0}
-.ref-header{text-align:center;margin-bottom:28px}
-.ref-h2{font-family:var(--serif);font-size:clamp(40px,4vw,64px);font-weight:300;letter-spacing:-0.02em;line-height:1.15;margin-bottom:24px}
-.ref-intro{font-size:clamp(17px, 2vw, 20px);line-height:1.9;color:var(--text-dim);max-width:680px;margin:0 auto 80px}
-.ref-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px; perspective: 1000px;}
-.ref-card{background:var(--glass);border:1px solid var(--glass-border);padding:60px 48px;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;border-radius: 8px;}
-.ref-logo-wrap{height:64px;display:flex;align-items:center;margin-bottom:36px;filter:brightness(0.7) grayscale(0.4);transition:filter 0.4s; transform:translateZ(20px)}
-.ref-card:hover .ref-logo-wrap{filter:brightness(1.1) grayscale(0)}
-.ref-logo-wrap img{max-height:100%;max-width:180px;object-fit:contain;display:block}
-.ref-brand{font-family:var(--sans);font-size:18px;font-weight:600;letter-spacing:0.04em;color:var(--text);margin-bottom:14px; transform:translateZ(10px)}
-.ref-desc{font-size:17px;line-height:1.8;color:var(--text-dim);flex:1;margin-bottom:36px}
-.ref-btn{font-family:var(--mono);font-size:12px;letter-spacing:0.18em;text-transform:uppercase;padding:12px 24px;border:1px solid var(--glass-border);color:var(--text-dim);text-decoration:none;transition:all 0.3s;background:transparent;display:inline-block;margin-top:auto; border-radius: 4px;}
-.ref-btn:hover{border-color:rgba(0,212,255,0.5);color:var(--cyan);background:rgba(0,212,255,0.06); transform:translateY(-2px)}
-.ref-align-note{text-align:center;margin-top:56px}
-.ref-align-note p{font-family:var(--mono);font-size:13px;letter-spacing:0.15em;color:var(--text-faint);opacity:0.7}
-
 /* eco-unit logos */
 .eco-logo-wrap{height:56px;display:flex;align-items:center;margin-bottom:32px;filter:brightness(0.8);transition:filter 0.4s}
 .eco-card:hover .eco-logo-wrap{filter:brightness(1.1)}
 .eco-logo-wrap img{max-height:100%;max-width:160px;object-fit:contain;display:block}
+
+/* =========================================================
+   ECOSYSTEM REFERENCES (PREMIUM OPTIMIZED)
+   ========================================================= */
+#references { padding:140px 0; position: relative; z-index: 5; }
+.ref-header { text-align:center; margin-bottom:28px; }
+.ref-h2 { font-family:var(--serif); font-size:clamp(40px,4vw,64px); font-weight:300; letter-spacing:-0.02em; line-height:1.15; margin-bottom:24px; }
+.ref-intro { font-size:clamp(20px, 2.5vw, 24px); line-height:1.8; color:var(--text-dim); max-width:800px; margin:0 auto 80px; }
+
+.ref-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; perspective: 1200px; }
+
+/* Premium Reference Card Container */
+.ref-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 48px 40px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  transition: transform 0.4s cubic-bezier(0.1, 1, 0.3, 1), border-color 0.4s, box-shadow 0.4s;
+}
+
+/* Neutral Plate for White Background Logos */
+.ref-logo-stage {
+  width: 100%; 
+  height: 140px; 
+  background: linear-gradient(145deg, #f8f9fa, #e2e6ea); 
+  border-radius: 12px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  padding: 30px; 
+  margin-bottom: 48px; 
+  box-shadow: inset 0 2px 8px rgba(255,255,255,0.8), 0 12px 24px rgba(0,0,0,0.6); 
+  border: 1px solid rgba(255,255,255,0.1); 
+  position: relative; 
+  transform: translateZ(20px);
+}
+/* Inner inset border for physical realism */
+.ref-logo-stage::after { 
+  content: ''; position: absolute; inset: 0; border-radius: 12px; 
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04); pointer-events: none; 
+}
+
+/* Multiply blend mode is the magic here. 
+  It makes the white background of the image disappear into the light gray stage, 
+  leaving just the logo graphic and eliminating the harsh "white box" effect.
+*/
+.ref-logo-stage img {
+  max-height: 100%; 
+  max-width: 200px; 
+  object-fit: contain; 
+  display: block; 
+  filter: grayscale(1) opacity(0.75); 
+  mix-blend-mode: multiply; 
+  transition: all 0.5s cubic-bezier(0.1, 1, 0.3, 1);
+}
+
+/* Hover States for Hierarchy & Motion */
+.ref-card:hover {
+  border-color: rgba(255,255,255,0.18);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 50px rgba(0,212,255,0.06);
+}
+.ref-card:hover .ref-logo-stage img { 
+  filter: grayscale(0) opacity(1); 
+  transform: scale(1.05); 
+}
+
+/* Typography Scale adjustment: 1.5x larger body, close gap to subtitle */
+.ref-brand {
+  font-family: var(--sans);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  margin-bottom: 16px; 
+  transform: translateZ(10px);
+}
+.ref-desc {
+  font-size: 22px;
+  line-height: 1.7;
+  color: var(--text-dim);
+  flex: 1;
+  margin-bottom: 48px; 
+  font-weight: 400;
+}
+
+/* Refined External Link Button */
+.ref-btn {
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 16px 24px;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: all 0.3s;
+  background: rgba(255,255,255,0.02);
+  display: block; 
+  width: 100%; 
+  text-align: center; 
+  margin-top: auto; 
+  border-radius: 8px;
+}
+.ref-btn:hover {
+  border-color: rgba(0,212,255,0.4);
+  color: var(--cyan);
+  background: rgba(0,212,255,0.08); 
+  box-shadow: 0 4px 20px rgba(0,212,255,0.15); 
+}
+
+.ref-align-note { text-align:center; margin-top:64px; }
+.ref-align-note p { font-family:var(--mono); font-size:15px; letter-spacing:0.15em; color:var(--text-faint); opacity:0.8; }
 
 /* SINGAPORE */
 #singapore{padding:140px 0}
@@ -295,8 +395,15 @@ footer{padding:80px 0 50px;border-top:1px solid var(--glass-border)}
   .d-card{padding:50px 32px}
   #ecosystem{padding:100px 0}
   .eco-units{grid-template-columns:1fr;gap:16px}
+  
+  /* Reference Responsive */
   #references{padding:100px 0}
-  .ref-cards{grid-template-columns:1fr;gap:16px}
+  .ref-cards{grid-template-columns:1fr;gap:24px}
+  .ref-brand { font-size: 24px; }
+  .ref-desc { font-size: 19px; }
+  .ref-logo-stage { height: 120px; margin-bottom: 32px; padding: 24px; }
+  .ref-card { padding: 40px 32px; }
+
   #singapore{padding:100px 0}
   .sg-inner{grid-template-columns:1fr;gap:60px; text-align:center;}
   .sg-p {margin-left: auto; margin-right: auto;}
@@ -317,6 +424,12 @@ footer{padding:80px 0 50px;border-top:1px solid var(--glass-border)}
   .eco-card{padding:40px 24px}
   .sg-block{padding:36px 24px}
   .contact-inner{gap:50px}
+  
+  /* Reference Mobile */
+  .ref-brand { font-size: 22px; }
+  .ref-desc { font-size: 18px; margin-bottom: 32px; }
+  .ref-logo-stage { height: 100px; margin-bottom: 24px; padding: 20px; }
+  .ref-card { padding: 32px 24px; border-radius: 12px; }
 }
 </style>
 </head>
@@ -518,7 +631,7 @@ footer{padding:80px 0 50px;border-top:1px solid var(--glass-border)}
 
 <div class="divider"></div>
 
-<!-- ECOSYSTEM REFERENCES -->
+<!-- ECOSYSTEM REFERENCES (Premium Redesign) -->
 <section id="references">
   <div class="container">
     <div class="ref-header fade-up">
@@ -530,7 +643,7 @@ footer{padding:80px 0 50px;border-top:1px solid var(--glass-border)}
     <div class="ref-cards">
       <!-- OCP -->
       <div class="ref-card card-3d fade-up">
-        <div class="ref-logo-wrap">
+        <div class="ref-logo-stage">
           <img src="/images/ocp.jpg" alt="Open Compute Project">
         </div>
         <div class="ref-brand">Open Compute Project</div>
@@ -540,7 +653,7 @@ footer{padding:80px 0 50px;border-top:1px solid var(--glass-border)}
 
       <!-- OpenRouter -->
       <div class="ref-card card-3d fade-up" style="transition-delay:0.1s">
-        <div class="ref-logo-wrap">
+        <div class="ref-logo-stage">
           <img src="/images/or.jpg" alt="OpenRouter">
         </div>
         <div class="ref-brand">OpenRouter</div>
@@ -550,7 +663,7 @@ footer{padding:80px 0 50px;border-top:1px solid var(--glass-border)}
 
       <!-- NVIDIA -->
       <div class="ref-card card-3d fade-up" style="transition-delay:0.2s">
-        <div class="ref-logo-wrap">
+        <div class="ref-logo-stage">
           <img src="/images/nvidia.jpg" alt="NVIDIA">
         </div>
         <div class="ref-brand">NVIDIA</div>
