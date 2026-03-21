@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DataEnergy Holding — Strategic Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#04060f;
+  --ink2:#070c1a;
+  --surface:#0a0e1f;
+  --glass:rgba(255,255,255,0.03);
+  --glass-border:rgba(255,255,255,0.07);
+  --cyan:#00d4ff;
+  --cyan-dim:rgba(0,212,255,0.12);
+  --cyan-glow:rgba(0,212,255,0.25);
+  --blue:#1a6fff;
+  --blue-dim:rgba(26,111,255,0.1);
+  --violet:#7c5cfc;
+  --gold:#c8a96e;
+  --gold-dim:rgba(200,169,110,0.12);
+  --text:#e8eaf2;
+  --text-dim:#8890b0;
+  --text-faint:#4a5070;
+  --serif:'Cormorant Garamond',serif;
+  --sans:'Syne',sans-serif;
+  --mono:'DM Mono',monospace;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--ink);color:var(--text);font-family:var(--sans);overflow-x:hidden}
+
+/* CANVAS BG */
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:22px 60px;display:flex;align-items:center;justify-content:space-between;transition:all 0.5s cubic-bezier(.16,1,.3,1)}
+nav.scrolled{background:rgba(4,6,15,0.9);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);padding:14px 60px;border-bottom:1px solid var(--glass-border)}
+.nav-logo{font-family:var(--mono);font-weight:300;font-size:13px;letter-spacing:0.12em;color:var(--cyan);text-decoration:none;white-space:nowrap}
+.nav-logo span{color:var(--text-dim)}
+.nav-links{display:flex;align-items:center;gap:36px}
+.nav-links a{font-family:var(--mono);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-dim);text-decoration:none;transition:color 0.3s;position:relative;white-space:nowrap}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--cyan);transition:width 0.3s}
+.nav-links a:hover,.nav-links a.active{color:var(--text)}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.nav-cta{font-family:var(--mono);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--cyan);border:1px solid rgba(0,212,255,0.3);padding:10px 22px;text-decoration:none;transition:all 0.3s;background:rgba(0,212,255,0.04);white-space:nowrap}
+.nav-cta:hover{background:rgba(0,212,255,0.12);border-color:rgba(0,212,255,0.6)}
+.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.nav-hamburger span{display:block;width:22px;height:1.5px;background:var(--text-dim);transition:all 0.3s}
+.mobile-menu{display:none;position:fixed;inset:0;background:rgba(4,6,15,0.97);z-index:90;flex-direction:column;align-items:center;justify-content:center;gap:32px}
+.mobile-menu.open{display:flex}
+.mobile-menu a{font-family:var(--mono);font-size:14px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-dim);text-decoration:none;transition:color 0.3s}
+.mobile-menu a:hover{color:var(--cyan)}
+.mobile-close{position:absolute;top:28px;right:28px;font-family:var(--mono);font-size:20px;color:var(--text-faint);cursor:pointer;background:none;border:none}
+
+/* SECTIONS COMMON */
+section{position:relative;z-index:2}
+.container{max-width:1200px;margin:0 auto;padding:0 60px}
+.section-label{font-family:var(--mono);font-size:11px;letter-spacing:0.25em;text-transform:uppercase;color:var(--cyan);margin-bottom:20px;opacity:0.85}
+
+/* HERO */
+#hero{height:100vh;min-height:680px;display:flex;align-items:center;position:relative;overflow:hidden}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px);background-size:70px 70px;opacity:0.8}
+.hero-glow{position:absolute;top:20%;left:50%;transform:translateX(-50%);width:900px;height:500px;background:radial-gradient(ellipse,rgba(26,111,255,0.12) 0%,rgba(0,212,255,0.04) 40%,transparent 70%);filter:blur(40px);pointer-events:none}
+.hero-content{position:relative;z-index:3;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;width:100%;max-width:1200px;margin:0 auto;padding:0 60px}
+.hero-left{padding-top:40px}
+.hero-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:var(--cyan);margin-bottom:28px;opacity:0}
+.hero-h1{font-family:var(--serif);font-size:clamp(48px,5.5vw,80px);font-weight:300;line-height:1.06;letter-spacing:-0.02em;margin-bottom:28px;opacity:0}
+.hero-h1 em{font-style:italic;color:var(--cyan)}
+.hero-sub{font-family:var(--sans);font-size:17px;font-weight:400;line-height:1.65;color:var(--text-dim);max-width:480px;margin-bottom:18px;opacity:0}
+.hero-p{font-size:15px;line-height:1.85;color:var(--text-faint);max-width:460px;margin-bottom:48px;opacity:0}
+.hero-btns{display:flex;gap:16px;flex-wrap:wrap;opacity:0}
+.btn-primary{font-family:var(--mono);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;padding:14px 32px;background:var(--cyan);color:var(--ink);text-decoration:none;transition:all 0.3s;font-weight:400;display:inline-block}
+.btn-primary:hover{background:#fff;box-shadow:0 0 40px rgba(0,212,255,0.35)}
+.btn-ghost{font-family:var(--mono);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;padding:14px 32px;border:1px solid var(--glass-border);color:var(--text-dim);text-decoration:none;transition:all 0.3s;display:inline-block}
+.btn-ghost:hover{border-color:rgba(0,212,255,0.4);color:var(--text)}
+.hero-tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:40px;opacity:0}
+.hero-tag{font-family:var(--mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;padding:7px 14px;border:1px solid var(--glass-border);color:var(--text-faint);background:var(--glass)}
+.hero-right{position:relative;height:480px;display:flex;align-items:center;justify-content:center}
+#chain-canvas{width:100%;height:100%;display:block}
+
+/* SCROLL REVEAL */
+.fade-up{opacity:0;transform:translateY(32px);transition:opacity 0.85s cubic-bezier(.16,1,.3,1),transform 0.85s cubic-bezier(.16,1,.3,1)}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+.fade-left{opacity:0;transform:translateX(-28px);transition:opacity 0.85s cubic-bezier(.16,1,.3,1),transform 0.85s cubic-bezier(.16,1,.3,1)}
+.fade-left.visible{opacity:1;transform:translateX(0)}
+
+/* DIVIDER */
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,0.18),transparent);margin:0 60px}
+
+/* PLATFORM NARRATIVE */
+#platform{padding:130px 0}
+.narrative-header{text-align:center;margin-bottom:72px}
+.narrative-h2{font-family:var(--serif);font-size:clamp(36px,3.8vw,58px);font-weight:300;letter-spacing:-0.02em;line-height:1.15;margin-bottom:22px}
+.narrative-p{font-size:16px;line-height:1.9;color:var(--text-dim);max-width:600px;margin:0 auto}
+.narrative-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:56px}
+.n-card{background:var(--glass);border:1px solid var(--glass-border);padding:52px 40px;position:relative;overflow:hidden;transition:all 0.4s cubic-bezier(.16,1,.3,1)}
+.n-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,212,255,0.04),transparent);opacity:0;transition:opacity 0.4s}
+.n-card:hover{transform:translateY(-5px);border-color:rgba(0,212,255,0.2);box-shadow:0 24px 64px rgba(0,0,0,0.45)}
+.n-card:hover::before{opacity:1}
+.n-card-num{font-family:var(--mono);font-size:11px;letter-spacing:0.2em;color:var(--text-faint);margin-bottom:32px}
+.n-card-title{font-family:var(--serif);font-size:32px;font-weight:400;margin-bottom:16px;letter-spacing:-0.01em}
+.n-card-text{font-size:15px;line-height:1.8;color:var(--text-dim)}
+.n-card-line{position:absolute;bottom:0;left:0;width:0;height:2px;background:linear-gradient(90deg,var(--cyan),transparent);transition:width 0.5s cubic-bezier(.16,1,.3,1)}
+.n-card:hover .n-card-line{width:100%}
+
+/* DOMAINS */
+#domains{padding:130px 0;background:linear-gradient(180deg,transparent,rgba(26,111,255,0.025),transparent)}
+.domains-header{margin-bottom:72px}
+.domains-h2{font-family:var(--serif);font-size:clamp(36px,3.8vw,58px);font-weight:300;letter-spacing:-0.02em;line-height:1.15;margin-bottom:20px;max-width:560px}
+.domains-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px}
+.d-card{background:var(--glass);border:1px solid var(--glass-border);padding:60px 52px;position:relative;overflow:hidden;transition:all 0.5s cubic-bezier(.16,1,.3,1)}
+.d-card-glow{position:absolute;inset:0;opacity:0;transition:opacity 0.5s}
+.d-card:nth-child(1) .d-card-glow{background:radial-gradient(circle at 0% 100%,rgba(0,212,255,0.07),transparent 60%)}
+.d-card:nth-child(2) .d-card-glow{background:radial-gradient(circle at 100% 0%,rgba(26,111,255,0.07),transparent 60%)}
+.d-card:nth-child(3) .d-card-glow{background:radial-gradient(circle at 0% 0%,rgba(124,92,252,0.07),transparent 60%)}
+.d-card:nth-child(4) .d-card-glow{background:radial-gradient(circle at 100% 100%,rgba(200,169,110,0.07),transparent 60%)}
+.d-card:hover{transform:scale(1.012);border-color:rgba(255,255,255,0.1)}
+.d-card:hover .d-card-glow{opacity:1}
+.d-num{font-family:var(--mono);font-size:11px;letter-spacing:0.2em;color:var(--text-faint);margin-bottom:36px}
+.d-accent{width:3px;height:44px;margin-bottom:28px}
+.d-card:nth-child(1) .d-accent{background:linear-gradient(180deg,var(--cyan),transparent)}
+.d-card:nth-child(2) .d-accent{background:linear-gradient(180deg,var(--blue),transparent)}
+.d-card:nth-child(3) .d-accent{background:linear-gradient(180deg,var(--violet),transparent)}
+.d-card:nth-child(4) .d-accent{background:linear-gradient(180deg,var(--gold),transparent)}
+.d-title{font-family:var(--serif);font-size:44px;font-weight:300;letter-spacing:-0.02em;margin-bottom:14px}
+.d-sub{font-family:var(--mono);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-faint);margin-bottom:24px;line-height:1.6}
+.d-text{font-size:15px;line-height:1.9;color:var(--text-dim);max-width:380px}
+.d-card:nth-child(1) .d-title{color:var(--cyan)}
+.d-card:nth-child(2) .d-title{color:#6fa8ff}
+.d-card:nth-child(3) .d-title{color:#a48fff}
+.d-card:nth-child(4) .d-title{color:var(--gold)}
+
+/* ECOSYSTEM */
+#ecosystem{padding:130px 0;position:relative;overflow:hidden}
+.eco-bg{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:900px;height:900px;background:radial-gradient(circle,rgba(26,111,255,0.05) 0%,transparent 65%);pointer-events:none}
+.eco-header{text-align:center;margin-bottom:24px}
+.eco-h2{font-family:var(--serif);font-size:clamp(36px,3.8vw,58px);font-weight:300;letter-spacing:-0.02em;line-height:1.15;margin-bottom:20px}
+.eco-intro{font-size:16px;line-height:1.9;color:var(--text-dim);max-width:580px;margin:0 auto 72px}
+.eco-hub-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:0}
+.eco-hub-card{background:rgba(0,212,255,0.04);border:1px solid rgba(0,212,255,0.18);padding:28px 56px;text-align:center;position:relative;backdrop-filter:blur(8px)}
+.eco-hub-label{font-family:var(--mono);font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--cyan);margin-bottom:8px;opacity:0.75}
+.eco-hub-name{font-family:var(--serif);font-size:24px;font-weight:400;letter-spacing:-0.01em}
+.eco-line-v{width:1px;height:44px;background:linear-gradient(180deg,rgba(0,212,255,0.35),rgba(0,212,255,0.08))}
+.eco-branch{position:relative;height:36px}
+.eco-branch svg{position:absolute;inset:0;width:100%;height:100%}
+.eco-units{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.eco-card{background:var(--glass);border:1px solid var(--glass-border);padding:48px 36px;position:relative;overflow:hidden;transition:all 0.4s cubic-bezier(.16,1,.3,1);text-decoration:none;display:block;color:inherit}
+.eco-card:nth-child(1),.eco-card:nth-child(2){border-top:2px solid rgba(0,212,255,0.25)}
+.eco-card:nth-child(3){border-top:2px solid rgba(200,169,110,0.25)}
+.eco-card:hover{transform:translateY(-6px);box-shadow:0 32px 80px rgba(0,0,0,0.5)}
+.eco-card:nth-child(1):hover,.eco-card:nth-child(2):hover{border-color:rgba(0,212,255,0.2)}
+.eco-card:nth-child(3):hover{border-color:rgba(200,169,110,0.2)}
+.eco-label{display:inline-block;font-family:var(--mono);font-size:9px;letter-spacing:0.22em;text-transform:uppercase;padding:5px 12px;border:1px solid rgba(0,212,255,0.22);color:var(--cyan);margin-bottom:24px;background:rgba(0,212,255,0.04)}
+.eco-card:nth-child(3) .eco-label{border-color:rgba(200,169,110,0.22);color:var(--gold);background:rgba(200,169,110,0.04)}
+.eco-name{font-family:var(--serif);font-size:32px;font-weight:400;letter-spacing:-0.01em;margin-bottom:16px}
+.eco-text{font-size:15px;line-height:1.8;color:var(--text-dim);margin-bottom:28px}
+.eco-link{font-family:var(--mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--cyan);opacity:0.6;transition:opacity 0.3s}
+.eco-card:nth-child(3) .eco-link{color:var(--gold)}
+.eco-card:hover .eco-link{opacity:1}
+
+/* ECOSYSTEM REFERENCES */
+#references{padding:130px 0}
+.ref-header{text-align:center;margin-bottom:24px}
+.ref-h2{font-family:var(--serif);font-size:clamp(36px,3.8vw,58px);font-weight:300;letter-spacing:-0.02em;line-height:1.15;margin-bottom:20px}
+.ref-intro{font-size:16px;line-height:1.9;color:var(--text-dim);max-width:620px;margin:0 auto 72px}
+.ref-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.ref-card{background:var(--glass);border:1px solid var(--glass-border);padding:52px 40px;position:relative;overflow:hidden;transition:all 0.4s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column;align-items:flex-start}
+.ref-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity 0.5s;background:radial-gradient(circle at 50% 0%,rgba(255,255,255,0.03),transparent 60%)}
+.ref-card:hover{transform:translateY(-5px);border-color:rgba(255,255,255,0.12);box-shadow:0 24px 64px rgba(0,0,0,0.45)}
+.ref-card:hover::before{opacity:1}
+.ref-logo-wrap{height:56px;display:flex;align-items:center;margin-bottom:32px;filter:brightness(0.75) grayscale(0.3);transition:filter 0.4s}
+.ref-card:hover .ref-logo-wrap{filter:brightness(1) grayscale(0)}
+.ref-logo-wrap img{max-height:100%;max-width:160px;object-fit:contain;display:block}
+.ref-brand{font-family:var(--sans);font-size:16px;font-weight:500;letter-spacing:0.04em;color:var(--text);margin-bottom:12px}
+.ref-desc{font-size:14px;line-height:1.8;color:var(--text-dim);flex:1;margin-bottom:32px}
+.ref-btn{font-family:var(--mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;padding:10px 20px;border:1px solid var(--glass-border);color:var(--text-dim);text-decoration:none;transition:all 0.3s;background:transparent;display:inline-block;margin-top:auto}
+.ref-btn:hover{border-color:rgba(0,212,255,0.4);color:var(--cyan);background:rgba(0,212,255,0.04)}
+.ref-align-note{text-align:center;margin-top:48px}
+.ref-align-note p{font-family:var(--mono);font-size:11px;letter-spacing:0.15em;color:var(--text-faint);opacity:0.6}
+
+/* eco-unit logos */
+.eco-logo-wrap{height:48px;display:flex;align-items:center;margin-bottom:28px;filter:brightness(0.85);transition:filter 0.4s}
+.eco-card:hover .eco-logo-wrap{filter:brightness(1)}
+.eco-logo-wrap img{max-height:100%;max-width:150px;object-fit:contain;display:block}
+
+/* SINGAPORE */
+#singapore{padding:130px 0}
+.sg-inner{display:grid;grid-template-columns:1fr 1fr;gap:100px;align-items:start}
+.sg-left .section-label{margin-bottom:20px}
+.sg-h2{font-family:var(--serif);font-size:clamp(36px,3.8vw,54px);font-weight:300;letter-spacing:-0.02em;line-height:1.15;margin-bottom:24px}
+.sg-p{font-size:15px;line-height:1.9;color:var(--text-dim);max-width:420px}
+.sg-right{display:flex;flex-direction:column;gap:2px;padding-top:32px}
+.sg-block{background:var(--glass);border:1px solid var(--glass-border);padding:38px 40px;position:relative;overflow:hidden;transition:all 0.3s}
+.sg-block:hover{border-color:rgba(0,212,255,0.15);background:rgba(0,212,255,0.02)}
+.sg-block-title{font-family:var(--mono);font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:var(--cyan);margin-bottom:14px}
+.sg-block-text{font-size:15px;line-height:1.8;color:var(--text-dim)}
+.sg-flag{position:absolute;right:28px;top:50%;transform:translateY(-50%);font-size:22px;opacity:0.12}
+
+/* CONTACT */
+#contact{padding:130px 0;background:linear-gradient(180deg,transparent,rgba(26,111,255,0.03),transparent)}
+.contact-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px}
+.contact-left .section-label{margin-bottom:20px}
+.contact-h2{font-family:var(--serif);font-size:clamp(36px,3.8vw,54px);font-weight:300;letter-spacing:-0.02em;line-height:1.15;margin-bottom:24px}
+.contact-intro{font-size:15px;line-height:1.9;color:var(--text-dim);margin-bottom:48px}
+.contact-info{display:flex;flex-direction:column;gap:28px}
+.ci-label{font-family:var(--mono);font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--text-faint);margin-bottom:8px}
+.ci-val{font-size:15px;color:var(--text-dim);line-height:1.7}
+.ci-val a{color:var(--cyan);text-decoration:none;transition:opacity 0.3s}
+.ci-val a:hover{opacity:0.7}
+.btn-cta{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;padding:16px 40px;background:transparent;border:1px solid rgba(0,212,255,0.4);color:var(--cyan);text-decoration:none;margin-top:40px;transition:all 0.3s;position:relative;overflow:hidden}
+.btn-cta::before{content:'';position:absolute;inset:0;background:var(--cyan);transform:scaleX(0);transform-origin:left;transition:transform 0.4s cubic-bezier(.16,1,.3,1)}
+.btn-cta:hover::before{transform:scaleX(1)}
+.btn-cta span{position:relative;z-index:1;transition:color 0.4s}
+.btn-cta:hover span{color:var(--ink)}
+.contact-form{display:flex;flex-direction:column;gap:2px}
+.form-field input,.form-field textarea{width:100%;background:var(--glass);border:1px solid var(--glass-border);color:var(--text);font-family:var(--sans);font-size:15px;padding:18px 20px;outline:none;transition:border-color 0.3s;-webkit-appearance:none;border-radius:0;-webkit-text-size-adjust:100%}
+.form-field textarea{min-height:120px;resize:vertical}
+.form-field input::placeholder,.form-field textarea::placeholder{color:var(--text-faint);font-size:13px;letter-spacing:0.05em}
+.form-field input:focus,.form-field textarea:focus{border-color:rgba(0,212,255,0.3);background:rgba(0,212,255,0.02)}
+.form-submit{font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;padding:18px;background:var(--cyan);color:var(--ink);border:none;cursor:pointer;transition:all 0.3s;margin-top:2px;width:100%}
+.form-submit:hover{background:#fff;box-shadow:0 0 30px rgba(0,212,255,0.3)}
+
+/* FOOTER */
+footer{padding:64px 0 44px;border-top:1px solid var(--glass-border)}
+.footer-inner{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:56px;margin-bottom:56px}
+.footer-logo{font-family:var(--mono);font-size:13px;letter-spacing:0.12em;color:var(--cyan);margin-bottom:16px}
+.footer-tagline{font-size:13px;line-height:1.8;color:var(--text-faint);max-width:240px}
+.footer-col-title{font-family:var(--mono);font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--text-faint);margin-bottom:20px}
+.footer-col a{display:block;font-size:13px;color:var(--text-dim);text-decoration:none;margin-bottom:12px;transition:color 0.3s}
+.footer-col a:hover{color:var(--cyan)}
+.footer-col p{font-size:13px;color:var(--text-faint);line-height:1.7;margin-bottom:8px}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:32px;border-top:1px solid var(--glass-border);flex-wrap:wrap;gap:12px}
+.footer-copy{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;color:var(--text-faint)}
+
+/* ANIMATIONS */
+@keyframes pulse{0%,100%{opacity:0.5}50%{opacity:1}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes glow-sweep{0%{background-position:-200% center}100%{background-position:300% center}}
+
+/* ========== RESPONSIVE ========== */
+@media(max-width:1024px){
+  .container{padding:0 40px}
+  nav{padding:20px 40px}
+  nav.scrolled{padding:14px 40px}
+  .hero-content{padding:0 40px;gap:40px}
+  .footer-inner{grid-template-columns:1fr 1fr;gap:40px}
+  .divider{margin:0 40px}
+}
+@media(max-width:800px){
+  nav{padding:18px 24px}
+  nav.scrolled{padding:14px 24px}
+  .nav-links,.nav-cta{display:none}
+  .nav-hamburger{display:flex}
+  .container{padding:0 24px}
+  .divider{margin:0 24px}
+  .hero-content{grid-template-columns:1fr;padding:0 24px;gap:32px;padding-top:80px}
+  .hero-right{height:280px}
+  .hero-h1{font-size:clamp(42px,10vw,64px)}
+  .hero-sub{font-size:16px}
+  .hero-p{font-size:14px}
+  #platform{padding:90px 0}
+  .narrative-cards{grid-template-columns:1fr;gap:2px}
+  #domains{padding:90px 0}
+  .domains-grid{grid-template-columns:1fr}
+  .d-card{padding:44px 32px}
+  #ecosystem{padding:90px 0}
+  .eco-units{grid-template-columns:1fr}
+  #references{padding:90px 0}
+  .ref-cards{grid-template-columns:1fr}
+  #singapore{padding:90px 0}
+  .sg-inner{grid-template-columns:1fr;gap:56px}
+  #contact{padding:90px 0}
+  .contact-inner{grid-template-columns:1fr;gap:60px}
+  .footer-inner{grid-template-columns:1fr;gap:36px}
+  .footer-bottom{flex-direction:column;align-items:flex-start}
+  nav.scrolled{padding:14px 24px}
+}
+@media(max-width:480px){
+  .hero-h1{font-size:40px}
+  .hero-sub{font-size:15px}
+  .hero-btns{flex-direction:column;gap:12px}
+  .hero-btns a{text-align:center}
+  .d-card{padding:36px 24px}
+  .n-card{padding:40px 28px}
+  .eco-card{padding:40px 28px}
+  .sg-block{padding:32px 28px}
+  .contact-inner{gap:48px}
+}
+</style>
+</head>
+<body>
+
+<!-- Background canvas -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobile-menu">
+  <button class="mobile-close" id="mobile-close">✕</button>
+  <a href="#platform" onclick="closeMobile()">Overview</a>
+  <a href="#domains" onclick="closeMobile()">Platform</a>
+  <a href="#ecosystem" onclick="closeMobile()">Ecosystem</a>
+  <a href="#references" onclick="closeMobile()">References</a>
+  <a href="#singapore" onclick="closeMobile()">Singapore</a>
+  <a href="#contact" onclick="closeMobile()">Contact</a>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">DataEnergy<span> Holding</span></a>
+  <div class="nav-links">
+    <a href="#platform" data-section="platform">Overview</a>
+    <a href="#domains" data-section="domains">Platform</a>
+    <a href="#ecosystem" data-section="ecosystem">Ecosystem</a>
+    <a href="#references" data-section="references">References</a>
+    <a href="#singapore" data-section="singapore">Singapore</a>
+    <a href="#contact" data-section="contact">Contact</a>
+  </div>
+  <a href="#contact" class="nav-cta">Contact Us</a>
+  <div class="nav-hamburger" id="hamburger" onclick="openMobile()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-left">
+      <p class="hero-eyebrow" id="h-eyebrow">Singapore · Strategic Platform · Est. 2024</p>
+      <h1 class="hero-h1" id="h-title">From Energy<br>to <em>Intelligence</em></h1>
+      <p class="hero-sub" id="h-sub">A strategic platform for the next infrastructure cycle.</p>
+      <p class="hero-p" id="h-p">DataEnergy Holding connects energy systems, digital infrastructure, AI compute platforms, and long-term capital into a unified platform for the green AI era.</p>
+      <div class="hero-btns" id="h-btns">
+        <a href="#platform" class="btn-primary">Explore the Platform</a>
+        <a href="#contact" class="btn-ghost">Contact Us</a>
+      </div>
+      <div class="hero-tags" id="h-tags">
+        <span class="hero-tag">Singapore HQ</span>
+        <span class="hero-tag">Green AI Infrastructure</span>
+        <span class="hero-tag">Strategic Platform</span>
+        <span class="hero-tag">Cross-Border Capability</span>
+        <span class="hero-tag">Capital Ready</span>
+      </div>
+    </div>
+    <div class="hero-right">
+      <canvas id="chain-canvas"></canvas>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PLATFORM NARRATIVE -->
+<section id="platform">
+  <div class="container">
+    <div class="narrative-header">
+      <p class="section-label fade-up">Platform Overview</p>
+      <h2 class="narrative-h2 fade-up">A Platform for the<br>AI Infrastructure Era</h2>
+      <p class="narrative-p fade-up">DataEnergy Holding brings together the enabling layers of next-generation infrastructure — where power, data, compute, and capital increasingly converge.</p>
+    </div>
+    <div class="narrative-cards">
+      <div class="n-card fade-up">
+        <div class="n-card-num">01</div>
+        <div class="n-card-title">Infrastructure</div>
+        <div class="n-card-text">Physical and digital foundations designed for the requirements of the AI era.</div>
+        <div class="n-card-line"></div>
+      </div>
+      <div class="n-card fade-up" style="transition-delay:0.1s">
+        <div class="n-card-num">02</div>
+        <div class="n-card-title">Intelligence</div>
+        <div class="n-card-text">Platforms that transform infrastructure into usable capability and strategic operating leverage.</div>
+        <div class="n-card-line" style="background:linear-gradient(90deg,var(--violet),transparent)"></div>
+      </div>
+      <div class="n-card fade-up" style="transition-delay:0.2s">
+        <div class="n-card-num">03</div>
+        <div class="n-card-title">Capital</div>
+        <div class="n-card-text">Structures that support long-term ownership, scalability, and platform value creation.</div>
+        <div class="n-card-line" style="background:linear-gradient(90deg,var(--gold),transparent)"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- DOMAINS -->
+<section id="domains">
+  <div class="container">
+    <div class="domains-header fade-left">
+      <p class="section-label">Strategic Focus</p>
+      <h2 class="domains-h2">Four Strategic<br>Domains</h2>
+    </div>
+    <div class="domains-grid">
+      <div class="d-card fade-up">
+        <div class="d-card-glow"></div>
+        <div class="d-num">Domain 01</div>
+        <div class="d-accent"></div>
+        <div class="d-title">Energy</div>
+        <div class="d-sub">Powering the physical foundation of the AI era.</div>
+        <div class="d-text">We focus on the energy logic behind next-generation infrastructure, from resilient power systems to efficient deployment environments.</div>
+      </div>
+      <div class="d-card fade-up" style="transition-delay:0.1s">
+        <div class="d-card-glow"></div>
+        <div class="d-num">Domain 02</div>
+        <div class="d-accent"></div>
+        <div class="d-title">Data</div>
+        <div class="d-sub">Enabling the operating medium of modern intelligence.</div>
+        <div class="d-text">We see data infrastructure as a strategic layer supporting trusted flows, industrial systems, and future-facing digital capability.</div>
+      </div>
+      <div class="d-card fade-up" style="transition-delay:0.2s">
+        <div class="d-card-glow"></div>
+        <div class="d-num">Domain 03</div>
+        <div class="d-accent"></div>
+        <div class="d-title">Compute</div>
+        <div class="d-sub">Turning infrastructure into programmable capability.</div>
+        <div class="d-text">Compute platforms and orchestration models convert infrastructure into scalable, usable AI services.</div>
+      </div>
+      <div class="d-card fade-up" style="transition-delay:0.3s">
+        <div class="d-card-glow"></div>
+        <div class="d-num">Domain 04</div>
+        <div class="d-accent"></div>
+        <div class="d-title">Capital</div>
+        <div class="d-sub">Scaling strategic infrastructure through long-term structures.</div>
+        <div class="d-text">We believe the future of AI infrastructure will be shaped by platform ownership, assetization, and durable capital alignment.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ECOSYSTEM -->
+<section id="ecosystem">
+  <div class="eco-bg"></div>
+  <div class="container">
+    <div class="eco-header fade-up">
+      <p class="section-label">Group Structure</p>
+      <h2 class="eco-h2">Platform Ecosystem</h2>
+    </div>
+    <p class="eco-intro fade-up">DataEnergy Holding coordinates a broader ecosystem of strategic operating units and platform capabilities.</p>
+
+    <!-- Hub -->
+    <div class="eco-hub-wrap fade-up">
+      <div class="eco-hub-card">
+        <div class="eco-hub-label">Parent Platform</div>
+        <div class="eco-hub-name">DataEnergy Holding</div>
+      </div>
+      <div class="eco-line-v"></div>
+    </div>
+
+    <!-- SVG branch lines -->
+    <div class="eco-branch fade-up">
+      <svg viewBox="0 0 900 36" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="450" y1="0" x2="150" y2="36" stroke="rgba(0,212,255,0.18)" stroke-width="1"/>
+        <line x1="450" y1="0" x2="450" y2="36" stroke="rgba(0,212,255,0.18)" stroke-width="1"/>
+        <line x1="450" y1="0" x2="750" y2="36" stroke="rgba(200,169,110,0.18)" stroke-width="1"/>
+      </svg>
+    </div>
+
+    <!-- Member units -->
+    <div class="eco-units">
+      <a class="eco-card fade-up" href="https://www.dcdeeptech.com" target="_blank" rel="noopener noreferrer">
+        <div class="eco-logo-wrap"><img src="/images/dcdeeptech.jpg" alt="DCDeepTech"></div>
+        <div class="eco-label">Member Unit</div>
+        <div class="eco-name">DCDeepTech</div>
+        <div class="eco-text">Focused on AI infrastructure strategy, digital systems architecture, and next-generation platform enablement across the group's core investment thesis.</div>
+        <div class="eco-link">Visit dcdeeptech.com ↗</div>
+      </a>
+      <a class="eco-card fade-up" href="https://www.axiomdeta.com" target="_blank" rel="noopener noreferrer" style="transition-delay:0.1s">
+        <div class="eco-logo-wrap"><img src="/images/axiomdeta.jpg" alt="AxiomDeta"></div>
+        <div class="eco-label">Member Unit</div>
+        <div class="eco-name">AxiomDeta</div>
+        <div class="eco-text">Focused on productization, delivery alignment, and execution across infrastructure and industrial deployment environments within the platform ecosystem.</div>
+        <div class="eco-link">Visit axiomdeta.com ↗</div>
+      </a>
+      <div class="eco-card fade-up" style="transition-delay:0.2s">
+        <div class="eco-label">Ecosystem Layer</div>
+        <div class="eco-name">Strategic Platforms</div>
+        <div class="eco-text">Future-facing project structures, partnerships, and capital platforms that extend the strategic reach and capabilities of the DataEnergy group.</div>
+        <div class="eco-link">Expanding ↗</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ECOSYSTEM REFERENCES -->
+<section id="references">
+  <div class="container">
+    <div class="ref-header fade-up">
+      <p class="section-label">Ecosystem Alignment</p>
+      <h2 class="ref-h2">Ecosystem References</h2>
+    </div>
+    <p class="ref-intro fade-up">DataEnergy Holding is aligned with leading ecosystems across open infrastructure, model access, and accelerated computing.</p>
+
+    <div class="ref-cards">
+      <!-- OCP -->
+      <div class="ref-card fade-up">
+        <div class="ref-logo-wrap">
+          <img src="/images/ocp.jpg" alt="Open Compute Project">
+        </div>
+        <div class="ref-brand">Open Compute Project</div>
+        <div class="ref-desc">Open infrastructure ecosystem for scalable compute, hardware collaboration, and next-generation data center design.</div>
+        <a class="ref-btn" href="https://www.opencompute.org/" target="_blank" rel="noopener noreferrer">Visit OCP ↗</a>
+      </div>
+
+      <!-- OpenRouter -->
+      <div class="ref-card fade-up" style="transition-delay:0.1s">
+        <div class="ref-logo-wrap">
+          <img src="/images/or.jpg" alt="OpenRouter">
+        </div>
+        <div class="ref-brand">OpenRouter</div>
+        <div class="ref-desc">Unified AI model access layer enabling flexible routing across major model providers and frontier systems.</div>
+        <a class="ref-btn" href="https://openrouter.ai/" target="_blank" rel="noopener noreferrer">Visit OpenRouter ↗</a>
+      </div>
+
+      <!-- NVIDIA -->
+      <div class="ref-card fade-up" style="transition-delay:0.2s">
+        <div class="ref-logo-wrap">
+          <img src="/images/nvidia.jpg" alt="NVIDIA">
+        </div>
+        <div class="ref-brand">NVIDIA</div>
+        <div class="ref-desc">Accelerated computing platform powering modern AI infrastructure, simulation, and next-generation digital systems.</div>
+        <a class="ref-btn" href="https://www.nvidia.com/en-sg/" target="_blank" rel="noopener noreferrer">Visit NVIDIA ↗</a>
+      </div>
+    </div>
+
+    <div class="ref-align-note fade-up">
+      <p>Ecosystem alignment reflects strategic orientation — not commercial partnership or endorsement.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SINGAPORE -->
+<section id="singapore">
+  <div class="container">
+    <div class="sg-inner">
+      <div class="sg-left fade-left">
+        <p class="section-label">Base of Operations</p>
+        <h2 class="sg-h2">Singapore as<br>Strategic Base</h2>
+        <p class="sg-p">Singapore provides a trusted foundation for governance, coordination, regional connectivity, and long-term capital formation — an ideal base for a platform of this ambition.</p>
+      </div>
+      <div class="sg-right">
+        <div class="sg-block fade-up">
+          <div class="sg-block-title">Governance</div>
+          <div class="sg-block-text">A credible environment for strategic partnerships and platform development, underpinned by institutional clarity and regulatory depth.</div>
+          <div class="sg-flag">🇸🇬</div>
+        </div>
+        <div class="sg-block fade-up" style="transition-delay:0.1s">
+          <div class="sg-block-title">Connectivity</div>
+          <div class="sg-block-text">A gateway between markets, ecosystems, and next-generation infrastructure corridors — connecting regional and global capital flows.</div>
+          <div class="sg-flag">🇸🇬</div>
+        </div>
+        <div class="sg-block fade-up" style="transition-delay:0.2s">
+          <div class="sg-block-title">Capital</div>
+          <div class="sg-block-text">A foundation for institutional engagement and future infrastructure scaling, with access to sovereign, institutional, and private capital networks.</div>
+          <div class="sg-flag">🇸🇬</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-inner">
+      <div class="contact-left fade-left">
+        <p class="section-label">Get in Touch</p>
+        <h2 class="contact-h2">Connect with<br>DataEnergy Holding</h2>
+        <p class="contact-intro">We welcome conversations with infrastructure partners, strategic institutions, deployment collaborators, and capital providers.</p>
+        <div class="contact-info">
+          <div>
+            <div class="ci-label">Address</div>
+            <div class="ci-val">71 Ayer Rajah Crescent, #02-01<br>Singapore 139951</div>
+          </div>
+          <div>
+            <div class="ci-label">Email</div>
+            <div class="ci-val"><a href="mailto:info@dcdeeptech.com">info@dcdeeptech.com</a></div>
+          </div>
+          <div>
+            <div class="ci-label">WhatsApp</div>
+            <div class="ci-val"><a href="https://wa.me/6583785068">+65 8378 5068</a></div>
+          </div>
+        </div>
+        <a href="mailto:info@dcdeeptech.com" class="btn-cta"><span>Start the Conversation</span></a>
+      </div>
+      <div class="contact-form fade-up">
+        <div class="form-field">
+          <input type="text" placeholder="Name" autocomplete="name">
+        </div>
+        <div class="form-field">
+          <input type="email" placeholder="Email" autocomplete="email">
+        </div>
+        <div class="form-field">
+          <input type="text" placeholder="Organization">
+        </div>
+        <div class="form-field">
+          <textarea placeholder="Message — tell us about your interest or project"></textarea>
+        </div>
+        <button class="form-submit">Send Message</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-logo">DataEnergy Holding</div>
+        <div class="footer-tagline">Singapore-based platform for the green AI infrastructure era.</div>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Platform</div>
+        <a href="#platform">Overview</a>
+        <a href="#domains">Domains</a>
+        <a href="#ecosystem">Ecosystem</a>
+        <a href="#references">References</a>
+        <a href="#singapore">Singapore</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Member Units</div>
+        <a href="https://www.dcdeeptech.com" target="_blank" rel="noopener noreferrer">DCDeepTech ↗</a>
+        <a href="https://www.axiomdeta.com" target="_blank" rel="noopener noreferrer">AxiomDeta ↗</a>
+        <a href="#ecosystem">Strategic Platforms</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Contact</div>
+        <p>info@dcdeeptech.com</p>
+        <p>+65 8378 5068</p>
+        <p>71 Ayer Rajah Crescent<br>Singapore 139951</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2024 DataEnergy Holding. All rights reserved.</div>
+      <div class="footer-copy" style="opacity:0.5">Singapore · Strategic Platform · AI Infrastructure</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── MOBILE MENU ──
+function openMobile(){document.getElementById('mobile-menu').classList.add('open')}
+function closeMobile(){document.getElementById('mobile-menu').classList.remove('open')}
+document.getElementById('mobile-close').onclick=closeMobile;
+
+// ── BG PARTICLES ──
+const bgCanvas=document.getElementById('bg-canvas');
+const bgCtx=bgCanvas.getContext('2d');
+function resizeBg(){bgCanvas.width=window.innerWidth;bgCanvas.height=window.innerHeight}
+resizeBg();
+window.addEventListener('resize',()=>{resizeBg();resizeChain()});
+
+const numPts=Math.min(60,Math.floor(window.innerWidth/20));
+const pts=Array.from({length:numPts},()=>({
+  x:Math.random()*window.innerWidth,
+  y:Math.random()*window.innerHeight,
+  vx:(Math.random()-.5)*0.18,
+  vy:(Math.random()-.5)*0.18,
+  r:Math.random()*1.2+0.4
+}));
+
+function drawBg(){
+  bgCtx.clearRect(0,0,bgCanvas.width,bgCanvas.height);
+  pts.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0||p.x>bgCanvas.width)p.vx*=-1;
+    if(p.y<0||p.y>bgCanvas.height)p.vy*=-1;
+    bgCtx.beginPath();bgCtx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    bgCtx.fillStyle='rgba(0,212,255,0.18)';bgCtx.fill();
+  });
+  const maxDist=window.innerWidth>800?130:80;
+  for(let i=0;i<pts.length;i++){
+    for(let j=i+1;j<pts.length;j++){
+      const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<maxDist){
+        bgCtx.beginPath();bgCtx.moveTo(pts[i].x,pts[i].y);bgCtx.lineTo(pts[j].x,pts[j].y);
+        bgCtx.strokeStyle=`rgba(0,212,255,${(1-d/maxDist)*0.055})`;bgCtx.lineWidth=0.5;bgCtx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(drawBg);
+}
+drawBg();
+
+// ── HERO CHAIN CANVAS ──
+const chainCanvas=document.getElementById('chain-canvas');
+const cc=chainCanvas.getContext('2d');
+
+function resizeChain(){
+  const p=chainCanvas.parentElement;
+  if(!p)return;
+  chainCanvas.width=p.offsetWidth;
+  chainCanvas.height=p.offsetHeight;
+}
+resizeChain();
+
+const nodes=[
+  {label:'Energy',color:'#00d4ff',x:0,y:0},
+  {label:'Data',color:'#6fa8ff',x:0,y:0},
+  {label:'Compute',color:'#a48fff',x:0,y:0},
+  {label:'Capital',color:'#c8a96e',x:0,y:0},
+];
+
+const chainPts=[];
+for(let i=0;i<50;i++){
+  chainPts.push({seg:Math.floor(Math.random()*3),t:Math.random(),speed:0.001+Math.random()*0.0025,alpha:0.2+Math.random()*0.6,size:0.6+Math.random()*1.8});
+}
+
+let cT=0;
+function drawChain(){
+  const W=chainCanvas.width,H=chainCanvas.height;
+  cc.clearRect(0,0,W,H);
+  if(W===0||H===0){cT+=0.01;requestAnimationFrame(drawChain);return;}
+
+  const cx=W/2,cy=H/2;
+  const scale=Math.min(W,H);
+  const offs=[
+    {ox:-scale*0.30,oy:-scale*0.24},
+    {ox: scale*0.14,oy:-scale*0.06},
+    {ox:-scale*0.14,oy: scale*0.06},
+    {ox: scale*0.30,oy: scale*0.24},
+  ];
+  nodes.forEach((n,i)=>{
+    n.x=cx+offs[i].ox+Math.sin(cT*0.9+i*1.4)*5;
+    n.y=cy+offs[i].oy+Math.cos(cT*0.7+i*1.1)*5;
+  });
+
+  // Connections
+  for(let i=0;i<nodes.length-1;i++){
+    const a=nodes[i],b=nodes[i+1];
+    const grd=cc.createLinearGradient(a.x,a.y,b.x,b.y);
+    grd.addColorStop(0,a.color+'55');grd.addColorStop(1,b.color+'55');
+    cc.beginPath();cc.moveTo(a.x,a.y);cc.lineTo(b.x,b.y);
+    cc.strokeStyle=grd;cc.lineWidth=1;cc.stroke();
+    const grd2=cc.createLinearGradient(a.x,a.y,b.x,b.y);
+    grd2.addColorStop(0,a.color+'18');grd2.addColorStop(1,b.color+'18');
+    cc.beginPath();cc.moveTo(a.x,a.y);cc.lineTo(b.x,b.y);
+    cc.strokeStyle=grd2;cc.lineWidth=9;cc.stroke();
+  }
+
+  // Flowing particles
+  chainPts.forEach(p=>{
+    p.t+=p.speed;
+    if(p.t>1){p.t=0;p.seg=Math.floor(Math.random()*3)}
+    const a=nodes[p.seg],b=nodes[p.seg+1];
+    cc.beginPath();cc.arc(a.x+(b.x-a.x)*p.t,a.y+(b.y-a.y)*p.t,p.size,0,Math.PI*2);
+    cc.fillStyle=a.color;cc.globalAlpha=p.alpha;cc.fill();
+    cc.globalAlpha=1;
+  });
+
+  // Nodes
+  nodes.forEach((n,i)=>{
+    const pulse=(Math.sin(cT*1.6+i*1.7)+1)/2;
+    const gr=cc.createRadialGradient(n.x,n.y,0,n.x,n.y,48+pulse*10);
+    gr.addColorStop(0,n.color+'28');gr.addColorStop(1,'transparent');
+    cc.beginPath();cc.arc(n.x,n.y,48+pulse*10,0,Math.PI*2);cc.fillStyle=gr;cc.fill();
+    cc.beginPath();cc.arc(n.x,n.y,26,0,Math.PI*2);
+    cc.strokeStyle=n.color+'50';cc.lineWidth=1;cc.stroke();
+    cc.beginPath();cc.arc(n.x,n.y,17,0,Math.PI*2);
+    cc.fillStyle=n.color+'16';cc.fill();
+    cc.strokeStyle=n.color+'88';cc.lineWidth=1.5;cc.stroke();
+    cc.fillStyle=n.color;cc.font=`500 ${Math.max(10,Math.floor(scale*0.028))}px Syne,sans-serif`;
+    cc.textAlign='center';cc.textBaseline='bottom';
+    cc.fillText(n.label,n.x,n.y-30);
+    cc.beginPath();cc.arc(n.x,n.y,3,0,Math.PI*2);cc.fill();
+  });
+
+  cT+=0.012;
+  requestAnimationFrame(drawChain);
+}
+drawChain();
+
+// ── NAV SCROLL ──
+const navbar=document.getElementById('navbar');
+const sections=['platform','domains','ecosystem','references','singapore','contact'];
+window.addEventListener('scroll',()=>{
+  navbar.classList.toggle('scrolled',window.scrollY>50);
+  let cur='';
+  sections.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&window.scrollY>=el.offsetTop-220)cur=id;
+  });
+  document.querySelectorAll('.nav-links a').forEach(a=>{
+    a.classList.toggle('active',a.dataset.section===cur);
+  });
+},{passive:true});
+
+// ── HERO ENTRY ANIMATIONS ──
+const heroEls=[
+  {id:'h-eyebrow',delay:180},
+  {id:'h-title',delay:360},
+  {id:'h-sub',delay:540},
+  {id:'h-p',delay:700},
+  {id:'h-btns',delay:860},
+  {id:'h-tags',delay:1050},
+];
+heroEls.forEach(({id})=>{
+  const el=document.getElementById(id);
+  if(el){el.style.opacity='0';el.style.transform='translateY(22px)'}
+});
+heroEls.forEach(({id,delay})=>{
+  setTimeout(()=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.style.transition='opacity 0.9s cubic-bezier(.16,1,.3,1),transform 0.9s cubic-bezier(.16,1,.3,1)';
+    el.style.opacity='1';el.style.transform='none';
+  },delay);
+});
+
+// ── SCROLL REVEAL ──
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.fade-up,.fade-left').forEach(el=>obs.observe(el));
+
+// ── SMOOTH SCROLL ──
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const href=a.getAttribute('href');
+    if(href==='#')return;
+    const t=document.querySelector(href);
+    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'})}
+  });
+});
+</script>
+</body>
+</html>
