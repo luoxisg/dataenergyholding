@@ -185,14 +185,16 @@ section{position:relative;z-index:2}
 .eco-branch svg{position:absolute;inset:0;width:100%;height:100%}
 .eco-units{display:grid;grid-template-columns:repeat(3,1fr);gap:20px; perspective: 1000px;}
 .eco-card{background:var(--glass);border:1px solid var(--glass-border);padding:56px 42px;overflow:hidden;text-decoration:none;display:block;color:inherit;border-radius: 8px;}
-.eco-card:nth-child(1),.eco-card:nth-child(2){border-top:3px solid rgba(0,212,255,0.4)}
-.eco-card:nth-child(3){border-top:3px solid rgba(200,169,110,0.4)}
+
+/* Updated CSS for 4 ecosystem cards */
+.eco-card:nth-child(1),.eco-card:nth-child(2),.eco-card:nth-child(3){border-top:3px solid rgba(0,212,255,0.4)}
+.eco-card:nth-child(4){border-top:3px solid rgba(200,169,110,0.4)}
 .eco-label{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:0.22em;text-transform:uppercase;padding:6px 14px;border:1px solid rgba(0,212,255,0.3);color:var(--cyan);margin-bottom:28px;background:rgba(0,212,255,0.06); border-radius: 4px;}
-.eco-card:nth-child(3) .eco-label{border-color:rgba(200,169,110,0.3);color:var(--gold);background:rgba(200,169,110,0.06)}
+.eco-card:nth-child(4) .eco-label{border-color:rgba(200,169,110,0.3);color:var(--gold);background:rgba(200,169,110,0.06)}
 .eco-name{font-family:var(--serif);font-size:36px;font-weight:400;letter-spacing:-0.01em;margin-bottom:20px; color:#fff;}
 .eco-text{font-size:17px;line-height:1.8;color:var(--text-dim);margin-bottom:32px}
 .eco-link{font-family:var(--mono);font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:var(--cyan);opacity:0.7;transition:all 0.3s; display:inline-block;}
-.eco-card:nth-child(3) .eco-link{color:var(--gold)}
+.eco-card:nth-child(4) .eco-link{color:var(--gold)}
 .eco-card:hover .eco-link{opacity:1; transform:translateX(5px)}
 
 /* eco-unit logos */
@@ -612,6 +614,7 @@ footer{padding:80px 0 50px;border-top:1px solid var(--glass-border)}
         <div class="eco-text">Focused on AI infrastructure strategy, digital systems architecture, and next-generation platform enablement across the group's core investment thesis.</div>
         <div class="eco-link">Visit dcdeeptech.com ↗</div>
       </a>
+      
       <a class="eco-card card-3d fade-up" href="https://www.axiomdeta.com" target="_blank" rel="noopener noreferrer" style="transition-delay:0.1s">
         <div class="eco-logo-wrap"><img src="/images/axiomdeta.jpg" alt="AxiomDeta"></div>
         <div class="eco-label">Member Unit</div>
@@ -619,7 +622,17 @@ footer{padding:80px 0 50px;border-top:1px solid var(--glass-border)}
         <div class="eco-text">Focused on productization, delivery alignment, and execution across infrastructure and industrial deployment environments within the platform ecosystem.</div>
         <div class="eco-link">Visit axiomdeta.com ↗</div>
       </a>
-      <div class="eco-card card-3d fade-up" style="transition-delay:0.2s">
+
+      <!-- NEW CARD: Tprime (Chongqing) -->
+      <a class="eco-card card-3d fade-up" href="#" target="_blank" rel="noopener noreferrer" style="transition-delay:0.2s">
+        <div class="eco-logo-wrap"><img src="/images/TRrime.png" alt="Tprime"></div>
+        <div class="eco-label">Member Unit</div>
+        <div class="eco-name">Tprime (Chongqing)</div>
+        <div class="eco-text">Focused on strategic infrastructure and platform operations within the Chongqing region, expanding localized digital systems and intelligence footprint.</div>
+        <div class="eco-link">Learn more ↗</div>
+      </a>
+
+      <div class="eco-card card-3d fade-up" style="transition-delay:0.3s">
         <div class="eco-label">Ecosystem Layer</div>
         <div class="eco-name">Strategic Platforms</div>
         <div class="eco-text">Future-facing project structures, partnerships, and capital platforms that extend the strategic reach and capabilities of the DataEnergy group.</div>
